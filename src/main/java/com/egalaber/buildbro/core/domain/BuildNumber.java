@@ -72,12 +72,12 @@ public class BuildNumber {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BuildNumber that = (BuildNumber) o;
-        return Objects.equals(getId(), that.getId()) && Objects.equals(getProject(), that.getProject()) && Objects.equals(getBranch(), that.getBranch()) && Objects.equals(getNumber(), that.getNumber());
+        return Objects.equals(getProject(), that.getProject()) && Objects.equals(getBranch(), that.getBranch()) && Objects.equals(getNumber(), that.getNumber());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getProject(), getBranch(), getNumber());
+        return Objects.hash(getProject(), getBranch(), getNumber());
     }
 
     @Override

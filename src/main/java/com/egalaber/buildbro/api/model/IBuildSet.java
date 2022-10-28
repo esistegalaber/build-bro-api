@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class EnvironmentBuilds implements Serializable {
+public class IBuildSet implements Serializable {
     private String environment;
     private boolean internal;
     private Map<String, IBuild> builds = new TreeMap<>();

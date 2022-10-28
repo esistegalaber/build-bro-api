@@ -2,7 +2,7 @@ package com.egalaber.buildbro.api.model;
 
 import java.io.Serializable;
 
-public class ProjectBranch implements Serializable {
+public class IBranchedProject implements Serializable {
     String project;
     String branch;
 

@@ -2,7 +2,7 @@ package com.egalaber.buildbro.core.service
 
 import com.egalaber.buildbro.BaseBuildBroSpec
 import com.egalaber.buildbro.api.fault.DataNotFoundException
-import com.egalaber.buildbro.api.model.BuildSearch
+import com.egalaber.buildbro.api.model.IBuildSearch
 import com.egalaber.buildbro.core.domain.Build
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
@@ -62,7 +62,7 @@ class BuildServiceTest extends BaseBuildBroSpec {
     @Unroll("#message")
     def "Search"() {
         given:
-        BuildSearch buildSearch = new BuildSearch(
+        IBuildSearch buildSearch = new IBuildSearch(
                 project: theProject,
                 branch: theBranch,
                 minBuildNumber: theMinBuildNumber,

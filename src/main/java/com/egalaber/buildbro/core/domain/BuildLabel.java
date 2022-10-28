@@ -83,12 +83,12 @@ public class BuildLabel implements Serializable, Comparable<BuildLabel> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BuildLabel that = (BuildLabel) o;
-        return Objects.equals(getId(), that.getId()) && Objects.equals(getKey(), that.getKey()) && Objects.equals(getValue(), that.getValue());
+        return Objects.equals(getBuild(), that.getBuild()) && Objects.equals(getKey(), that.getKey()) && Objects.equals(getValue(), that.getValue());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getKey(), getValue());
+        return Objects.hash(getBuild(), getKey(), getValue());
     }
 
     @Override

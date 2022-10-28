@@ -1,7 +1,7 @@
 package com.egalaber.buildbro.core.service;
 
 import com.egalaber.buildbro.api.fault.DataNotFoundException;
-import com.egalaber.buildbro.api.model.BuildSearch;
+import com.egalaber.buildbro.api.model.IBuildSearch;
 import com.egalaber.buildbro.core.domain.Build;
 import com.egalaber.buildbro.core.domain.BuildLabel;
 import com.egalaber.buildbro.core.repository.BuildLabelRepository;
@@ -54,11 +54,11 @@ public class BuildService {
         );
     }
 
-    public Page<Build> search(BuildSearch search) {
+    public Page<Build> search(IBuildSearch search) {
         return buildRepository.findAll(toSpecification(search), search.page());
     }
 
-    private Specification<Build> toSpecification(BuildSearch search) {
+    private Specification<Build> toSpecification(IBuildSearch search) {
         Specification<Build> theQuerySpecification = BuildSpecs.allBuilds();
         if (!search.getLabels().isEmpty()) {
             Set<BuildLabel> labelsToSearch = labelsToInclude(search.getLabels());

@@ -2,7 +2,7 @@ package com.egalaber.buildbro.api.impl;
 
 import com.egalaber.buildbro.api.BuildNumberEndpoint;
 import com.egalaber.buildbro.api.model.IBuildNumber;
-import com.egalaber.buildbro.api.model.ProjectBranch;
+import com.egalaber.buildbro.api.model.IBranchedProject;
 import com.egalaber.buildbro.core.service.BuildNumberService;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,9 +18,9 @@ public class BuildNumberEndpointImpl implements BuildNumberEndpoint {
     }
 
     @Override
-    public IBuildNumber next(ProjectBranch projectBranch) {
+    public IBuildNumber next(IBranchedProject branchedProject) {
         return BuildNumberMapper.from(
-                buildNumberService.next(projectBranch.getProject(), projectBranch.getBranch())
+                buildNumberService.next(branchedProject.getProject(), branchedProject.getBranch())
         );
     }
 

@@ -2,11 +2,13 @@ package com.egalaber.buildbro.api.impl;
 
 import com.egalaber.buildbro.api.BuildEndpoint;
 import com.egalaber.buildbro.api.fault.DataNotFoundException;
-import com.egalaber.buildbro.api.model.BuildSearch;
-import com.egalaber.buildbro.api.model.BuildSearchResult;
+import com.egalaber.buildbro.api.model.IBuildSearch;
+import com.egalaber.buildbro.api.model.IBuildSearchResult;
 import com.egalaber.buildbro.api.model.IBuild;
 import com.egalaber.buildbro.core.domain.Build;
+import com.egalaber.buildbro.core.events.BuildCreatedEvent;
 import com.egalaber.buildbro.core.service.BuildService;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,14 +21,16 @@ import static com.egalaber.buildbro.api.impl.SearchResultMapper.mapToBuildSearch
 @RestController
 @Transactional
 public class BuildEndpointImpl implements BuildEndpoint {
+    protected final ApplicationEventPublisher applicationEventPublisher;
     private final BuildService buildService;
 
-    public BuildEndpointImpl(BuildService buildService) {
+    public BuildEndpointImpl(ApplicationEventPublisher applicationEventPublisher, BuildService buildService) {
+        this.applicationEventPublisher = applicationEventPublisher;
         this.buildService = buildService;
     }
 
     @Override
-    public BuildSearchResult search(BuildSearch search) {
+    public IBuildSearchResult search(IBuildSearch search) {
         Page<Build> found = buildService.search(search);
         return mapToBuildSearchResult(found);
     }
@@ -40,9 +44,13 @@ public class BuildEndpointImpl implements BuildEndpoint {
 
     @Override
     public IBuild create(IBuild build) {
-        return mapToBuild(
-                buildService.create(build.getProject(), build.getBranch(), build.getBuildNumber())
+        String projectName = build.getProject();
+        String branchName = build.getBranch();
+        IBuild iBuild = mapToBuild(
+                buildService.create(projectName, branchName, build.getBuildNumber())
         );
+        applicationEventPublisher.publishEvent(new BuildCreatedEvent(projectName, branchName));
+        return iBuild;
     }
 
     @Override

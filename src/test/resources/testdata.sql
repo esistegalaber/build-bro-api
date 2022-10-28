@@ -1,17 +1,11 @@
 # noinspection SqlWithoutWhereForFile
 
 delete
-from deploy_label;
+from build_template_labels;
 delete
-from deploy;
+from build_template;
 delete
-from server;
-delete
-from artifact_labels;
-delete
-from artifact;
-delete
-from environment;
+from build_set_template;
 delete
 from build_number;
 delete
@@ -400,55 +394,55 @@ VALUES (1, 'integration-test', 'ok', 1),
        (270, 'integration-test', 'broken', 90);
 
 -- environments
-INSERT INTO environment (id, name)
+INSERT INTO build_set_template (id, name)
 VALUES (1, 'main');
-INSERT INTO artifact (id, branch, project, environment_id, build_number)
+INSERT INTO build_template (id, branch, project, build_set_template_id, build_number)
 VALUES (1, 'main', 'backend', 1, '9');
-INSERT INTO artifact (id, branch, project, environment_id)
+INSERT INTO build_template (id, branch, project, build_set_template_id)
 VALUES (2, 'main', 'frontend', 1);
 
 
-INSERT INTO environment (id, name)
+INSERT INTO build_set_template (id, name)
 VALUES (2, 'feature-test-stage-1');
 
-INSERT INTO environment (id, name, internal)
-VALUES (3, 'Environment of StageServer', true);
+INSERT INTO build_set_template (id, name)
+VALUES (3, 'Environment of StageServer');
 
-INSERT INTO project(id, active)
-VALUES ('backend', 1),
-       ('backoffice', 1),
-       ('frontend', 1),
-       ('abandoned', 0);
+INSERT INTO project(id, name, active)
+VALUES (1, 'backend', 1),
+       (2, 'backoffice', 1),
+       (3, 'frontend', 1),
+       (4, 'abandoned', 0);
 
-INSERT INTO branch(name, project_id, active)
-VALUES ('main', 'backend', 1),
-       ('next', 'backend', 1),
-       ('feature-backend', 'backend', 1),
-       ('merged-feature-backend', 'backend', 0),
-       ('main', 'frontend', 1),
-       ('next', 'frontend', 1),
-       ('feature-frontend', 'frontend', 1),
-       ('merged-feature-frontend', 'frontend', 0),
-       ('main', 'backoffice', 1),
-       ('next', 'backoffice', 1),
-       ('feature-backoffice', 'backoffice', 1),
-       ('merged-feature-backoffice', 'backoffice', 0),
-       ('main', 'abandoned', 1),
-       ('merged', 'abandoned', 0);
+INSERT INTO branch(id, name, project_id, active)
+VALUES (1, 'main', 1, 1),
+       (2, 'next', 1, 1),
+       (3, 'feature-backend', 1, 1),
+       (4, 'merged-feature-backend', 1, 0),
+       (5, 'main', 3, 1),
+       (6, 'next', 3, 1),
+       (7, 'feature-frontend', 3, 1),
+       (8, 'merged-feature-frontend', 3, 0),
+       (9, 'main', 2, 1),
+       (10, 'next', 2, 1),
+       (11, 'feature-backoffice', 2, 1),
+       (12, 'merged-feature-backoffice', 2, 0),
+       (13, 'main', 4, 1),
+       (14, 'merged', 4, 0);
+--
+-- INSERT INTO server(id, name, reserved_by, reservation_note)
+-- VALUES (1, 'Test-Server-1', null, null),
+--     (2, 'Empty-Server', 'Test Account', 'Checking if reservation works');
 
-INSERT INTO server(id, name, reserved_by, reservation_note)
-VALUES (1, 'Test-Server-1', null, null),
-       (2, 'Empty-Server', 'Test Account', 'Checking if reservation works');
-
-INSERT INTO deploy(id, deployed_at, build_id, server_id)
-VALUES (1, (NOW() - INTERVAL 5 YEAR), 1, 1),
-       (2, (NOW() - INTERVAL 1 YEAR), 2, 1),
-       (3, (NOW() - INTERVAL 6 MONTH), 2, 1),
-       (4, (NOW() - INTERVAL 1 MONTH), 2, 1),
-       (5, (NOW() - INTERVAL 2 WEEK), 2, 1),
-       (6, (NOW() - INTERVAL 1 WEEK), 2, 1),
-       (7, (NOW() - INTERVAL 3 DAY), 2, 1),
-       (8, (NOW() - INTERVAL 1 DAY), 2, 1),
-       (9, (NOW() - INTERVAL 6 HOUR), 2, 1),
-       (10, (NOW() - INTERVAL 1 HOUR), 2, 1),
-       (11, NOW(), 2, 1);
+-- INSERT INTO deploy(id, deployed_at, build_id, server_id)
+-- VALUES (1, (NOW() - INTERVAL 5 YEAR), 1, 1),
+--        (2, (NOW() - INTERVAL 1 YEAR), 2, 1),
+--        (3, (NOW() - INTERVAL 6 MONTH), 2, 1),
+--        (4, (NOW() - INTERVAL 1 MONTH), 2, 1),
+--        (5, (NOW() - INTERVAL 2 WEEK), 2, 1),
+--        (6, (NOW() - INTERVAL 1 WEEK), 2, 1),
+--        (7, (NOW() - INTERVAL 3 DAY), 2, 1),
+--        (8, (NOW() - INTERVAL 1 DAY), 2, 1),
+--        (9, (NOW() - INTERVAL 6 HOUR), 2, 1),
+--        (10, (NOW() - INTERVAL 1 HOUR), 2, 1),
+--        (11, NOW(), 2, 1);

@@ -86,12 +86,12 @@ public class Build {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Build build = (Build) o;
-        return Objects.equals(getId(), build.getId()) && Objects.equals(getProject(), build.getProject()) && Objects.equals(getBranch(), build.getBranch()) && Objects.equals(getBuildNumber(), build.getBuildNumber());
+        return Objects.equals(getProject(), build.getProject()) && Objects.equals(getBranch(), build.getBranch()) && Objects.equals(getBuildNumber(), build.getBuildNumber());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getProject(), getBranch(), getBuildNumber());
+        return Objects.hash(getProject(), getBranch(), getBuildNumber());
     }
 
     @Override

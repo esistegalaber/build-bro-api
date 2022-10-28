@@ -1,6 +1,6 @@
 package com.egalaber.buildbro.api.impl;
 
-import com.egalaber.buildbro.api.model.BuildSearchResult;
+import com.egalaber.buildbro.api.model.IBuildSearchResult;
 import com.egalaber.buildbro.api.model.IBuild;
 import com.egalaber.buildbro.api.model.IBuildLabel;
 import com.egalaber.buildbro.core.domain.Build;
@@ -13,8 +13,8 @@ public class SearchResultMapper {
     private SearchResultMapper() {
     }
 
-    public static BuildSearchResult mapToBuildSearchResult(Page<Build> result) {
-        BuildSearchResult toReturn = new BuildSearchResult();
+    public static IBuildSearchResult mapToBuildSearchResult(Page<Build> result) {
+        IBuildSearchResult toReturn = new IBuildSearchResult();
         toReturn.setData(
                 result.getContent().stream()
                         .map(SearchResultMapper::mapToBuild)

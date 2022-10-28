@@ -2,7 +2,7 @@ package com.egalaber.buildbro.api.model;
 
 import java.io.Serializable;
 
-public class ExceptionInfo implements Serializable {
+public class IExceptionInfo implements Serializable {
     private String key;
     private String description;
     private String message;
@@ -11,10 +11,10 @@ public class ExceptionInfo implements Serializable {
         return key;
     }
 
-    public ExceptionInfo() {
+    public IExceptionInfo() {
     }
 
-    public ExceptionInfo(String key, String description, String message) {
+    public IExceptionInfo(String key, String description, String message) {
         this.key = key;
         this.description = description;
         this.message = message;

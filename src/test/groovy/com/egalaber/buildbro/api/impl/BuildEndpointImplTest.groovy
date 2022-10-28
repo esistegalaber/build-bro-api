@@ -1,8 +1,8 @@
 package com.egalaber.buildbro.api.impl
 
 import com.egalaber.buildbro.api.BaseRestSpec
-import com.egalaber.buildbro.api.model.BuildSearch
-import com.egalaber.buildbro.api.model.BuildSearchResult
+import com.egalaber.buildbro.api.model.IBuildSearch
+import com.egalaber.buildbro.api.model.IBuildSearchResult
 import com.egalaber.buildbro.api.model.IBuild
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -11,12 +11,12 @@ class BuildEndpointImplTest extends BaseRestSpec {
     def "Search"() {
         given:
         String SEARCH_URL = "http://localhost:${port}/api/v1/builds/search"
-        BuildSearch search = new BuildSearch(
+        IBuildSearch search = new IBuildSearch(
                 project: 'backend'
         )
 
         when:
-        ResponseEntity<BuildSearchResult> responseEntity = restTemplate.postForEntity(SEARCH_URL, search, BuildSearchResult)
+        ResponseEntity<IBuildSearchResult> responseEntity = restTemplate.postForEntity(SEARCH_URL, search, IBuildSearchResult)
 
         then:
         responseEntity.statusCode == HttpStatus.OK
@@ -28,7 +28,7 @@ class BuildEndpointImplTest extends BaseRestSpec {
     def "Search with Labels"() {
         given:
         String SEARCH_URL = "http://localhost:${port}/api/v1/builds/search"
-        BuildSearch search = new BuildSearch(
+        IBuildSearch search = new IBuildSearch(
                 project: 'backend',
                 labels: [
                         'integration-test': 'broken'
@@ -36,7 +36,7 @@ class BuildEndpointImplTest extends BaseRestSpec {
         )
 
         when:
-        ResponseEntity<BuildSearchResult> responseEntity = restTemplate.postForEntity(SEARCH_URL, search, BuildSearchResult)
+        ResponseEntity<IBuildSearchResult> responseEntity = restTemplate.postForEntity(SEARCH_URL, search, IBuildSearchResult)
 
         then:
         responseEntity.statusCode == HttpStatus.OK

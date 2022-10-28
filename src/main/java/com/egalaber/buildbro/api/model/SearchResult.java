@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @param <R> the class of the results returned from the search
  */
-public class SearchResult<R> implements Serializable {
+public abstract class SearchResult<R> implements Serializable {
     private List<R> data = new ArrayList<>();
     private Integer page;
     private Long totalElements;

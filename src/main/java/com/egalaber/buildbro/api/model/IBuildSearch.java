@@ -3,7 +3,7 @@ package com.egalaber.buildbro.api.model;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BuildSearch extends BaseSearch {
+public class IBuildSearch extends BaseSearch {
     private static final String DEFAULT_SORT_ATTRIBUTE = "buildNumber";
     private String project;
     private String branch;

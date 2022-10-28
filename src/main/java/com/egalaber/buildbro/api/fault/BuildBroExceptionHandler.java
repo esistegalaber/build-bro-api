@@ -1,6 +1,6 @@
 package com.egalaber.buildbro.api.fault;
 
-import com.egalaber.buildbro.api.model.ExceptionInfo;
+import com.egalaber.buildbro.api.model.IExceptionInfo;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,8 +11,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class BuildBroExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(BuildBroException.class)
-    ResponseEntity<ExceptionInfo> handleConversion(BuildBroException ex) {
-        ExceptionInfo body = new ExceptionInfo(
+    ResponseEntity<IExceptionInfo> handleConversion(BuildBroException ex) {
+        IExceptionInfo body = new IExceptionInfo(
                 ex.getKey(),
                 ex.getMessage(),
                 ex.getDescription()
