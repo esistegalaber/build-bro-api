@@ -1,6 +1,6 @@
 package com.egalaber.buildbro.core.domain
 
-import com.egalaber.buildbro.core.repository.ProjectRepository
+
 import nl.jqno.equalsverifier.EqualsVerifier
 import spock.lang.Specification
 
@@ -22,7 +22,7 @@ class EqualsAndHashCodeTest extends Specification {
                 .verify()
     }
 
-    def "Equals and hashCode of BuildNumber"() {
+    def "Equals and hashCode of BuildLabel"() {
         expect:
         EqualsVerifier.forClass(BuildLabel)
                 .withPrefabValues(Build, new Build(project: 'first'), new Build(project: 'second'))
