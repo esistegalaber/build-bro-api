@@ -2,6 +2,7 @@ package com.egalaber.buildbro.core.service
 
 import com.egalaber.buildbro.BaseBuildBroSpec
 import com.egalaber.buildbro.api.fault.DataNotFoundException
+import com.egalaber.buildbro.api.model.IBuild
 import com.egalaber.buildbro.api.model.IBuildSearch
 import com.egalaber.buildbro.core.domain.Build
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,7 +18,7 @@ class BuildServiceTest extends BaseBuildBroSpec {
     @Unroll("#message")
     def "ById"() {
         when:
-        Optional<Build> build = service.byId(id)
+        Optional<IBuild> build = service.byId(id)
 
         then:
         build.isPresent() == expected
@@ -31,7 +32,12 @@ class BuildServiceTest extends BaseBuildBroSpec {
 
     def "Create"() {
         expect:
-        service.create('backend', 'next', 1).id
+        service.create(
+                new IBuild(
+                        project: 'backend',
+                        branch: 'next',
+                        buildNumber: 1
+                )).id
     }
 
     def "AddLabels"() {
@@ -40,7 +46,7 @@ class BuildServiceTest extends BaseBuildBroSpec {
         labels.put('newKey', 'newValue')
 
         when:
-        Build theBuild = service.addLabels(1L, labels)
+        IBuild theBuild = service.addLabels(1L, labels)
 
         then:
         theBuild.labels.size() == 4

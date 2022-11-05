@@ -2,9 +2,9 @@ package com.egalaber.buildbro.api.impl;
 
 import com.egalaber.buildbro.api.BuildEndpoint;
 import com.egalaber.buildbro.api.fault.DataNotFoundException;
+import com.egalaber.buildbro.api.model.IBuild;
 import com.egalaber.buildbro.api.model.IBuildSearch;
 import com.egalaber.buildbro.api.model.IBuildSearchResult;
-import com.egalaber.buildbro.api.model.IBuild;
 import com.egalaber.buildbro.core.domain.Build;
 import com.egalaber.buildbro.core.events.BuildCreatedEvent;
 import com.egalaber.buildbro.core.service.BuildService;
@@ -15,8 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.transaction.Transactional;
 import java.util.Map;
 
-import static com.egalaber.buildbro.api.impl.SearchResultMapper.mapToBuild;
-import static com.egalaber.buildbro.api.impl.SearchResultMapper.mapToBuildSearchResult;
+import static com.egalaber.buildbro.core.mapping.SearchResultMapper.toApi;
 
 @RestController
 @Transactional
@@ -32,31 +31,24 @@ public class BuildEndpointImpl implements BuildEndpoint {
     @Override
     public IBuildSearchResult search(IBuildSearch search) {
         Page<Build> found = buildService.search(search);
-        return mapToBuildSearchResult(found);
+        return toApi(found);
     }
 
     @Override
     public IBuild get(Long buildId) throws DataNotFoundException {
         return buildService.byId(buildId)
-                .map(SearchResultMapper::mapToBuild)
                 .orElseThrow(() -> new DataNotFoundException("No Build found for buildId='" + buildId + "'"));
     }
 
     @Override
     public IBuild create(IBuild build) {
-        String projectName = build.getProject();
-        String branchName = build.getBranch();
-        IBuild iBuild = mapToBuild(
-                buildService.create(projectName, branchName, build.getBuildNumber())
-        );
-        applicationEventPublisher.publishEvent(new BuildCreatedEvent(projectName, branchName));
-        return iBuild;
+        IBuild created = buildService.create(build);
+        applicationEventPublisher.publishEvent(new BuildCreatedEvent(build));
+        return created;
     }
 
     @Override
     public IBuild addLabels(Long buildId, Map<String, String> buildLabels) throws DataNotFoundException {
-        return mapToBuild(
-                buildService.addLabels(buildId, buildLabels)
-        );
+        return buildService.addLabels(buildId, buildLabels);
     }
 }

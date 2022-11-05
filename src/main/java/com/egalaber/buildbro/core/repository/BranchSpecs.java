@@ -16,4 +16,14 @@ public class BranchSpecs {
                 )
         );
     }
+
+    public static Specification<Branch> allBranchesOf(Project project, boolean includingInactive) {
+        return ((root, query, criteriaBuilder) ->
+                includingInactive ? criteriaBuilder.equal(root.get("project"), project) :
+                        criteriaBuilder.and(
+                                criteriaBuilder.equal(root.get("project"), project),
+                                criteriaBuilder.equal(root.get("active"), true)
+                        )
+        );
+    }
 }

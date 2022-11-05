@@ -19,6 +19,6 @@ public class BuildCreatedEventListener {
     @EventListener
     public void handleBuildCreated(BuildCreatedEvent buildCreatedEvent) {
         log.info("onBuildCreated(buildCreatedEvent={})", buildCreatedEvent);
-        trackingService.handleBuildCreated(buildCreatedEvent.getProjectName(), buildCreatedEvent.getBranchName());
+        trackingService.handleBuildCreated(buildCreatedEvent.getBuild());
     }
 }

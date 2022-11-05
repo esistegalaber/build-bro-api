@@ -3,6 +3,7 @@ package com.egalaber.buildbro.api.impl;
 import com.egalaber.buildbro.api.BuildNumberEndpoint;
 import com.egalaber.buildbro.api.model.IBuildNumber;
 import com.egalaber.buildbro.api.model.IBranchedProject;
+import com.egalaber.buildbro.core.mapping.BuildNumberMapper;
 import com.egalaber.buildbro.core.service.BuildNumberService;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,22 +20,16 @@ public class BuildNumberEndpointImpl implements BuildNumberEndpoint {
 
     @Override
     public IBuildNumber next(IBranchedProject branchedProject) {
-        return BuildNumberMapper.from(
-                buildNumberService.next(branchedProject.getProject(), branchedProject.getBranch())
-        );
+        return buildNumberService.next(branchedProject.getProject(), branchedProject.getBranch());
     }
 
     @Override
     public IBuildNumber current(String project, String branch) {
-        return BuildNumberMapper.from(
-                buildNumberService.current(project, branch)
-        );
+        return buildNumberService.current(project, branch);
     }
 
     @Override
     public IBuildNumber set(IBuildNumber buildNumber) {
-        return BuildNumberMapper.from(
-                buildNumberService.set(buildNumber.getProject(), buildNumber.getBranch(), buildNumber.getNumber())
-        );
+        return buildNumberService.set(buildNumber.getProject(), buildNumber.getBranch(), buildNumber.getNumber());
     }
 }

@@ -1,7 +1,7 @@
 package com.egalaber.buildbro.core.service
 
 import com.egalaber.buildbro.BaseBuildBroSpec
-import com.egalaber.buildbro.core.domain.BuildNumber
+import com.egalaber.buildbro.api.model.IBuildNumber
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Subject
 import spock.lang.Unroll
@@ -14,7 +14,7 @@ class BuildNumberServiceTest extends BaseBuildBroSpec {
     @Unroll("#message")
     def "Next"() {
         when:
-        BuildNumber buildCount = buildCountService.next(project, branch)
+        IBuildNumber buildCount = buildCountService.next(project, branch)
 
         then:
         buildCount.number == expected
@@ -36,7 +36,7 @@ class BuildNumberServiceTest extends BaseBuildBroSpec {
     @Unroll("#message")
     def "Current"() {
         when:
-        BuildNumber buildCount = buildCountService.current(project, branch)
+        IBuildNumber buildCount = buildCountService.current(project, branch)
 
         then:
         buildCount.number == expected
@@ -56,7 +56,7 @@ class BuildNumberServiceTest extends BaseBuildBroSpec {
     @Unroll("#message")
     def "Set"() {
         when:
-        BuildNumber buildCount = buildCountService.set(project, branch, 10L)
+        IBuildNumber buildCount = buildCountService.set(project, branch, 10L)
 
         then:
         buildCount.number == 10L

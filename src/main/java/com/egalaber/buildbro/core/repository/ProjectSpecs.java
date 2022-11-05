@@ -12,4 +12,10 @@ public class ProjectSpecs {
                 criteriaBuilder.equal(root.get("name"), projectName)
         );
     }
+
+    public static Specification<Project> allProjects(boolean includeInactive) {
+        return (root, query, criteriaBuilder) -> includeInactive
+                ? criteriaBuilder.conjunction()
+                : criteriaBuilder.equal(root.get("active"), true);
+    }
 }

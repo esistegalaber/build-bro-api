@@ -1,6 +1,8 @@
 package com.egalaber.buildbro.core.service;
 
+import com.egalaber.buildbro.api.model.IBuildNumber;
 import com.egalaber.buildbro.core.domain.BuildNumber;
+import com.egalaber.buildbro.core.mapping.BuildNumberMapper;
 import com.egalaber.buildbro.core.repository.BuildNumberRepository;
 import com.egalaber.buildbro.core.repository.BuildNumberSpecs;
 import org.springframework.lang.NonNull;
@@ -16,26 +18,27 @@ public class BuildNumberService {
         this.buildNumberRepository = buildNumberRepository;
     }
 
-    public BuildNumber next(String project, String branch) {
+    public IBuildNumber next(String project, String branch) {
         BuildNumber theCount = of(project, branch)
                 .orElse(new BuildNumber(project, branch));
         theCount.increment();
-        return buildNumberRepository.save(theCount);
+        return BuildNumberMapper.toApi(buildNumberRepository.save(theCount));
     }
 
-    public BuildNumber current(String project, String branch) {
-        return of(project, branch).orElse(
+    public IBuildNumber current(String project, String branch) {
+        return of(project, branch)
+                .map(BuildNumberMapper::toApi)
+                .orElse(
+                        new IBuildNumber(project, branch)
+                );
+    }
+
+    public IBuildNumber set(String project, String branch, Long buildCount) {
+        BuildNumber theCount = of(project, branch).orElse(
                 new BuildNumber(project, branch)
         );
-    }
-
-    public BuildNumber set(String project, String branch, Long buildCount) {
-        BuildNumber theCount = of(project, branch)
-                .orElse(
-                        new BuildNumber(project, branch)
-                );
         theCount.setNumber(buildCount);
-        return buildNumberRepository.save(theCount);
+        return BuildNumberMapper.toApi(buildNumberRepository.save(theCount));
     }
 
     private Optional<BuildNumber> of(@NonNull String project, @NonNull String branch) {

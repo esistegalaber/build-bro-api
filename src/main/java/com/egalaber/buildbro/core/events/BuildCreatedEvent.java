@@ -1,29 +1,23 @@
 package com.egalaber.buildbro.core.events;
 
+import com.egalaber.buildbro.api.model.IBuild;
 import org.springframework.context.ApplicationEvent;
 
 public class BuildCreatedEvent {
-    private final String projectName;
-    private final String branchName;
+    private final IBuild build;
 
-    public BuildCreatedEvent(String projectName, String branchName) {
-        this.projectName = projectName;
-        this.branchName = branchName;
+    public BuildCreatedEvent(IBuild build) {
+        this.build = build;
     }
 
-    public String getProjectName() {
-        return projectName;
-    }
-
-    public String getBranchName() {
-        return branchName;
+    public IBuild getBuild() {
+        return build;
     }
 
     @Override
     public String toString() {
         return "BuildCreatedEvent{" +
-                "projectName='" + projectName + '\'' +
-                ", branchName='" + branchName + '\'' +
+                "build=" + build +
                 '}';
     }
 }

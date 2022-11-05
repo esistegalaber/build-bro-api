@@ -1,9 +1,11 @@
 package com.egalaber.buildbro.core.service;
 
 import com.egalaber.buildbro.api.fault.DataNotFoundException;
+import com.egalaber.buildbro.api.model.IBuild;
 import com.egalaber.buildbro.api.model.IBuildSearch;
 import com.egalaber.buildbro.core.domain.Build;
 import com.egalaber.buildbro.core.domain.BuildLabel;
+import com.egalaber.buildbro.core.mapping.BuildMapper;
 import com.egalaber.buildbro.core.repository.BuildLabelRepository;
 import com.egalaber.buildbro.core.repository.BuildLabelSpecs;
 import com.egalaber.buildbro.core.repository.BuildRepository;
@@ -28,24 +30,24 @@ public class BuildService {
         this.buildLabelRepository = buildLabelRepository;
     }
 
-    public Optional<Build> byId(Long id) {
-        return buildRepository.findById(id);
+    public Optional<IBuild> byId(Long id) {
+        return buildRepository.findById(id).map(BuildMapper::toApi);
     }
 
-    public Build create(String project, String branch, Long buildNumber) {
-        Build build = of(project, branch, buildNumber).orElse(
-                new Build(project, branch, buildNumber)
+    public IBuild create(IBuild toCreate) {
+        Build build = of(toCreate.getProject(), toCreate.getBranch(), toCreate.getBuildNumber()).orElse(
+                new Build(toCreate.getProject(), toCreate.getBranch(), toCreate.getBuildNumber())
         );
-        return buildRepository.save(build);
+        return BuildMapper.toApi(buildRepository.save(build));
     }
 
-    public Build addLabels(Long buildId, Map<String, String> labels) throws DataNotFoundException {
-        final Build build = byId(buildId)
+    public IBuild addLabels(Long buildId, Map<String, String> labels) throws DataNotFoundException {
+        final Build theBuild = buildRepository.findById(buildId)
                 .orElseThrow(() -> new DataNotFoundException("No Build found for buildId='" + buildId + "'"));
         labels.forEach((key, value) ->
-                build.getLabels().add(new BuildLabel(build, key, value)
+                theBuild.getLabels().add(new BuildLabel(theBuild, key, value)
                 ));
-        return buildRepository.save(build);
+        return BuildMapper.toApi(buildRepository.save(theBuild));
     }
 
     private Optional<Build> of(String project, String branch, Long buildNumber) {

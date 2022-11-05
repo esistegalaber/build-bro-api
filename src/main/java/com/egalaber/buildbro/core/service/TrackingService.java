@@ -1,5 +1,6 @@
 package com.egalaber.buildbro.core.service;
 
+import com.egalaber.buildbro.api.model.IBuild;
 import com.egalaber.buildbro.core.domain.Branch;
 import com.egalaber.buildbro.core.domain.Project;
 import com.egalaber.buildbro.core.repository.BranchRepository;
@@ -21,13 +22,13 @@ public class TrackingService {
         this.branchRepository = branchRepository;
     }
 
-    public void handleBuildCreated(String projectName, String branchName) {
+    public void handleBuildCreated(IBuild build) {
         Project theProject = projectRepository
-                .findOne(ProjectSpecs.projectNamed(projectName))
-                .orElse(createProject(projectName));
+                .findOne(ProjectSpecs.projectNamed(build.getProject()))
+                .orElse(createProject(build.getProject()));
         Branch theBranch = branchRepository
-                .findOne(BranchSpecs.branchOfProjectNamed(theProject, branchName))
-                .orElse(createBranch(theProject, branchName));
+                .findOne(BranchSpecs.branchOfProjectNamed(theProject, build.getBranch()))
+                .orElse(createBranch(theProject, build.getBranch()));
 
     }
 

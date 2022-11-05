@@ -6,7 +6,15 @@ import java.util.Objects;
 public class IBuildNumber implements Serializable {
     private String project;
     private String branch;
-    private Long number;
+    private Long number = 0L;
+
+    public IBuildNumber() {
+    }
+
+    public IBuildNumber(String project, String branch) {
+        this.project = project;
+        this.branch = branch;
+    }
 
     public String getProject() {
         return project;
