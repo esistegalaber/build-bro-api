@@ -46,4 +46,18 @@ class EqualsAndHashCodeOfDomainEntitiesTest extends Specification {
                 .usingGetClass()
                 .verify()
     }
+
+    def "Equals and hashCode of BuildSetTemplate"() {
+        expect:
+        EqualsVerifier.forClass(BuildSetTemplate)
+                .usingGetClass()
+                .verify()
+    }
+
+    def "Equals and hashCode of BuildTemplate"() {
+        expect:
+        EqualsVerifier.forClass(BuildTemplate)
+                .usingGetClass()
+                .verify()
+    }
 }

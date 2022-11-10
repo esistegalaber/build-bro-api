@@ -3,6 +3,7 @@ package com.egalaber.buildbro.core.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(
@@ -45,5 +46,27 @@ public class BuildSetTemplate {
 
     public void setBuildTemplates(List<BuildTemplate> buildTemplates) {
         this.buildTemplates = buildTemplates;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BuildSetTemplate that = (BuildSetTemplate) o;
+        return Objects.equals(getName(), that.getName()) && Objects.equals(getBuildTemplates(), that.getBuildTemplates());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getName(), getBuildTemplates());
+    }
+
+    @Override
+    public String toString() {
+        return "BuildSetTemplate{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", buildTemplates=" + buildTemplates +
+                '}';
     }
 }

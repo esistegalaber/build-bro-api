@@ -5,7 +5,7 @@ import org.springframework.data.domain.Sort;
 
 import java.io.Serializable;
 
-abstract public class BaseSearch implements Serializable {
+public abstract class BaseSearch implements Serializable {
     Integer pageSize;
     Integer page;
     String sortAttribute;
@@ -54,5 +54,5 @@ abstract public class BaseSearch implements Serializable {
         return PageRequest.of(thePage, thePageSize, Sort.by(theDirection, theSortAttribute));
     }
 
-    abstract protected String defaultSortAttribute();
+    protected abstract String defaultSortAttribute();
 }

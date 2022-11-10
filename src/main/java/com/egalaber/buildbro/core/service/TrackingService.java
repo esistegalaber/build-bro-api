@@ -7,12 +7,14 @@ import com.egalaber.buildbro.core.repository.BranchRepository;
 import com.egalaber.buildbro.core.repository.BranchSpecs;
 import com.egalaber.buildbro.core.repository.ProjectRepository;
 import com.egalaber.buildbro.core.repository.ProjectSpecs;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
 @Service
 @Transactional
+@Slf4j
 public class TrackingService {
     private final ProjectRepository projectRepository;
     private final BranchRepository branchRepository;
@@ -29,7 +31,7 @@ public class TrackingService {
         Branch theBranch = branchRepository
                 .findOne(BranchSpecs.branchOfProjectNamed(theProject, build.getBranch()))
                 .orElse(createBranch(theProject, build.getBranch()));
-
+        log.info("handleBuildCreated(build={}) - theProject.id={}, theBranch.id={}", build, theProject.getId(), theBranch.getId());
     }
 
     private Project createProject(String projectName) {

@@ -2,6 +2,7 @@ package com.egalaber.buildbro.core.domain;
 
 import javax.persistence.*;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 @Entity
@@ -65,5 +66,18 @@ public class BuildTemplate {
 
     public void setLabels(Map<String, String> labels) {
         this.labels = labels;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BuildTemplate that = (BuildTemplate) o;
+        return Objects.equals(getProject(), that.getProject()) && Objects.equals(getBranch(), that.getBranch()) && Objects.equals(getBuildNumber(), that.getBuildNumber()) && Objects.equals(getLabels(), that.getLabels());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getProject(), getBranch(), getBuildNumber(), getLabels());
     }
 }

@@ -25,11 +25,11 @@ public class StatsService {
     }
 
     public IBuildBroStats stats() {
-        IBuildBroStats IBuildBroStats = new IBuildBroStats();
-        IBuildBroStats.setNumberOfProjects(projectRepository.count());
-        IBuildBroStats.setNumberOfBranches(branchRepository.count());
-        IBuildBroStats.setNumberOfBuilds(buildRepository.count());
-        IBuildBroStats.setNumberOfLabels(buildLabelRepository.count());
-        return IBuildBroStats;
+        IBuildBroStats stats = new IBuildBroStats();
+        stats.setNumberOfProjects(projectRepository.count());
+        stats.setNumberOfBranches(branchRepository.count());
+        stats.setNumberOfBuilds(buildRepository.count());
+        stats.setNumberOfLabels(buildLabelRepository.count());
+        return stats;
     }
 }
