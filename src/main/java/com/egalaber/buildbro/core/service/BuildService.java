@@ -13,6 +13,7 @@ import com.egalaber.buildbro.core.repository.BuildSpecs;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -73,12 +74,12 @@ public class BuildService {
             }
         }
 
-        if (search.getProject() != null) {
+        if (!ObjectUtils.isEmpty(search.getProject())) {
             theQuerySpecification = theQuerySpecification.and(
                     BuildSpecs.ofProject(search.getProject())
             );
         }
-        if (search.getBranch() != null) {
+        if (!ObjectUtils.isEmpty(search.getBranch())) {
             theQuerySpecification = theQuerySpecification.and(
                     BuildSpecs.onBranch(search.getBranch())
             );

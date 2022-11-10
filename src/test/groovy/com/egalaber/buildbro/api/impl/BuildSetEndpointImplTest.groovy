@@ -1,0 +1,128 @@
+package com.egalaber.buildbro.api.impl
+
+import com.egalaber.buildbro.api.BaseRestSpec
+import com.egalaber.buildbro.api.model.IBuildSetTemplate
+import com.egalaber.buildbro.api.model.IBuildTemplate
+import com.egalaber.buildbro.api.model.IExceptionInfo
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+
+class BuildSetEndpointImplTest extends BaseRestSpec {
+    def "Create new, update and delete it"() {
+        given:
+        String newEnvName = 'new-crazy-env'
+        String CREATE_URL = "http://localhost:${port}/api/v1/build-sets"
+        String UPDATE_URL = "http://localhost:${port}/api/v1/build-sets/"
+        String DELETE_URL = "http://localhost:${port}/api/v1/build-sets/${newEnvName}"
+        IBuildSetTemplate newEnvironment = new IBuildSetTemplate(
+                name: newEnvName,
+                buildTemplates: [
+                        new IBuildTemplate(
+                                project: 'backend',
+                                branch: 'main'
+                        )
+                ]
+        )
+
+        when:
+        ResponseEntity<IBuildSetTemplate> created = restTemplate.postForEntity(CREATE_URL, newEnvironment, IBuildSetTemplate)
+        IBuildSetTemplate toUpdate = created.getBody()
+        toUpdate.getBuildTemplates().add(
+                new IBuildTemplate(
+                        project: 'frontend',
+                        branch: 'main',
+                        labels: ['integration-test': 'ok']
+                )
+
+        )
+        ResponseEntity<IBuildSetTemplate> updated = restTemplate.postForEntity(UPDATE_URL, toUpdate, IBuildSetTemplate)
+
+        restTemplate.delete(DELETE_URL)
+
+        then:
+        created.statusCode == HttpStatus.OK
+        and:
+        updated.statusCode == HttpStatus.OK
+        and:
+        created.getBody().getId() == updated.getBody().getId()
+    }
+
+    def "Get"() {
+        given:
+        String envName = 'main'
+        String GET_URL = "http://localhost:${port}/api/v1/build-sets/${envName}"
+
+        when:
+        ResponseEntity<IBuildSetTemplate> responseEntity = restTemplate.getForEntity(GET_URL, IBuildSetTemplate)
+
+        then:
+        responseEntity.statusCode == HttpStatus.OK
+
+        and:
+        responseEntity.getBody().id
+    }
+
+    def "Get DataNotFound"() {
+        given:
+        String envName = 'wrongName'
+        String GET_URL = "http://localhost:${port}/api/v1//build-sets/${envName}"
+
+        when:
+        ResponseEntity<IExceptionInfo> responseEntity = restTemplate.getForEntity(GET_URL, IExceptionInfo)
+
+        then:
+        responseEntity.statusCode == HttpStatus.NOT_FOUND
+
+        and:
+        responseEntity.getBody().key == 'not-found'
+    }
+
+//    def "VerifyEnvironment with 1 articfact"() {
+//        given:
+//        String VERIFY_URL = "http://localhost:${port}/api/v1/environments/verify-artifacts"
+//        IArtifact artifact = new IArtifact(
+//                project: 'backend',
+//                branch: 'main',
+//                labels: ['integration-test': 'ok']
+//        )
+//        when:
+//        ResponseEntity<EnvironmentBuilds> responseEntity = restTemplate.postForEntity(VERIFY_URL, [artifact], EnvironmentBuilds)
+//
+//        then:
+//        responseEntity.getStatusCode() == HttpStatus.OK
+//
+//        and:
+//        responseEntity.getBody().builds.size() == 1
+//    }
+
+    def "List all BuildSet names"() {
+        given:
+        String LIST_URL = "http://localhost:${port}/api/v1/build-sets/names"
+
+        when:
+        ResponseEntity<List> responseEntity = restTemplate.getForEntity(LIST_URL, List)
+
+        then:
+        responseEntity.statusCode == HttpStatus.OK
+
+        and:
+        !responseEntity.body.isEmpty()
+    }
+
+//    def "List all Envs"() {
+//        given:
+//        String LIST_URL = "http://localhost:${port}/api/v1/environments/all"
+//
+//        when:
+//        ResponseEntity<List> responseEntity = restTemplate.getForEntity(LIST_URL, List)
+//
+//        then:
+//        responseEntity.statusCode == HttpStatus.OK
+//
+//        and:
+//        !responseEntity.body.isEmpty()
+//
+//        and:
+//        (responseEntity.body.first() as IBui).id
+//    }
+}

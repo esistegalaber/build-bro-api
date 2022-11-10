@@ -4,7 +4,7 @@ import com.egalaber.buildbro.core.domain.*
 import nl.jqno.equalsverifier.EqualsVerifier
 import spock.lang.Specification
 
-class EqualsAndHashCodeTest extends Specification {
+class EqualsAndHashCodeOfApiModelsTest extends Specification {
 
     def "Equals and hashCode of IBuild"() {
         expect:

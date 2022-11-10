@@ -19,7 +19,8 @@ public class BuildSetTemplate {
     @Basic(optional = false)
     private String name;
 
-    @OneToMany(mappedBy = "buildSetTemplate", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "build_set_template_id", nullable = false)
     private List<BuildTemplate> buildTemplates = new ArrayList<>();
 
     public Long getId() {

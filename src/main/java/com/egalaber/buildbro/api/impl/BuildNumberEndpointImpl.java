@@ -1,9 +1,8 @@
 package com.egalaber.buildbro.api.impl;
 
 import com.egalaber.buildbro.api.BuildNumberEndpoint;
-import com.egalaber.buildbro.api.model.IBuildNumber;
 import com.egalaber.buildbro.api.model.IBranchedProject;
-import com.egalaber.buildbro.core.mapping.BuildNumberMapper;
+import com.egalaber.buildbro.api.model.IBuildNumber;
 import com.egalaber.buildbro.core.service.BuildNumberService;
 import org.springframework.web.bind.annotation.RestController;
 
