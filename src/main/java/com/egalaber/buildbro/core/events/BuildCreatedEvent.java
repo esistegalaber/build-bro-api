@@ -1,7 +1,6 @@
 package com.egalaber.buildbro.core.events;
 
 import com.egalaber.buildbro.api.model.IBuild;
-import org.springframework.context.ApplicationEvent;
 
 public class BuildCreatedEvent {
     private final IBuild build;

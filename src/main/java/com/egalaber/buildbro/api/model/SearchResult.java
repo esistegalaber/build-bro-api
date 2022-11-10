@@ -17,12 +17,8 @@ public abstract class SearchResult<R> implements Serializable {
     private Boolean hasNext;
     private Boolean hasPrevious;
 
-    /**
-     * Default constructor
-     * needed for JSON
-     * libraries
-     */
-    public SearchResult() {
+    protected SearchResult() {
+        //needed for JSON libs
     }
 
 //    /**
