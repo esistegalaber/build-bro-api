@@ -1,7 +1,5 @@
 package com.egalaber.buildbro.api.model;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
 public class IProjectStatus {
     private String name;
     private Boolean active;

@@ -13,7 +13,7 @@ public class BuildMapper {
         toReturn.setProject(build.getProject());
         toReturn.setId(build.getId());
         toReturn.setBuildNumber(build.getBuildNumber());
-        build.getLabels().forEach((singleLabel) ->
+        build.getLabels().forEach(singleLabel ->
                 toReturn.getLabels().add(BuildLabelMapper.forApi(singleLabel))
         );
         return toReturn;

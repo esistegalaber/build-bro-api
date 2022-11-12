@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IBuildSetTemplate implements Serializable {
-    Long id;
-    String name;
-    List<IBuildTemplate> buildTemplates = new ArrayList<>();
+    private Long id;
+    private String name;
+    private List<IBuildTemplate> buildTemplates = new ArrayList<>();
 
     public Long getId() {
         return id;

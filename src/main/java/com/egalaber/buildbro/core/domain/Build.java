@@ -1,6 +1,7 @@
 package com.egalaber.buildbro.core.domain;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -12,7 +13,7 @@ import java.util.TreeSet;
                 @Index(name = "unq_idx_project_branch", columnList = "project,branch,build_number")
         }
 )
-public class Build {
+public class Build implements Serializable {
     public Build() {
     }
 

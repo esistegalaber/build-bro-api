@@ -3,8 +3,6 @@ package com.egalaber.buildbro.core.mapping;
 import com.egalaber.buildbro.api.model.IBuildSetTemplate;
 import com.egalaber.buildbro.core.domain.BuildSetTemplate;
 
-import java.util.stream.Collectors;
-
 public class BuildSetTemplateMapper {
     private BuildSetTemplateMapper() {
     }
@@ -16,7 +14,7 @@ public class BuildSetTemplateMapper {
         toReturn.setBuildTemplates(
                 template.getBuildTemplates().stream()
                         .map(BuildTemplateMapper::toApi)
-                        .collect(Collectors.toList())
+                        .toList()
         );
         return toReturn;
     }

@@ -4,8 +4,6 @@ import com.egalaber.buildbro.api.model.IBuildSearchResult;
 import com.egalaber.buildbro.core.domain.Build;
 import org.springframework.data.domain.Page;
 
-import java.util.stream.Collectors;
-
 public class SearchResultMapper {
     private SearchResultMapper() {
     }
@@ -15,7 +13,7 @@ public class SearchResultMapper {
         toReturn.setData(
                 result.getContent().stream()
                         .map(BuildMapper::toApi)
-                        .collect(Collectors.toList())
+                        .toList()
         );
         toReturn.setPage(result.getNumber());
         toReturn.setHasNext(result.hasNext());
