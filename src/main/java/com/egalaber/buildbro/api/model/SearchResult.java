@@ -21,42 +21,6 @@ public abstract class SearchResult<R> implements Serializable {
         //needed for JSON libs
     }
 
-//    /**
-//     * A Constructor for child classes
-//     *
-//     * @param sr the SearchResult that the
-//     *           child is "cloning"
-//     */
-//    protected SearchResult(SearchResult sr) {
-//        this.results = sr.results;
-//        this.page = sr.page;
-//        this.totalPages = sr.totalPages;
-//        this.totalElements = sr.totalElements;
-//        this.hasNext = sr.hasNext;
-//        this.hasPrevious = sr.hasPrevious;
-//    }
-
-//    /**
-//     * Returns a SearchResult based on a query Page and a closure that transforms the
-//     * Page"s results into the relevant SearchResult result Class.
-//     *
-//     * @param result    a query Page containing all info needed to build a SearchResult
-//     * @param transform a closure which can transform the Page"s results class to the
-//     *                  SearchResult"s results class
-//     * @return a SearchResult based on the provided Page
-//     */
-//    static <P, R> SearchResult fromPageResult(Page<P> result, Closure<R> transform) {
-//        new SearchResult(
-//                results:result.getContent().collect(transform),
-//                page:result.getNumber(),
-//                totalPages:result.getTotalPages(),
-//                totalElements:result.getTotalElements(),
-//                hasNext:result.hasNext(),
-//                hasPrevious:result.hasPrevious()
-//        )
-//    }
-
-
     public List<R> getData() {
         return data;
     }

@@ -7,8 +7,4 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface SearchDataEndpoint {
     @GetMapping("/api/v1/search-data")
     ISearchData getProjectData();
-
-//    @PostMapping("/api/v1/projects/project-branch-active")
-//    void setProjectOrBranchActivation(
-//            @RequestBody ProjectBranchStatus projectBranch);
 }
