@@ -73,7 +73,7 @@ public class BuildService {
                 return BuildSpecs.noBuilds();
             } else {
                 final AtomicReference<Specification<Build>> subSpec = new AtomicReference<>(BuildSpecs.noBuilds());
-                labelsToSearch.forEach((label) -> subSpec.set(subSpec.get().or(BuildSpecs.hasLabel(label))));
+                labelsToSearch.forEach(label -> subSpec.set(subSpec.get().or(BuildSpecs.hasLabel(label))));
                 theQuerySpecification = theQuerySpecification.and(subSpec.get());
             }
         }
@@ -140,7 +140,7 @@ public class BuildService {
         buildSet.setName("verification-result");
         buildTemplates
                 .forEach(template -> withBuildNumberOrLatest(template).ifPresent(
-                        (theBuild) -> buildSet.getBuilds().put(template.getProject(), theBuild)
+                        theBuild -> buildSet.getBuilds().put(template.getProject(), theBuild)
                 ));
         return buildSet;
     }
@@ -155,7 +155,7 @@ public class BuildService {
 
         buildSetTemplate.getBuildTemplates()
                 .forEach(template -> withBuildNumberOrLatest(template).ifPresent(
-                        (theBuild) -> buildSet.getBuilds().put(template.getProject(), theBuild)
+                        theBuild -> buildSet.getBuilds().put(template.getProject(), theBuild)
                 ));
         return buildSet;
     }

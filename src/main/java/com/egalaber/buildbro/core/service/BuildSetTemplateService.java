@@ -15,7 +15,6 @@ import org.springframework.util.ObjectUtils;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -52,7 +51,7 @@ public class BuildSetTemplateService {
         }
         List<BuildTemplate> buildTemplates = template.getBuildTemplates().stream()
                 .map(BuildTemplateMapper::toDomain)
-                .collect(Collectors.toList());
+                .toList();
         theTemplate.getBuildTemplates().addAll(buildTemplates);
         return BuildSetTemplateMapper.toApi(
                 buildSetTemplateRepository.save(theTemplate)
@@ -75,7 +74,7 @@ public class BuildSetTemplateService {
         buildTemplateRepository.deleteAllById(
                 toUpdate.getBuildTemplates().stream()
                         .map(BuildTemplate::getId)
-                        .collect(Collectors.toList())
+                        .toList()
         );
         toUpdate.getBuildTemplates().clear();
         return buildSetTemplateRepository.save(toUpdate);
