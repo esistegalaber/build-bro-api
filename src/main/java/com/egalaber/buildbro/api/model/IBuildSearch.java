@@ -1,5 +1,7 @@
 package com.egalaber.buildbro.api.model;
 
+import org.springframework.data.domain.Sort;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,27 +53,27 @@ public class IBuildSearch extends BaseSearch {
         this.labels = labels;
     }
 
-//    static BuildSearch fromArtifact(Artifact artifact) {
-//        BuildSearch newBuildSearch = new BuildSearch();
-//        newBuildSearch.setProject(artifact.getProject());
-//        newBuildSearch.setBranch(artifact.getBranch());
-//        newBuildSearch.setLabels(artifact.getLabels());
-//        newBuildSearch.setPageSize(1);
-//        newBuildSearch.setPage(0);
-//        newBuildSearch.setSortAttribute(DEFAULT_SORT_ATTRIBUTE);
-//        newBuildSearch.setSortDirection(Sort.Direction.DESC.name());
-//
-//        if (artifact.getBuildNumber() != null && artifact.getBuildNumber() > 0) {
-//            // The min and max build number search params are exclusive
-//            // so to ensure that only the provided build number is
-//            // returned set the minBuildNumber to the buildNumber minus one
-//            // and the maxBuildNumber to the buildNumber plus one
-//            newBuildSearch.minBuildNumber = artifact.getBuildNumber() - 1;
-//            newBuildSearch.maxBuildNumber = artifact.getBuildNumber() + 1;
-//        }
-//
-//        return newBuildSearch;
-//    }
+    public static IBuildSearch fromBuildTemplate(IBuildTemplate artifact) {
+        IBuildSearch newBuildSearch = new IBuildSearch();
+        newBuildSearch.setProject(artifact.getProject());
+        newBuildSearch.setBranch(artifact.getBranch());
+        newBuildSearch.setLabels(artifact.getLabels());
+        newBuildSearch.setPageSize(1);
+        newBuildSearch.setPage(0);
+        newBuildSearch.setSortAttribute(DEFAULT_SORT_ATTRIBUTE);
+        newBuildSearch.setSortDirection(Sort.Direction.DESC.name());
+
+        if (artifact.getBuildNumber() != null && artifact.getBuildNumber() > 0) {
+            // The min and max build number search params are exclusive
+            // so to ensure that only the provided build number is
+            // returned set the minBuildNumber to the buildNumber minus one
+            // and the maxBuildNumber to the buildNumber plus one
+            newBuildSearch.minBuildNumber = artifact.getBuildNumber() - 1;
+            newBuildSearch.maxBuildNumber = artifact.getBuildNumber() + 1;
+        }
+
+        return newBuildSearch;
+    }
 
     protected String defaultSortAttribute() {
         return DEFAULT_SORT_ATTRIBUTE;

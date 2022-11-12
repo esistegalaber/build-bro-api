@@ -6,6 +6,7 @@ import com.egalaber.buildbro.api.fault.InvalidRequestException;
 import com.egalaber.buildbro.api.model.IBuildSet;
 import com.egalaber.buildbro.api.model.IBuildSetTemplate;
 import com.egalaber.buildbro.api.model.IBuildTemplate;
+import com.egalaber.buildbro.core.service.BuildService;
 import com.egalaber.buildbro.core.service.BuildSetTemplateService;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,9 +18,11 @@ import java.util.Set;
 @Transactional
 public class BuildSetEndpointImpl implements BuildSetEndpoint {
     private final BuildSetTemplateService buildSetTemplateService;
+    private final BuildService buildService;
 
-    public BuildSetEndpointImpl(BuildSetTemplateService buildSetTemplateService) {
+    public BuildSetEndpointImpl(BuildSetTemplateService buildSetTemplateService, BuildService buildService) {
         this.buildSetTemplateService = buildSetTemplateService;
+        this.buildService = buildService;
     }
 
     @Override
@@ -39,13 +42,13 @@ public class BuildSetEndpointImpl implements BuildSetEndpoint {
     }
 
     @Override
-    public IBuildSet verify(Set<IBuildTemplate> artifacts) {
-        return null;
+    public IBuildSet verify(Set<IBuildTemplate> buildTemplates) {
+        return buildService.buildsOf(buildTemplates);
     }
 
     @Override
-    public IBuildSet environment(String name) throws DataNotFoundException {
-        return null;
+    public IBuildSet buildsOf(String name) throws DataNotFoundException {
+        return buildService.buildsOf(name);
     }
 
     @Override

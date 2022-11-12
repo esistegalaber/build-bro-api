@@ -5,7 +5,6 @@ import com.egalaber.buildbro.api.fault.InvalidRequestException;
 import com.egalaber.buildbro.api.model.IBuildSet;
 import com.egalaber.buildbro.api.model.IBuildSetTemplate;
 import com.egalaber.buildbro.api.model.IBuildTemplate;
-import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,13 +21,11 @@ public interface BuildSetEndpoint {
     @GetMapping("/api/v1/build-sets/{name}")
     IBuildSetTemplate get(@PathVariable("name") String name) throws DataNotFoundException;
 
+    @PostMapping(value = "/api/v1/build-sets/verify")
     IBuildSet verify(@RequestBody Set<IBuildTemplate> artifacts);
 
     @GetMapping("/api/v1/build-sets/of/{name}")
-    IBuildSet environment(
-            @Parameter(name = "name", description = "Name of the Environment to search Builds for. ")
-            @PathVariable(name = "name") String name
-    ) throws DataNotFoundException;
+    IBuildSet buildsOf(@PathVariable(name = "name") String name) throws DataNotFoundException;
 
     @DeleteMapping("/api/v1/build-sets/{name}")
     void delete(@PathVariable("name") String name);

@@ -1,6 +1,7 @@
 package com.egalaber.buildbro.api.impl
 
 import com.egalaber.buildbro.api.BaseRestSpec
+import com.egalaber.buildbro.api.model.IBuildSet
 import com.egalaber.buildbro.api.model.IBuildSetTemplate
 import com.egalaber.buildbro.api.model.IBuildTemplate
 import com.egalaber.buildbro.api.model.IExceptionInfo
@@ -77,24 +78,6 @@ class BuildSetEndpointImplTest extends BaseRestSpec {
         responseEntity.getBody().key == 'not-found'
     }
 
-//    def "VerifyEnvironment with 1 articfact"() {
-//        given:
-//        String VERIFY_URL = "http://localhost:${port}/api/v1/environments/verify-artifacts"
-//        IArtifact artifact = new IArtifact(
-//                project: 'backend',
-//                branch: 'main',
-//                labels: ['integration-test': 'ok']
-//        )
-//        when:
-//        ResponseEntity<EnvironmentBuilds> responseEntity = restTemplate.postForEntity(VERIFY_URL, [artifact], EnvironmentBuilds)
-//
-//        then:
-//        responseEntity.getStatusCode() == HttpStatus.OK
-//
-//        and:
-//        responseEntity.getBody().builds.size() == 1
-//    }
-
     def "List all BuildSet names"() {
         given:
         String LIST_URL = "http://localhost:${port}/api/v1/build-sets/names"
@@ -109,20 +92,35 @@ class BuildSetEndpointImplTest extends BaseRestSpec {
         !responseEntity.body.isEmpty()
     }
 
-//    def "List all Envs"() {
-//        given:
-//        String LIST_URL = "http://localhost:${port}/api/v1/environments/all"
-//
-//        when:
-//        ResponseEntity<List> responseEntity = restTemplate.getForEntity(LIST_URL, List)
-//
-//        then:
-//        responseEntity.statusCode == HttpStatus.OK
-//
-//        and:
-//        !responseEntity.body.isEmpty()
-//
-//        and:
-//        (responseEntity.body.first() as IBui).id
-//    }
+    def "VerifyEnvironment with 1 articfact"() {
+        given:
+        String VERIFY_URL = "http://localhost:${port}/api/v1/build-sets/verify"
+        IBuildTemplate artifact = new IBuildTemplate(
+                project: 'backend',
+                branch: 'main',
+                labels: ['integration-test': 'ok']
+        )
+        when:
+        ResponseEntity<IBuildSet> responseEntity = restTemplate.postForEntity(VERIFY_URL, [artifact], IBuildSet)
+
+        then:
+        responseEntity.getStatusCode() == HttpStatus.OK
+
+        and:
+        responseEntity.getBody().builds.size() == 1
+    }
+
+    def "BuildSet of defined environment"() {
+        given:
+        String templateName = 'main'
+        String VERIFY_URL = "http://localhost:${port}/api/v1/build-sets/of/${templateName}"
+        when:
+        ResponseEntity<IBuildSet> responseEntity = restTemplate.getForEntity(VERIFY_URL, IBuildSet)
+
+        then:
+        responseEntity.getStatusCode() == HttpStatus.OK
+
+        and:
+        responseEntity.getBody().builds.size() == 2
+    }
 }

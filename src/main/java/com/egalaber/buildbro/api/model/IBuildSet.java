@@ -5,24 +5,15 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class IBuildSet implements Serializable {
-    private String environment;
-    private boolean internal;
+    private String name;
     private Map<String, IBuild> builds = new TreeMap<>();
 
-    public String getEnvironment() {
-        return environment;
+    public String getName() {
+        return name;
     }
 
-    public void setEnvironment(String environment) {
-        this.environment = environment;
-    }
-
-    public boolean isInternal() {
-        return internal;
-    }
-
-    public void setInternal(boolean internal) {
-        this.internal = internal;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Map<String, IBuild> getBuilds() {
