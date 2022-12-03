@@ -5,5 +5,5 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 public interface SearchDataEndpoint {
     @GetMapping("/api/v1/search-data")
-    ISearchData getProjectData();
+    ISearchData getSearchData();
 }

@@ -1,7 +1,6 @@
 package com.egalaber.buildbro.api.impl
 
 import com.egalaber.buildbro.api.BaseRestSpec
-import com.egalaber.buildbro.api.model.IBuildNumber
 import com.egalaber.buildbro.api.model.ISearchData
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

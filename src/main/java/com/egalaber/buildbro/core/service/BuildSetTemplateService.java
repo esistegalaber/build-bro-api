@@ -15,6 +15,7 @@ import org.springframework.util.ObjectUtils;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 @Service
 @Transactional
@@ -83,5 +84,11 @@ public class BuildSetTemplateService {
     public void delete(String buildSetName) {
         buildSetTemplateName(buildSetName)
                 .ifPresent(buildSetTemplateRepository::delete);
+    }
+
+    public List<IBuildSetTemplate> allBuildSetTemplates() {
+        return StreamSupport.stream(buildSetTemplateRepository.findAll().spliterator(), false)
+                .map(BuildSetTemplateMapper::toApi)
+                .toList();
     }
 }

@@ -17,7 +17,7 @@ public class SearchDataEndpointImpl implements SearchDataEndpoint {
     }
 
     @Override
-    public ISearchData getProjectData() {
+    public ISearchData getSearchData() {
         return searchDataService.searchData();
     }
 }

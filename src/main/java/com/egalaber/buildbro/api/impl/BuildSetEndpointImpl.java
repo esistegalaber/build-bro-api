@@ -31,6 +31,11 @@ public class BuildSetEndpointImpl implements BuildSetEndpoint {
     }
 
     @Override
+    public List<IBuildSetTemplate> all() {
+        return buildSetTemplateService.allBuildSetTemplates();
+    }
+
+    @Override
     public IBuildSetTemplate save(IBuildSetTemplate template) throws InvalidRequestException {
         return buildSetTemplateService.save(template);
     }

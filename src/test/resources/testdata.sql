@@ -391,7 +391,10 @@ VALUES (1, 'integration-test', 'ok', 1),
        (267, 'jenkins-build', 'http://my-jenkins/a4cf21cd-30e1-4f1d-83de-422ef19d0212', 89),
        (268, 'jenkins-build', 'http://my-jenkins/609d3e53-940b-485f-a473-e4e84280a189', 90),
        (269, 'revision', 'd9d7c16b3085404927c61080cb9fbc3cace99b38a49955783225ed1d0d6a2bea', 90),
-       (270, 'integration-test', 'broken', 90);
+       (270, 'integration-test', 'broken', 90),
+       (271, 'release.name', 'Analog-Amoeba', 10),
+       (272, 'release.date', '01/01/2023', 10),
+       (273, 'release.version', '1', 10);
 
 -- environments
 INSERT INTO build_set_template (id, name)
