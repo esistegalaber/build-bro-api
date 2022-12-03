@@ -15,7 +15,7 @@ public interface BuildSetEndpoint {
     @GetMapping("/api/v1/build-sets/names")
     List<String> names();
 
-    @GetMapping("/api/v1/build-sets/")
+    @GetMapping("/api/v1/build-sets")
     List<IBuildSetTemplate> all();
 
     @PostMapping(value = "/api/v1/build-sets")

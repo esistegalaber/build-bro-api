@@ -123,4 +123,17 @@ class BuildSetEndpointImplTest extends BaseRestSpec {
         and:
         responseEntity.getBody().builds.size() == 2
     }
+
+    def "all BuildSets"() {
+        given:
+        String VERIFY_URL = "http://localhost:${port}/api/v1/build-sets"
+        when:
+        ResponseEntity<List> responseEntity = restTemplate.getForEntity(VERIFY_URL, List)
+
+        then:
+        responseEntity.getStatusCode() == HttpStatus.OK
+
+        and:
+        responseEntity.getBody().size() > 0
+    }
 }
