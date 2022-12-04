@@ -1,5 +1,6 @@
 package com.egalaber.buildbro.api.v1.impl;
 
+import com.egalaber.buildbro.api.fault.DataNotFoundException;
 import com.egalaber.buildbro.api.model.IServer;
 import com.egalaber.buildbro.api.v1.ServerEndpoint;
 import com.egalaber.buildbro.core.service.ServerService;
@@ -20,5 +21,10 @@ public class ServerEndpointImpl implements ServerEndpoint {
     @Override
     public List<IServer> allServers() {
         return serverService.all();
+    }
+
+    @Override
+    public IServer updateServerDetails(IServer server) throws DataNotFoundException {
+        return serverService.updateServerDetails(server);
     }
 }

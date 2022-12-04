@@ -1,5 +1,6 @@
 package com.egalaber.buildbro.core.service;
 
+import com.egalaber.buildbro.api.fault.DataNotFoundException;
 import com.egalaber.buildbro.api.model.IServer;
 import com.egalaber.buildbro.core.domain.Server;
 import com.egalaber.buildbro.core.mapping.ServerMapper;
@@ -42,5 +43,13 @@ public class ServerService {
         Server newServer = new Server();
         newServer.setName(serverName);
         return serverRepository.save(newServer);
+    }
+
+    public IServer updateServerDetails(IServer server) throws DataNotFoundException {
+        Server theServer = serverRepository.findById(server.getId()).orElseThrow(() ->
+                new DataNotFoundException("No server found for id='" + server.getId() + "'"));
+        theServer.setNickName(server.getNickName());
+        theServer.setDescription(server.getDescription());
+        return ServerMapper.toApi(serverRepository.save(theServer));
     }
 }
