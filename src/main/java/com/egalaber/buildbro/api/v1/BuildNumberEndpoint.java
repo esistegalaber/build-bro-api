@@ -1,4 +1,4 @@
-package com.egalaber.buildbro.api;
+package com.egalaber.buildbro.api.v1;
 
 import com.egalaber.buildbro.api.model.IBuildNumber;
 import com.egalaber.buildbro.api.model.IBranchedProject;

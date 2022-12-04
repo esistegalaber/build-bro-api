@@ -1,6 +1,6 @@
-package com.egalaber.buildbro.api.impl;
+package com.egalaber.buildbro.api.v1.impl;
 
-import com.egalaber.buildbro.api.SearchDataEndpoint;
+import com.egalaber.buildbro.api.v1.SearchDataEndpoint;
 import com.egalaber.buildbro.api.model.ISearchData;
 import com.egalaber.buildbro.core.service.SearchDataService;
 import org.springframework.web.bind.annotation.RestController;

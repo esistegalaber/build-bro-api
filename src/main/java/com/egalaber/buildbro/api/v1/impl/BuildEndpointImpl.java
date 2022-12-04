@@ -1,10 +1,11 @@
-package com.egalaber.buildbro.api.impl;
+package com.egalaber.buildbro.api.v1.impl;
 
-import com.egalaber.buildbro.api.BuildEndpoint;
 import com.egalaber.buildbro.api.fault.DataNotFoundException;
+import com.egalaber.buildbro.api.fault.InvalidRequestException;
 import com.egalaber.buildbro.api.model.IBuild;
 import com.egalaber.buildbro.api.model.IBuildSearch;
 import com.egalaber.buildbro.api.model.IBuildSearchResult;
+import com.egalaber.buildbro.api.v1.BuildEndpoint;
 import com.egalaber.buildbro.core.domain.Build;
 import com.egalaber.buildbro.core.events.BuildCreatedEvent;
 import com.egalaber.buildbro.core.service.BuildService;
@@ -41,7 +42,7 @@ public class BuildEndpointImpl implements BuildEndpoint {
     }
 
     @Override
-    public IBuild create(IBuild build) {
+    public IBuild create(IBuild build) throws InvalidRequestException {
         IBuild created = buildService.create(build);
         applicationEventPublisher.publishEvent(new BuildCreatedEvent(build));
         return created;

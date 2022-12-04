@@ -1,4 +1,4 @@
-package com.egalaber.buildbro.api;
+package com.egalaber.buildbro.api.v1;
 
 import com.egalaber.buildbro.api.model.IBuildBroStats;
 import io.swagger.v3.oas.annotations.tags.Tag;

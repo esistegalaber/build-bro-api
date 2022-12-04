@@ -1,6 +1,12 @@
 # noinspection SqlWithoutWhereForFile
 
 delete
+from deployed_builds;
+delete
+from deployment;
+delete
+from server;
+delete
 from build_template_labels;
 delete
 from build_template;
@@ -432,6 +438,11 @@ VALUES (1, 'main', 1, 1),
        (12, 'merged-feature-backoffice', 2, 0),
        (13, 'main', 4, 1),
        (14, 'merged', 4, 0);
+
+INSERT INTO server(id, name, nick_name, description)
+VALUES (1, 'testserver', 'Tester', 'Main Testing Server'),
+       (2, 'staging', 'Company Staging', 'Main Staging Server'),
+       (3, 'prod-1', 'Prod', 'Prod-1');
 --
 -- INSERT INTO server(id, name, reserved_by, reservation_note)
 -- VALUES (1, 'Test-Server-1', null, null),

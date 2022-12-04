@@ -2,7 +2,9 @@ package com.egalaber.buildbro.core.service
 
 import com.egalaber.buildbro.BaseBuildBroSpec
 import com.egalaber.buildbro.api.fault.DataNotFoundException
+import com.egalaber.buildbro.api.fault.InvalidRequestException
 import com.egalaber.buildbro.api.model.IBuild
+import com.egalaber.buildbro.api.model.IBuildLabel
 import com.egalaber.buildbro.api.model.IBuildSearch
 import com.egalaber.buildbro.api.model.IBuildSet
 import com.egalaber.buildbro.api.model.IBuildTemplate
@@ -38,8 +40,39 @@ class BuildServiceTest extends BaseBuildBroSpec {
                 new IBuild(
                         project: 'backend',
                         branch: 'next',
-                        buildNumber: 1
+                        buildNumber: 99
                 )).id
+    }
+
+    def "Create duplicate Build"() {
+        when:
+        service.create(
+                new IBuild(
+                        project: 'backend',
+                        branch: 'next',
+                        buildNumber: 1
+                ))
+        then:
+        thrown(InvalidRequestException)
+    }
+
+
+    def "Create with labels"() {
+        given:
+        IBuild newBuild = new IBuild(
+                project: 'backend',
+                branch: 'next',
+                buildNumber: 100
+        )
+        newBuild.getLabels().add(new IBuildLabel(key: 'some', value: 'value'))
+        when:
+        IBuild created = service.create(newBuild)
+
+        then:
+        created.id
+
+        and:
+        created.labels.size() == 1
     }
 
     def "AddLabels"() {

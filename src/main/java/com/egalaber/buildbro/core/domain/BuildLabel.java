@@ -11,7 +11,6 @@ import java.util.Objects;
         name = "build_label",
         indexes = {
                 @Index(name = "idx_build_label_value", columnList = "label_key")
-
         }
 )
 public class BuildLabel implements Serializable, Comparable<BuildLabel> {

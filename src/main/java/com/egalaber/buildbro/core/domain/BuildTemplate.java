@@ -11,19 +11,15 @@ public class BuildTemplate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Basic(optional = false)
     @Column(name = "project")
     private String project;
-
     @Basic(optional = false)
     @Column(name = "branch")
     private String branch;
-
-    @Basic(optional = true)
+    @Basic
     @Column(name = "build_number")
     private Long buildNumber;
-
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "build_template_labels", joinColumns = @JoinColumn(name = "build_template_id"))
     private Map<String, String> labels = new TreeMap<>();

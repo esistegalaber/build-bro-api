@@ -1,4 +1,4 @@
-package com.egalaber.buildbro.api.impl
+package com.egalaber.buildbro.api.v1.impl
 
 import com.egalaber.buildbro.api.BaseRestSpec
 import org.springframework.http.HttpStatus
