@@ -27,7 +27,6 @@ public class ServerService {
         return StreamSupport.stream(serverRepository.findAll(Sort.by("id")).spliterator(), false)
                 .map(ServerMapper::toApi)
                 .toList();
-
     }
 
     public Optional<Server> byName(String serverName) {
