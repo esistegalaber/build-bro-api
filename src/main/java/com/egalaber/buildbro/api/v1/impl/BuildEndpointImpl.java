@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.transaction.Transactional;
 import java.util.Map;
 
-import static com.egalaber.buildbro.core.mapping.SearchResultMapper.toApi;
+import static com.egalaber.buildbro.core.mapping.SearchResultMapper.buildSearchResultToApi;
 
 @RestController
 @Transactional
@@ -32,7 +32,7 @@ public class BuildEndpointImpl implements BuildEndpoint {
     @Override
     public IBuildSearchResult search(IBuildSearch search) {
         Page<Build> found = buildService.search(search);
-        return toApi(found);
+        return buildSearchResultToApi(found);
     }
 
     @Override
