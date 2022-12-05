@@ -6,6 +6,7 @@ public class IBranch implements Serializable, Comparable<IBranch> {
     private Long id;
     private String name;
     private Boolean active;
+    private Long projectId;
 
     public Long getId() {
         return id;
@@ -29,6 +30,14 @@ public class IBranch implements Serializable, Comparable<IBranch> {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 
     @Override

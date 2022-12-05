@@ -443,6 +443,35 @@ INSERT INTO server(id, name, nick_name, description)
 VALUES (1, 'testserver', 'Tester', 'Main Testing Server'),
        (2, 'staging', 'Company Staging', 'Main Staging Server'),
        (3, 'prod-1', 'Prod', 'Prod-1');
+
+INSERT INTO deployment(id, deployed_at, server_id)
+VALUES (1, NOW() - INTERVAL 6 WEEK, 1);
+INSERT INTO deployment(id, deployed_at, server_id)
+VALUES (2, NOW() - INTERVAL 5 WEEK, 1);
+INSERT INTO deployment(id, deployed_at, server_id)
+VALUES (3, NOW() - INTERVAL 4 WEEK, 1);
+INSERT INTO deployment(id, deployed_at, server_id)
+VALUES (4, NOW() - INTERVAL 3 WEEK, 1);
+INSERT INTO deployment(id, deployed_at, server_id)
+VALUES (5, NOW() - INTERVAL 3 WEEK, 2);
+
+INSERT INTO deployed_builds(deployment_id, build_id)
+VALUES (1, 10),
+       (1, 40),
+       (1, 70),
+       (2, 9),
+       (2, 39),
+       (2, 69),
+       (3, 8),
+       (3, 38),
+       (3, 68),
+       (4, 7),
+       (4, 37),
+       (4, 67),
+       (5, 6),
+       (5, 36),
+       (5, 66);
+
 --
 -- INSERT INTO server(id, name, reserved_by, reservation_note)
 -- VALUES (1, 'Test-Server-1', null, null),

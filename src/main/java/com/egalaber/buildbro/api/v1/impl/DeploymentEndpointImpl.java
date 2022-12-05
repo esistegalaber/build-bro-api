@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.transaction.Transactional;
 import java.util.List;
 
-import static com.egalaber.buildbro.core.mapping.SearchResultMapper.deploymentSearchResultToApi;
-
 @RestController
 @Transactional
 public class DeploymentEndpointImpl implements DeploymentEndpoint {
@@ -23,7 +21,7 @@ public class DeploymentEndpointImpl implements DeploymentEndpoint {
 
     @Override
     public IDeploymentSearchResult search(IDeploymentSearch search) {
-        return deploymentSearchResultToApi(deploymentService.search(search));
+        return deploymentService.search(search);
     }
 
     @Override

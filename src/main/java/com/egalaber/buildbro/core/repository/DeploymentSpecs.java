@@ -1,6 +1,8 @@
 package com.egalaber.buildbro.core.repository;
 
 import com.egalaber.buildbro.core.domain.Deployment;
+import com.egalaber.buildbro.core.domain.Deployment_;
+import com.egalaber.buildbro.core.domain.Server_;
 import org.springframework.data.jpa.domain.Specification;
 
 public class DeploymentSpecs {
@@ -12,7 +14,7 @@ public class DeploymentSpecs {
     }
 
     public static Specification<Deployment> onServer(String serverName) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("server").get("name"), serverName);
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Deployment_.server).get(Server_.NAME), serverName);
     }
 
 }
