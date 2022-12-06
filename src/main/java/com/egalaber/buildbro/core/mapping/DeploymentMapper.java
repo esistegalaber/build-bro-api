@@ -17,6 +17,11 @@ public class DeploymentMapper {
                         .map(BuildMapper::toApi)
                         .toList()
         );
+        toReturn.getLabels().addAll(
+                deployment.getLabels().stream()
+                        .map(DeploymentLabelMapper::toApi)
+                        .toList()
+        );
         return toReturn;
     }
 }

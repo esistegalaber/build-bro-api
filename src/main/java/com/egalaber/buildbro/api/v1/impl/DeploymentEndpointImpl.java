@@ -8,7 +8,6 @@ import com.egalaber.buildbro.core.service.DeploymentService;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
-import java.util.List;
 
 @RestController
 @Transactional
@@ -25,7 +24,7 @@ public class DeploymentEndpointImpl implements DeploymentEndpoint {
     }
 
     @Override
-    public IDeployment add(String server, List<Long> buildIds) {
-        return deploymentService.create(server, buildIds);
+    public IDeployment add(IDeployment deployment) {
+        return deploymentService.create(deployment);
     }
 }

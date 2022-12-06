@@ -1,6 +1,7 @@
 package com.egalaber.buildbro.core.service
 
 import com.egalaber.buildbro.BaseBuildBroSpec
+import com.egalaber.buildbro.api.model.IBuild
 import com.egalaber.buildbro.api.model.IDeployment
 import com.egalaber.buildbro.api.model.IDeploymentSearch
 import com.egalaber.buildbro.api.model.IDeploymentSearchResult
@@ -15,9 +16,13 @@ class DeploymentServiceTest extends BaseBuildBroSpec {
 
     def "Create"() {
         given:
-        List<Long> buildIds = [1L, 2L, 3L]
+        String serverName = "prod-1"
+        IDeployment newDeployment = new IDeployment(
+                serverName: serverName,
+                builds: [new IBuild(id: 1), new IBuild(id: 2), new IBuild(id: 3)]
+        )
         when:
-        IDeployment created = deploymentService.create("prod-1", buildIds)
+        IDeployment created = deploymentService.create(newDeployment)
 
         then:
         created.id
@@ -29,9 +34,13 @@ class DeploymentServiceTest extends BaseBuildBroSpec {
 
     def "Create on new Server"() {
         given:
-        List<Long> buildIds = [1L, 2L, 3L]
+        String serverName = "new-prod-3"
+        IDeployment newDeployment = new IDeployment(
+                serverName: serverName,
+                builds: [new IBuild(id: 1), new IBuild(id: 2), new IBuild(id: 3)]
+        )
         when:
-        IDeployment created = deploymentService.create("new-prod-3", buildIds)
+        IDeployment created = deploymentService.create(newDeployment)
 
         then:
         created.id

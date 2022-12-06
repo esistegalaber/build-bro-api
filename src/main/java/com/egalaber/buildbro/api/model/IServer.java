@@ -1,6 +1,7 @@
 package com.egalaber.buildbro.api.model;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class IServer implements Serializable {
     private Long id;
@@ -38,5 +39,18 @@ public class IServer implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        IServer iServer = (IServer) o;
+        return Objects.equals(getId(), iServer.getId()) && Objects.equals(getName(), iServer.getName()) && Objects.equals(getNickName(), iServer.getNickName()) && Objects.equals(getDescription(), iServer.getDescription());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getNickName(), getDescription());
     }
 }

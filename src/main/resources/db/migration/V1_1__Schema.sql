@@ -128,8 +128,8 @@ create table `deployment_label`
     `label_value`   varchar(255) not null,
     `deployment_id` bigint(20)   not null,
     primary key (`id`),
-    key `fk_build` (`deployment_id`),
-    constraint `fk_deployment` foreign key (`deployment_id`) references `deployment` (`id`)
+    key `fk_deployment` (`deployment_id`),
+    constraint `fk_deployment` foreign key (`deployment_id`) references `deployment` (`id`) on delete cascade
 ) engine = innodb
   default charset = utf8;
 create index `idx_deployment_label_key` on `deployment_label` (`label_key`);

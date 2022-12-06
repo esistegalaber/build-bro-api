@@ -13,7 +13,7 @@ public class Branch {
     @Column(name = "name", nullable = false)
     private String name;
     @ManyToOne
-    @JoinColumn(name = "project_id", nullable = false, foreignKey = @ForeignKey(name = "fk_project_name", value = ConstraintMode.CONSTRAINT))
+    @JoinColumn(name = "project_id", nullable = false, foreignKey = @ForeignKey(name = "fk_project_id", value = ConstraintMode.CONSTRAINT))
     private Project project;
     @Basic(optional = false)
     @Column(name = "active", nullable = false)

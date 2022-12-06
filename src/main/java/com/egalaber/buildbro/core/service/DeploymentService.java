@@ -1,9 +1,11 @@
 package com.egalaber.buildbro.core.service;
 
+import com.egalaber.buildbro.api.model.IBuild;
 import com.egalaber.buildbro.api.model.IDeployment;
 import com.egalaber.buildbro.api.model.IDeploymentSearch;
 import com.egalaber.buildbro.api.model.IDeploymentSearchResult;
 import com.egalaber.buildbro.core.domain.Deployment;
+import com.egalaber.buildbro.core.domain.DeploymentLabel;
 import com.egalaber.buildbro.core.domain.Server;
 import com.egalaber.buildbro.core.mapping.DeploymentMapper;
 import com.egalaber.buildbro.core.mapping.SearchResultMapper;
@@ -30,12 +32,16 @@ public class DeploymentService {
         this.buildRepository = buildRepository;
     }
 
-    public IDeployment create(String serverName, List<Long> buildIds) {
-        Server theServer = serverService.findOrCreate(serverName);
+    public IDeployment create(IDeployment deployment) {
+        Server theServer = serverService.findOrCreate(deployment.getServerName());
         Deployment toCreate = new Deployment();
         toCreate.setServer(theServer);
+        List<Long> buildIds = deployment.getBuilds().stream().map(IBuild::getId).toList();
         buildRepository.findAllById(buildIds)
                 .forEach(toCreate.getBuilds()::add);
+        deployment.getLabels().forEach(
+                newLabel -> toCreate.getLabels().add(new DeploymentLabel(toCreate, newLabel.getKey(), newLabel.getValue()))
+        );
         return DeploymentMapper.toApi(deploymentRepository.save(toCreate));
     }
 

@@ -3,6 +3,8 @@
 delete
 from deployed_builds;
 delete
+from deployment_label;
+delete
 from deployment;
 delete
 from server;
