@@ -2,6 +2,7 @@ package com.egalaber.buildbro.core.domain;
 
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
@@ -11,7 +12,7 @@ import java.util.Objects;
                 @Index(name = "unq_server_name", columnList = "name", unique = true)
         }
 )
-public class Server {
+public class Server implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

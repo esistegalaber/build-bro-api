@@ -1,13 +1,14 @@
 package com.egalaber.buildbro.core.domain;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
 @Entity
 @Table(name = "build_template")
-public class BuildTemplate {
+public class BuildTemplate implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

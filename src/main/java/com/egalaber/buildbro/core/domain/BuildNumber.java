@@ -1,13 +1,14 @@
 package com.egalaber.buildbro.core.domain;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "build_number", indexes = {
         @Index(name = "unq_idx_project_branch", columnList = "project,branch", unique = true)
 })
-public class BuildNumber {
+public class BuildNumber implements Serializable {
 
     public BuildNumber() {
     }

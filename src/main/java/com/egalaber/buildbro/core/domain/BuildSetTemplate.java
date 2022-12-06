@@ -1,6 +1,7 @@
 package com.egalaber.buildbro.core.domain;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -12,7 +13,7 @@ import java.util.Objects;
                 @Index(name = "unq_env_name", columnList = "name", unique = true)
         }
 )
-public class BuildSetTemplate {
+public class BuildSetTemplate implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

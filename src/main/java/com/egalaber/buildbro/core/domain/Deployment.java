@@ -1,6 +1,7 @@
 package com.egalaber.buildbro.core.domain;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
@@ -9,7 +10,7 @@ import java.util.TreeSet;
 
 @Entity
 @Table(name = "deployment")
-public class Deployment {
+public class Deployment implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

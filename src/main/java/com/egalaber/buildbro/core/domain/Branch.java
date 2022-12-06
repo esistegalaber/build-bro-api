@@ -1,11 +1,12 @@
 package com.egalaber.buildbro.core.domain;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "branch")
-public class Branch {
+public class Branch implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
