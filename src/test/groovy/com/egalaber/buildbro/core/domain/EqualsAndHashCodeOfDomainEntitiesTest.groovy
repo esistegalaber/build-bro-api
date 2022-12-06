@@ -60,4 +60,30 @@ class EqualsAndHashCodeOfDomainEntitiesTest extends Specification {
                 .usingGetClass()
                 .verify()
     }
+
+    def "Equals and hashCode of Deployment"() {
+        expect:
+        EqualsVerifier.forClass(Deployment)
+                .withIgnoredFields("labels", "builds")
+                .withPrefabValues(Build, new Build(project: 'first'), new Build(project: 'second'))
+                .withPrefabValues(DeploymentLabel, new DeploymentLabel(key: 'first'), new DeploymentLabel(key: 'second'))
+                .withIgnoredFields('builds', 'labels')
+                .usingGetClass()
+                .verify()
+    }
+
+    def "Equals and hashCode of DeploymentLabel"() {
+        expect:
+        EqualsVerifier.forClass(DeploymentLabel)
+                .withPrefabValues(Deployment, new Deployment(server: new Server(name: 'first')), new Deployment(server: new Server(name: 'second')))
+                .usingGetClass()
+                .verify()
+    }
+
+    def "Equals and hashCode of Server"() {
+        expect:
+        EqualsVerifier.forClass(Server)
+                .usingGetClass()
+                .verify()
+    }
 }

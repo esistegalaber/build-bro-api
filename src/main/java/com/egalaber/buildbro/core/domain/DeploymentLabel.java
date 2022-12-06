@@ -8,17 +8,17 @@ import java.util.Objects;
 
 @Entity
 @Table(
-        name = "build_label",
+        name = "deployment_label",
         indexes = {
-                @Index(name = "idx_build_label_value", columnList = "label_key")
+                @Index(name = "idx_deployment_label_value", columnList = "label_key")
         }
 )
-public class BuildLabel implements Serializable, Comparable<BuildLabel> {
-    public BuildLabel() {
+public class DeploymentLabel implements Serializable, Comparable<DeploymentLabel> {
+    public DeploymentLabel() {
     }
 
-    public BuildLabel(Build build, String key, String value) {
-        this.build = build;
+    public DeploymentLabel(Deployment deployment, String key, String value) {
+        this.deployment = deployment;
         this.key = key;
         this.value = value;
     }
@@ -27,10 +27,10 @@ public class BuildLabel implements Serializable, Comparable<BuildLabel> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(targetEntity = Build.class, optional = false)
-    @JoinColumn(name = "build_id", nullable = false, foreignKey = @ForeignKey(name = "fk_build", value = ConstraintMode.CONSTRAINT))
+    @ManyToOne(targetEntity = DeploymentLabel.class, optional = false)
+    @JoinColumn(name = "deployment_id", nullable = false, foreignKey = @ForeignKey(name = "fk_deployment", value = ConstraintMode.CONSTRAINT))
     @JsonBackReference
-    private Build build;
+    private Deployment deployment;
 
     @Basic(optional = false)
     @Column(name = "label_key", nullable = false)
@@ -48,12 +48,12 @@ public class BuildLabel implements Serializable, Comparable<BuildLabel> {
         this.id = id;
     }
 
-    public Build getBuild() {
-        return build;
+    public Deployment getDeployment() {
+        return deployment;
     }
 
-    public void setBuild(Build build) {
-        this.build = build;
+    public void setDeployment(Deployment deployment) {
+        this.deployment = deployment;
     }
 
     public String getKey() {
@@ -73,7 +73,7 @@ public class BuildLabel implements Serializable, Comparable<BuildLabel> {
     }
 
     @Override
-    public int compareTo(BuildLabel other) {
+    public int compareTo(DeploymentLabel other) {
         return getKey().compareTo(other.getKey());
     }
 
@@ -81,18 +81,18 @@ public class BuildLabel implements Serializable, Comparable<BuildLabel> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BuildLabel that = (BuildLabel) o;
-        return Objects.equals(getBuild(), that.getBuild()) && Objects.equals(getKey(), that.getKey()) && Objects.equals(getValue(), that.getValue());
+        DeploymentLabel that = (DeploymentLabel) o;
+        return Objects.equals(getDeployment(), that.getDeployment()) && Objects.equals(getKey(), that.getKey()) && Objects.equals(getValue(), that.getValue());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getBuild(), getKey(), getValue());
+        return Objects.hash(getDeployment(), getKey(), getValue());
     }
 
     @Override
     public String toString() {
-        return "BuildLabel{" +
+        return "DeploymentLabel{" +
                 "id=" + id +
                 ", key='" + key + '\'' +
                 ", value='" + value + '\'' +

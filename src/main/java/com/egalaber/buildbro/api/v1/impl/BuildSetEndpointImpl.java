@@ -1,6 +1,6 @@
-package com.egalaber.buildbro.api.impl;
+package com.egalaber.buildbro.api.v1.impl;
 
-import com.egalaber.buildbro.api.BuildSetEndpoint;
+import com.egalaber.buildbro.api.v1.BuildSetEndpoint;
 import com.egalaber.buildbro.api.fault.DataNotFoundException;
 import com.egalaber.buildbro.api.fault.InvalidRequestException;
 import com.egalaber.buildbro.api.model.IBuildSet;

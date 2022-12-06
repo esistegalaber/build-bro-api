@@ -1,11 +1,12 @@
 package com.egalaber.buildbro.core.domain;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "branch")
-public class Branch {
+public class Branch implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -13,7 +14,7 @@ public class Branch {
     @Column(name = "name", nullable = false)
     private String name;
     @ManyToOne
-    @JoinColumn(name = "project_id", nullable = false, foreignKey = @ForeignKey(name = "fk_project_name", value = ConstraintMode.CONSTRAINT))
+    @JoinColumn(name = "project_id", nullable = false, foreignKey = @ForeignKey(name = "fk_project_id", value = ConstraintMode.CONSTRAINT))
     private Project project;
     @Basic(optional = false)
     @Column(name = "active", nullable = false)

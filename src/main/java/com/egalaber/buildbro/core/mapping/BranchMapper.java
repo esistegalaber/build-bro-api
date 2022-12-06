@@ -12,6 +12,7 @@ public class BranchMapper {
         toReturn.setId(branch.getId());
         toReturn.setName(branch.getName());
         toReturn.setActive(branch.getActive());
+        toReturn.setProjectId(branch.getProject().getId());
         return toReturn;
     }
 }

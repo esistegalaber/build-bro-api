@@ -1,6 +1,7 @@
-package com.egalaber.buildbro.api;
+package com.egalaber.buildbro.api.v1;
 
 import com.egalaber.buildbro.api.fault.DataNotFoundException;
+import com.egalaber.buildbro.api.fault.InvalidRequestException;
 import com.egalaber.buildbro.api.model.IBuildSearch;
 import com.egalaber.buildbro.api.model.IBuildSearchResult;
 import com.egalaber.buildbro.api.model.IBuild;
@@ -20,7 +21,7 @@ public interface BuildEndpoint {
 
 
     @PostMapping("/api/v1/builds/create")
-    IBuild create(@RequestBody IBuild build);
+    IBuild create(@RequestBody IBuild build) throws InvalidRequestException;
 
     @PostMapping("/api/v1/builds/add-labels/{buildId}")
     IBuild addLabels(@PathVariable(name = "buildId") Long buildId, @RequestBody Map<String, String> buildLabels) throws DataNotFoundException;

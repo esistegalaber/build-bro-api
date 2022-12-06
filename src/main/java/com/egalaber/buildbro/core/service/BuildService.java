@@ -1,6 +1,7 @@
 package com.egalaber.buildbro.core.service;
 
 import com.egalaber.buildbro.api.fault.DataNotFoundException;
+import com.egalaber.buildbro.api.fault.InvalidRequestException;
 import com.egalaber.buildbro.api.model.IBuild;
 import com.egalaber.buildbro.api.model.IBuildSearch;
 import com.egalaber.buildbro.api.model.IBuildSet;
@@ -39,11 +40,17 @@ public class BuildService {
         return buildRepository.findById(id).map(BuildMapper::toApi);
     }
 
-    public IBuild create(IBuild toCreate) {
-        Build build = of(toCreate.getProject(), toCreate.getBranch(), toCreate.getBuildNumber()).orElse(
-                new Build(toCreate.getProject(), toCreate.getBranch(), toCreate.getBuildNumber())
+    public IBuild create(IBuild toCreate) throws InvalidRequestException {
+        Optional<Build> alreadyExisting = of(toCreate.getProject(), toCreate.getBranch(), toCreate.getBuildNumber());
+        if (alreadyExisting.isPresent()) {
+            throw new InvalidRequestException("Build with project='" + toCreate.getProject() + "' branch='" + toCreate.getBranch() + "' buildNumber='" + toCreate.getBuildNumber() + "' already exists.");
+        }
+        Build newBuild = new Build(toCreate.getProject(), toCreate.getBranch(), toCreate.getBuildNumber());
+        toCreate.getLabels().forEach(buildLabel ->
+                newBuild.getLabels().add(
+                        new BuildLabel(newBuild, buildLabel.getKey(), buildLabel.getValue()))
         );
-        return BuildMapper.toApi(buildRepository.save(build));
+        return BuildMapper.toApi(buildRepository.save(newBuild));
     }
 
     public IBuild addLabels(Long buildId, Map<String, String> labels) throws DataNotFoundException {

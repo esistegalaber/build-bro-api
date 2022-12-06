@@ -33,4 +33,39 @@ class EqualsAndHashCodeOfApiModelsTest extends Specification {
                 .usingGetClass()
                 .verify()
     }
+
+    def "Equals and hashCode of IProject"() {
+        expect:
+        EqualsVerifier.simple().forClass(IProject)
+                .usingGetClass()
+                .verify()
+    }
+
+    def "Equals and hashCode of IBranch"() {
+        expect:
+        EqualsVerifier.simple().forClass(IBranch)
+                .usingGetClass()
+                .verify()
+    }
+
+    def "Equals and hashCode of IServer"() {
+        expect:
+        EqualsVerifier.simple().forClass(IServer)
+                .usingGetClass()
+                .verify()
+    }
+
+    def "Equals and hashCode of IDeployment"() {
+        expect:
+        EqualsVerifier.simple().forClass(IDeployment)
+                .usingGetClass()
+                .verify()
+    }
+
+    def "Equals and hashCode of IDeploymentLabel"() {
+        expect:
+        EqualsVerifier.simple().forClass(IDeploymentLabel)
+                .usingGetClass()
+                .verify()
+    }
 }
