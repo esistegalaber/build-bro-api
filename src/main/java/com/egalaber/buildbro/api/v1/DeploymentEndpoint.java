@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface DeploymentEndpoint {
 
     @PostMapping("/api/v1/deployments/search")
-    IDeploymentSearchResult search(IDeploymentSearch search);
+    IDeploymentSearchResult search(@RequestBody IDeploymentSearch search);
 
     @PostMapping("/api/v1/deployments/{server}")
     IDeployment add(@RequestBody IDeployment deployment) throws DataNotFoundException;

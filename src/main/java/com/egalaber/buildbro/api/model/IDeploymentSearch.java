@@ -15,4 +15,15 @@ public class IDeploymentSearch extends BaseSearch {
     protected String defaultSortAttribute() {
         return DEFAULT_SORT_ATTRIBUTE;
     }
+
+    @Override
+    public String toString() {
+        return "IDeploymentSearch{" +
+                "serverName='" + serverName + '\'' +
+                ", pageSize=" + pageSize +
+                ", page=" + page +
+                ", sortAttribute='" + sortAttribute + '\'' +
+                ", sortDirection='" + sortDirection + '\'' +
+                '}';
+    }
 }
