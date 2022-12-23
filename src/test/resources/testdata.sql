@@ -447,15 +447,17 @@ VALUES (1, 'testserver', 'Tester', 'Main Testing Server'),
        (3, 'prod-1', 'Prod', 'Prod-1');
 
 INSERT INTO deployment(id, deployed_at, server_id)
-VALUES (1, NOW() - INTERVAL 6 WEEK, 1);
+VALUES (1, NOW() - INTERVAL 1 DAY, 1);
 INSERT INTO deployment(id, deployed_at, server_id)
-VALUES (2, NOW() - INTERVAL 5 WEEK, 1);
+VALUES (2, NOW() - INTERVAL 2 DAY, 1);
 INSERT INTO deployment(id, deployed_at, server_id)
-VALUES (3, NOW() - INTERVAL 4 WEEK, 1);
+VALUES (3, NOW() - INTERVAL 3 DAY, 1);
 INSERT INTO deployment(id, deployed_at, server_id)
-VALUES (4, NOW() - INTERVAL 3 WEEK, 1);
+VALUES (4, NOW() - INTERVAL 4 DAY, 1);
 INSERT INTO deployment(id, deployed_at, server_id)
-VALUES (5, NOW() - INTERVAL 3 WEEK, 2);
+VALUES (5, NOW() - INTERVAL 5 DAY, 2);
+INSERT INTO deployment(id, deployed_at, server_id)
+VALUES (6, NOW() - INTERVAL 6 DAY, 1);
 
 INSERT INTO deployed_builds(deployment_id, build_id)
 VALUES (1, 10),
@@ -472,8 +474,18 @@ VALUES (1, 10),
        (4, 67),
        (5, 6),
        (5, 36),
-       (5, 66);
-
+       (5, 66),
+       (6, 30),
+       (6, 60),
+       (6, 90)
+;
+insert into deployment_label(id, label_key, label_value, deployment_id)
+VALUES (1, 'part-of-build-set', 'main', 1),
+       (2, 'part-of-build-set', 'main', 1),
+       (3, 'part-of-build-set', 'main', 1),
+       (4, 'part-of-build-set', 'main', 1),
+       (5, 'part-of-build-set', 'main', 1),
+       (6, 'part-of-build-set', 'feature', 1);
 --
 -- INSERT INTO server(id, name, reserved_by, reservation_note)
 -- VALUES (1, 'Test-Server-1', null, null),

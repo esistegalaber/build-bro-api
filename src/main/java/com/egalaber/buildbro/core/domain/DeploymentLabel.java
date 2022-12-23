@@ -27,7 +27,7 @@ public class DeploymentLabel implements Serializable, Comparable<DeploymentLabel
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(targetEntity = DeploymentLabel.class, optional = false)
+    @ManyToOne(targetEntity = Deployment.class, optional = false)
     @JoinColumn(name = "deployment_id", nullable = false, foreignKey = @ForeignKey(name = "fk_deployment", value = ConstraintMode.CONSTRAINT))
     @JsonBackReference
     private Deployment deployment;
