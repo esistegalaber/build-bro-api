@@ -24,7 +24,7 @@ class BuildNumberEndpointImplTest extends BaseRestTest {
 
     //
     @Test
-    public void CurrentBuildNumberOfNewProject() {
+    void CurrentBuildNumberOfNewProject() {
         //given
         String GET_CURRENT_URL = "http://localhost:" + port + "/api/v1/build-numbers/current/my-new-project/master";
 
@@ -39,7 +39,7 @@ class BuildNumberEndpointImplTest extends BaseRestTest {
     }
 
     @Test
-    public void testNextAndSetNew() {
+    void testNextAndSetNew() {
         //given
         String project = "backend";
         String branch = "feature/feature-backend";

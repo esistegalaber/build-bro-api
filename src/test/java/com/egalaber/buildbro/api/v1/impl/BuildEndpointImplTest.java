@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BuildEndpointImplTest extends BaseRestTest {
+class BuildEndpointImplTest extends BaseRestTest {
     @Test
     void emtpyDefaultSearch() {
         IBuildSearch search = new IBuildSearch();
