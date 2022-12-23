@@ -5,8 +5,10 @@ import com.egalaber.buildbro.api.model.IBranch
 import com.egalaber.buildbro.api.model.IProject
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import spock.lang.Ignore
 
-class ProjectEndpointImplTest extends BaseRestSpec {
+@Ignore
+class ProjectEndpointImplSpec extends BaseRestSpec {
     def "GetProjectData"() {
         given:
         String VERIFY_URL = "http://localhost:${port}/api/v1/projects"

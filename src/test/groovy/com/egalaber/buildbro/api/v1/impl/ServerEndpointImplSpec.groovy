@@ -4,8 +4,10 @@ import com.egalaber.buildbro.api.BaseRestSpec
 import com.egalaber.buildbro.api.model.IServer
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import spock.lang.Ignore
 
-class ServerEndpointImplTest extends BaseRestSpec {
+@Ignore
+class ServerEndpointImplSpec extends BaseRestSpec {
     def "AllServers"() {
         given:
         String ALL_SERVERS_URL = "http://localhost:${port}/api/v1/servers"

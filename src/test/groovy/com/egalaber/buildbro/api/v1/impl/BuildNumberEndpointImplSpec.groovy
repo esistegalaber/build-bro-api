@@ -4,8 +4,11 @@ import com.egalaber.buildbro.api.BaseRestSpec
 import com.egalaber.buildbro.api.model.IBuildNumber
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import spock.lang.Ignore
+import spock.lang.IgnoreRest
 
-class BuildNumberEndpointImplTest extends BaseRestSpec {
+@Ignore
+class BuildNumberEndpointImplSpec extends BaseRestSpec {
 
     def "Current() for existing project"() {
         given:

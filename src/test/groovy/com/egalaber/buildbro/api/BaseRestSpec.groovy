@@ -14,5 +14,6 @@ import spock.lang.Specification
 @Sql('/testdata.sql')
 class BaseRestSpec extends Specification {
     TestRestTemplate restTemplate = new TestRestTemplate()
-    Integer port = 8080
+    @LocalServerPort
+    Integer port
 }
