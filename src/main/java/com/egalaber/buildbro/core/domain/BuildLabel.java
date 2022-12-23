@@ -1,8 +1,8 @@
 package com.egalaber.buildbro.core.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 

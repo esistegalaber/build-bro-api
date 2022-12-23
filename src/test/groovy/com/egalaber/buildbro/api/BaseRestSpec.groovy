@@ -10,11 +10,9 @@ import spock.lang.Specification
 /**
  * Created by Josip.Mihelko @ Gmail
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Sql('/testdata.sql')
 class BaseRestSpec extends Specification {
-    @Autowired
-    TestRestTemplate restTemplate
-    @LocalServerPort
-    Integer port
+    TestRestTemplate restTemplate = new TestRestTemplate()
+    Integer port = 8080
 }

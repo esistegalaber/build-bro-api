@@ -9,11 +9,11 @@ import com.egalaber.buildbro.api.v1.BuildEndpoint;
 import com.egalaber.buildbro.core.domain.Build;
 import com.egalaber.buildbro.core.events.BuildCreatedEvent;
 import com.egalaber.buildbro.core.service.BuildService;
+import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.transaction.Transactional;
 import java.util.Map;
 
 import static com.egalaber.buildbro.core.mapping.SearchResultMapper.buildSearchResultToApi;

@@ -2,12 +2,12 @@ package com.egalaber.buildbro.api.v1.impl;
 
 import com.egalaber.buildbro.api.fault.DataNotFoundException;
 import com.egalaber.buildbro.api.model.IBranch;
-import com.egalaber.buildbro.api.v1.ProjectEndpoint;
 import com.egalaber.buildbro.api.model.IProject;
+import com.egalaber.buildbro.api.v1.ProjectEndpoint;
 import com.egalaber.buildbro.core.service.ProjectService;
+import jakarta.transaction.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @RestController

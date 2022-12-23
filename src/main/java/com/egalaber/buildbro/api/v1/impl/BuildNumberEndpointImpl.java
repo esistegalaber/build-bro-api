@@ -1,12 +1,11 @@
 package com.egalaber.buildbro.api.v1.impl;
 
-import com.egalaber.buildbro.api.v1.BuildNumberEndpoint;
 import com.egalaber.buildbro.api.model.IBranchedProject;
 import com.egalaber.buildbro.api.model.IBuildNumber;
+import com.egalaber.buildbro.api.v1.BuildNumberEndpoint;
 import com.egalaber.buildbro.core.service.BuildNumberService;
+import jakarta.transaction.Transactional;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.transaction.Transactional;
 
 @RestController
 @Transactional

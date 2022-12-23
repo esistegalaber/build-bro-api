@@ -1,11 +1,10 @@
 package com.egalaber.buildbro.api.v1.impl;
 
-import com.egalaber.buildbro.api.v1.StatsEndpoint;
 import com.egalaber.buildbro.api.model.IBuildBroStats;
+import com.egalaber.buildbro.api.v1.StatsEndpoint;
 import com.egalaber.buildbro.core.service.StatsService;
+import jakarta.transaction.Transactional;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.transaction.Transactional;
 
 @RestController
 @Transactional
