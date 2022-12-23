@@ -5,9 +5,8 @@ import com.egalaber.buildbro.core.repository.BranchRepository;
 import com.egalaber.buildbro.core.repository.BuildLabelRepository;
 import com.egalaber.buildbro.core.repository.BuildRepository;
 import com.egalaber.buildbro.core.repository.ProjectRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 
 @Service
 @Transactional

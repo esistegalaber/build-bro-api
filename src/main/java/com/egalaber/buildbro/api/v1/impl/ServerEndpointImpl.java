@@ -4,9 +4,9 @@ import com.egalaber.buildbro.api.fault.DataNotFoundException;
 import com.egalaber.buildbro.api.model.IServer;
 import com.egalaber.buildbro.api.v1.ServerEndpoint;
 import com.egalaber.buildbro.core.service.ServerService;
+import jakarta.transaction.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @RestController

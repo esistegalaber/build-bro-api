@@ -6,9 +6,9 @@ import com.egalaber.buildbro.core.domain.Project;
 import com.egalaber.buildbro.core.repository.BuildLabelRepository;
 import com.egalaber.buildbro.core.repository.ProjectRepository;
 import com.egalaber.buildbro.core.repository.ProjectSpecs;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Service

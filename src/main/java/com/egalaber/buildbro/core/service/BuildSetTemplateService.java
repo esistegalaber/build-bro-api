@@ -9,10 +9,10 @@ import com.egalaber.buildbro.core.mapping.BuildTemplateMapper;
 import com.egalaber.buildbro.core.repository.BuildSetTemplateRepository;
 import com.egalaber.buildbro.core.repository.BuildSetTemplateSpecs;
 import com.egalaber.buildbro.core.repository.BuildTemplateRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.StreamSupport;

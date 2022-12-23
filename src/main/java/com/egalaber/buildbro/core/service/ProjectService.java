@@ -10,10 +10,10 @@ import com.egalaber.buildbro.core.mapping.ProjectMapper;
 import com.egalaber.buildbro.core.repository.BranchRepository;
 import com.egalaber.buildbro.core.repository.ProjectRepository;
 import com.egalaber.buildbro.core.repository.ProjectSpecs;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Service

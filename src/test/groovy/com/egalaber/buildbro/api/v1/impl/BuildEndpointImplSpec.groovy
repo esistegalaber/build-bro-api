@@ -6,8 +6,10 @@ import com.egalaber.buildbro.api.model.IBuildSearchResult
 import com.egalaber.buildbro.api.model.IBuild
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import spock.lang.Ignore
 
-class BuildEndpointImplTest extends BaseRestSpec {
+@Ignore
+class BuildEndpointImplSpec extends BaseRestSpec {
     def "Search"() {
         given:
         String SEARCH_URL = "http://localhost:${port}/api/v1/builds/search"

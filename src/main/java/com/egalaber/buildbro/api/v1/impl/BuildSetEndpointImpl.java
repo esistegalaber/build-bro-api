@@ -10,7 +10,8 @@ import com.egalaber.buildbro.core.service.BuildService;
 import com.egalaber.buildbro.core.service.BuildSetTemplateService;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
+
 import java.util.List;
 import java.util.Set;
 

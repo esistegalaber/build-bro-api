@@ -7,8 +7,10 @@ import com.egalaber.buildbro.api.model.IBuildTemplate
 import com.egalaber.buildbro.api.model.IExceptionInfo
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import spock.lang.Ignore
 
-class BuildSetEndpointImplTest extends BaseRestSpec {
+@Ignore
+class BuildSetEndpointImplSpec extends BaseRestSpec {
     def "Create new, update and delete it"() {
         given:
         String newEnvName = 'new-crazy-env'

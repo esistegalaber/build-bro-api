@@ -7,10 +7,9 @@ import com.egalaber.buildbro.core.repository.BranchRepository;
 import com.egalaber.buildbro.core.repository.BranchSpecs;
 import com.egalaber.buildbro.core.repository.ProjectRepository;
 import com.egalaber.buildbro.core.repository.ProjectSpecs;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 
 @Service
 @Transactional

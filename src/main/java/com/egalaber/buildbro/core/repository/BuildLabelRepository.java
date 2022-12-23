@@ -3,11 +3,12 @@ package com.egalaber.buildbro.core.repository;
 import com.egalaber.buildbro.core.domain.BuildLabel;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.Set;
 
-public interface BuildLabelRepository extends PagingAndSortingRepository<BuildLabel, Long>, JpaSpecificationExecutor<BuildLabel> {
+public interface BuildLabelRepository extends CrudRepository<BuildLabel, Long>, PagingAndSortingRepository<BuildLabel, Long>, JpaSpecificationExecutor<BuildLabel> {
     @Query("SELECT DISTINCT l.key FROM BuildLabel l ORDER BY l.key")
     Set<String> distinctLabelKeys();
 }
