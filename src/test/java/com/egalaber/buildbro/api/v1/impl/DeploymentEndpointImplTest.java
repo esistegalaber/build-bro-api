@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 class DeploymentEndpointImplTest extends BaseRestTest {
 
     @Test
-    public void search() {
+    void search() {
         //given
         IDeploymentSearch search = new IDeploymentSearch();
         String SEARCH_URL = baseUrl() + "/deployments/search";
@@ -22,7 +22,7 @@ class DeploymentEndpointImplTest extends BaseRestTest {
     }
 
     @Test
-    public void addDeployment() {
+    void addDeployment() {
         //given
         String serverName = "prod-1";
         IDeployment newDeployment = new IDeployment();

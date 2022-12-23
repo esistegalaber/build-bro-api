@@ -11,7 +11,7 @@ import org.springframework.test.context.jdbc.Sql;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Sql("/testdata.sql")
-public class BaseRestTest {
+public abstract class BaseRestTest {
     protected TestRestTemplate restTemplate = new TestRestTemplate();
     @LocalServerPort
     protected Integer port;

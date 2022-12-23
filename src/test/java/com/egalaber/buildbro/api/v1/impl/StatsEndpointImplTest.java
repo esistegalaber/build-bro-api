@@ -11,9 +11,9 @@ import org.springframework.http.ResponseEntity;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StatsEndpointImplTest extends BaseRestTest {
     @Test
-    public void testGetStats() {
+    void testGetStats() {
         String STATS_URL = baseUrl() + "/stats";
         ResponseEntity<IBuildBroStats> responseEntity = restTemplate.getForEntity(STATS_URL, IBuildBroStats.class);
-        Assertions.assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
+        Assertions.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }
 }

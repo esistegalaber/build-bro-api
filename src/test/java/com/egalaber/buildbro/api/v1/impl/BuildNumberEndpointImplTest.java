@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 
 class BuildNumberEndpointImplTest extends BaseRestTest {
     @Test
-    public void currentBuildNumberOfExistingProject() {
+    void currentBuildNumberOfExistingProject() {
         //given
         String GET_CURRENT_URL = "http://localhost:" + port + "/api/v1/build-numbers/current/backend/main";
 

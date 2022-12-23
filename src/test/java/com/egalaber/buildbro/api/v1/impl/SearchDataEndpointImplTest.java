@@ -11,7 +11,7 @@ import spock.lang.Ignore;
 @Ignore
 class SearchDataEndpointImplTest extends BaseRestTest {
     @Test
-    public void loadSearchData() {
+    void loadSearchData() {
         //given
         String GET_DATA_URL = baseUrl() + "/search-data";
         //when

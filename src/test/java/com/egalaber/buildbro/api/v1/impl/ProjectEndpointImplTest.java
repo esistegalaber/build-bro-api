@@ -14,7 +14,7 @@ import java.util.List;
 @Ignore
 class ProjectEndpointImplTest extends BaseRestTest {
     @Test
-    public void getProjectData() {
+    void getProjectData() {
         //given
         String GET_URL = baseUrl() + "/projects";
         //when
@@ -25,7 +25,7 @@ class ProjectEndpointImplTest extends BaseRestTest {
     }
 
     @Test
-    public void toggleProjectActive() {
+    void toggleProjectActive() {
         //given
         Long projectId = 1L;
         String ACTIVATE_URL = baseUrl() + "/projects/active/" + projectId;
@@ -46,7 +46,7 @@ class ProjectEndpointImplTest extends BaseRestTest {
     }
 
     @Test
-    public void toggleBranchActive() {
+    void toggleBranchActive() {
         //given
         Long branchId = 1L;
         String ACTIVATE_URL = baseUrl() + "/projects/branch-active/" + branchId;

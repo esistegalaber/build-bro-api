@@ -17,7 +17,7 @@ import java.util.List;
 @Ignore
 class BuildSetEndpointImplTest extends BaseRestTest {
     @Test
-    public void CreateNewUpdateThenDeleteIt() {
+    void CreateNewUpdateThenDeleteIt() {
         //given
         String newEnvName = "new-crazy-env";
         String SAVE_URL = baseUrl() + "/build-sets";
@@ -49,7 +49,7 @@ class BuildSetEndpointImplTest extends BaseRestTest {
     }
 
     @Test
-    public void testGetSingle() {
+    void testGetSingle() {
         //given
         String GET_URL = baseUrl() + "/build-sets/main";
 
@@ -62,7 +62,7 @@ class BuildSetEndpointImplTest extends BaseRestTest {
     }
 
     @Test
-    public void getMissingBuildSet() {
+    void getMissingBuildSet() {
         //given
         String envName = "wrongName";
         String GET_URL = baseUrl() + "/build-sets/ " + envName;
@@ -76,7 +76,7 @@ class BuildSetEndpointImplTest extends BaseRestTest {
     }
 
     @Test
-    public void listAllBuildSetNames() {
+    void listAllBuildSetNames() {
         //given
         String LIST_URL = baseUrl() + "/build-sets/names";
 
@@ -89,7 +89,7 @@ class BuildSetEndpointImplTest extends BaseRestTest {
     }
 
     @Test
-    public void verifyBuildSetWithOneBuildTemplate() {
+    void verifyBuildSetWithOneBuildTemplate() {
         //given
         String VERIFY_URL = baseUrl() + "/build-sets/verify";
         IBuildTemplate artifact = new IBuildTemplate();
@@ -105,7 +105,7 @@ class BuildSetEndpointImplTest extends BaseRestTest {
     }
 
     @Test
-    public void getBuildSetOfDefinedEnvironment() {
+    void getBuildSetOfDefinedEnvironment() {
         //given
         String templateName = "main";
         String VERIFY_URL = baseUrl() + "/build-sets/of/" + templateName;
@@ -118,7 +118,7 @@ class BuildSetEndpointImplTest extends BaseRestTest {
     }
 
     @Test
-    public void allBuildSets() {
+    void allBuildSets() {
         //given
         String VERIFY_URL = baseUrl() + "/build-sets";
         //when

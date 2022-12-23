@@ -11,19 +11,19 @@ import java.util.List;
 
 class ServerEndpointImplTest extends BaseRestTest {
     @Test
-    public void getAllServers() {
+    void getAllServers() {
         //given:
         String ALL_SERVERS_URL = baseUrl() + "/servers";
         //when
         ResponseEntity<List> responseEntity = restTemplate.getForEntity(ALL_SERVERS_URL, List.class);
 
         //then
-        Assertions.assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
+        Assertions.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         Assertions.assertFalse(responseEntity.getBody().isEmpty());
     }
 
     @Test
-    public void updateServerDetails() {
+    void updateServerDetails() {
         //given
         String newNick = "Glorious Test-machine";
         String newDescription = "My private Server";
@@ -35,7 +35,7 @@ class ServerEndpointImplTest extends BaseRestTest {
         //when
         ResponseEntity<IServer> responseEntity = restTemplate.postForEntity(UPDATE_SERVERS_URL, server, IServer.class);
         //then
-        Assertions.assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
+        Assertions.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         Assertions.assertEquals(newNick, responseEntity.getBody().getNickName());
         Assertions.assertEquals(newDescription, responseEntity.getBody().getDescription());
     }

@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class BuildEndpointImplTest extends BaseRestTest {
     @Test
-    public void emtpyDefaultSearch() {
+    void emtpyDefaultSearch() {
         IBuildSearch search = new IBuildSearch();
         ResponseEntity<IBuildSearchResult> responseEntity = restTemplate.postForEntity(searchUrl(), search, IBuildSearchResult.class);
 
@@ -24,7 +24,7 @@ public class BuildEndpointImplTest extends BaseRestTest {
     }
 
     @Test
-    public void searchUsingProjectAndLabel() {
+    void searchUsingProjectAndLabel() {
         //given
         IBuildSearch search = new IBuildSearch();
         search.setProject("backend");
@@ -39,7 +39,7 @@ public class BuildEndpointImplTest extends BaseRestTest {
     }
 
     @Test
-    public void loadSingleProject() {
+    void loadSingleProject() {
         //given
         Long buildId = 1L;
         //when
@@ -52,7 +52,7 @@ public class BuildEndpointImplTest extends BaseRestTest {
     }
 
     @Test
-    public void loadMissingProject() {
+    void loadMissingProject() {
         //given
         Long buildId = -1L;
         //when
@@ -64,7 +64,7 @@ public class BuildEndpointImplTest extends BaseRestTest {
     }
 
     @Test
-    public void createBuild() {
+    void createBuild() {
         //given
         IBuild build = new IBuild();
         build.setProject("backend");
@@ -78,7 +78,7 @@ public class BuildEndpointImplTest extends BaseRestTest {
     }
 
     @Test
-    public void addLabels() {
+    void addLabels() {
         //given
         Long buildId = 1L;
         Map<String, String> newLabels = new HashMap<>();
