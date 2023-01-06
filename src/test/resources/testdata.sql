@@ -458,6 +458,16 @@ INSERT INTO deployment(id, deployed_at, server_id)
 VALUES (5, NOW() - INTERVAL 5 DAY, 2);
 INSERT INTO deployment(id, deployed_at, server_id)
 VALUES (6, NOW() - INTERVAL 6 DAY, 1);
+INSERT INTO deployment(id, deployed_at, server_id)
+VALUES (7, NOW() - INTERVAL 7 DAY, 1);
+INSERT INTO deployment(id, deployed_at, server_id)
+VALUES (8, NOW() - INTERVAL 8 DAY, 1);
+INSERT INTO deployment(id, deployed_at, server_id)
+VALUES (9, NOW() - INTERVAL 9 DAY, 1);
+INSERT INTO deployment(id, deployed_at, server_id)
+VALUES (10, NOW() - INTERVAL 10 DAY, 1);
+INSERT INTO deployment(id, deployed_at, server_id)
+VALUES (11, NOW() - INTERVAL 11 DAY, 1);
 
 INSERT INTO deployed_builds(deployment_id, build_id)
 VALUES (1, 10),
@@ -477,7 +487,22 @@ VALUES (1, 10),
        (5, 66),
        (6, 30),
        (6, 60),
-       (6, 90)
+       (6, 90),
+       (7, 80),
+       (7, 50),
+       (7, 20),
+       (8, 81),
+       (8, 51),
+       (8, 21),
+       (9, 82),
+       (9, 52),
+       (9, 22),
+       (10, 83),
+       (10, 53),
+       (10, 23),
+       (11, 84),
+       (11, 54),
+       (11, 24)
 ;
 insert into deployment_label(id, label_key, label_value, deployment_id)
 VALUES (1, 'part-of-build-set', 'main', 1),
@@ -486,20 +511,3 @@ VALUES (1, 'part-of-build-set', 'main', 1),
        (4, 'part-of-build-set', 'main', 1),
        (5, 'part-of-build-set', 'main', 1),
        (6, 'part-of-build-set', 'feature', 1);
---
--- INSERT INTO server(id, name, reserved_by, reservation_note)
--- VALUES (1, 'Test-Server-1', null, null),
---     (2, 'Empty-Server', 'Test Account', 'Checking if reservation works');
-
--- INSERT INTO deploy(id, deployed_at, build_id, server_id)
--- VALUES (1, (NOW() - INTERVAL 5 YEAR), 1, 1),
---        (2, (NOW() - INTERVAL 1 YEAR), 2, 1),
---        (3, (NOW() - INTERVAL 6 MONTH), 2, 1),
---        (4, (NOW() - INTERVAL 1 MONTH), 2, 1),
---        (5, (NOW() - INTERVAL 2 WEEK), 2, 1),
---        (6, (NOW() - INTERVAL 1 WEEK), 2, 1),
---        (7, (NOW() - INTERVAL 3 DAY), 2, 1),
---        (8, (NOW() - INTERVAL 1 DAY), 2, 1),
---        (9, (NOW() - INTERVAL 6 HOUR), 2, 1),
---        (10, (NOW() - INTERVAL 1 HOUR), 2, 1),
---        (11, NOW(), 2, 1);

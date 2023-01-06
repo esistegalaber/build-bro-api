@@ -66,8 +66,8 @@ class DeploymentServiceTest extends BaseBuildBroSpec {
 
         where:
         serverName     | extecedResultSize | message
-        null           | 6                 | 'Empty search working'
-        'testserver'   | 5                 | 'Search by serverName'
+        null           | 10                | 'Empty search working'
+        'staging'      | 1                 | 'Search by serverName'
         'noSuchServer' | 0                 | 'Search by non-existing serverName'
     }
 }
