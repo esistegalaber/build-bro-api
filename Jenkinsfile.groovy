@@ -21,7 +21,7 @@ pipeline {
         stage('Boot DB') {
             steps {
                 script {
-                    sh "setup-db.sh"
+                    sh "./setup-db.sh"
                 }
             }
         }
