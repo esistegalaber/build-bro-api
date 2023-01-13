@@ -1,14 +1,16 @@
 package com.egalaber.buildbro.api.v1;
 
 import com.egalaber.buildbro.api.fault.DataNotFoundException;
-import com.egalaber.buildbro.api.model.*;
+import com.egalaber.buildbro.api.model.IBuildLabel;
+import com.egalaber.buildbro.api.model.IDeployment;
+import com.egalaber.buildbro.api.model.IDeploymentSearch;
+import com.egalaber.buildbro.api.model.IDeploymentSearchResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
-import java.util.Map;
 
 public interface DeploymentEndpoint {
 
