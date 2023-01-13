@@ -1,9 +1,8 @@
 package com.egalaber.buildbro.core.service;
 
-import com.egalaber.buildbro.api.model.IBuild;
-import com.egalaber.buildbro.api.model.IDeployment;
-import com.egalaber.buildbro.api.model.IDeploymentSearch;
-import com.egalaber.buildbro.api.model.IDeploymentSearchResult;
+import com.egalaber.buildbro.api.fault.DataNotFoundException;
+import com.egalaber.buildbro.api.model.*;
+import com.egalaber.buildbro.core.domain.BuildLabel;
 import com.egalaber.buildbro.core.domain.Deployment;
 import com.egalaber.buildbro.core.domain.DeploymentLabel;
 import com.egalaber.buildbro.core.domain.Server;
@@ -13,6 +12,7 @@ import com.egalaber.buildbro.core.repository.BuildRepository;
 import com.egalaber.buildbro.core.repository.DeploymentRepository;
 import com.egalaber.buildbro.core.repository.DeploymentSpecs;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -21,6 +21,7 @@ import java.util.List;
 
 @Service
 @Transactional
+@Slf4j
 public class DeploymentService {
     private final DeploymentRepository deploymentRepository;
     private final ServerService serverService;
@@ -45,6 +46,16 @@ public class DeploymentService {
         return DeploymentMapper.toApi(deploymentRepository.save(toCreate));
     }
 
+    public IDeployment current(String serverName) throws DataNotFoundException {
+        IDeploymentSearch search = new IDeploymentSearch();
+        search.setServerName(serverName);
+        search.setPageSize(1);
+        return search(search).getData()
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new DataNotFoundException("No Deployment found for serverName='" + serverName + "'"));
+    }
+
     public IDeploymentSearchResult search(IDeploymentSearch search) {
         return SearchResultMapper.deploymentSearchResultToApi(
                 deploymentRepository.findAll(toSpecification(search), search.page())
@@ -57,5 +68,19 @@ public class DeploymentService {
             return DeploymentSpecs.onServer(search.getServerName());
         }
         return theSpec;
+    }
+
+    public IDeployment addLabelsToBuilds(Long deploymentId, List<IBuildLabel> labels) throws DataNotFoundException {
+        Deployment deployment = deploymentRepository.findById(deploymentId)
+                .orElseThrow(() -> new DataNotFoundException("No Deployment found with id='" + deploymentId + "'"));
+        deployment.getBuilds().forEach(build ->
+                labels.forEach(label -> {
+                    build.getLabels().add(new BuildLabel(build, label.getKey(), label.getValue()));
+                    buildRepository.save(build);
+                })
+        );
+        return deploymentRepository.findById(deploymentId)
+                .map(DeploymentMapper::toApi)
+                .orElseThrow(() -> new DataNotFoundException("No Deployment found with id='" + deploymentId + "'"));
     }
 }

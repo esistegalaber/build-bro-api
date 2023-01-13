@@ -11,6 +11,8 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @Transactional
 @Slf4j
@@ -24,12 +26,10 @@ public class TrackingService {
     }
 
     public void handleBuildCreated(IBuild build) {
-        Project theProject = projectRepository
-                .findOne(ProjectSpecs.projectNamed(build.getProject()))
-                .orElse(createProject(build.getProject()));
-        Branch theBranch = branchRepository
-                .findOne(BranchSpecs.branchOfProjectNamed(theProject, build.getBranch()))
-                .orElse(createBranch(theProject, build.getBranch()));
+        Project theProject = projectRepository.findOne(ProjectSpecs.projectNamed(build.getProject()))
+                .orElseGet(() -> createProject(build.getProject()));
+        Branch theBranch = branchRepository.findOne(BranchSpecs.branchOfProjectNamed(theProject, build.getBranch()))
+                .orElseGet(() -> createBranch(theProject, build.getBranch()));
         log.info("handleBuildCreated(build={}) - theProject.id={}, theBranch.id={}", build, theProject.getId(), theBranch.getId());
     }
 

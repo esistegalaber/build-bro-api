@@ -4,12 +4,16 @@ import com.egalaber.buildbro.api.BaseRestSpec
 import com.egalaber.buildbro.api.model.IBuildSearch
 import com.egalaber.buildbro.api.model.IBuildSearchResult
 import com.egalaber.buildbro.api.model.IBuild
+import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import spock.lang.Ignore
 
 @Ignore
 class BuildEndpointImplSpec extends BaseRestSpec {
+    @LocalServerPort
+    Integer port
+
     def "Search"() {
         given:
         String SEARCH_URL = "http://localhost:${port}/api/v1/builds/search"

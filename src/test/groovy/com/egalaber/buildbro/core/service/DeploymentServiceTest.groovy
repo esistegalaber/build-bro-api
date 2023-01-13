@@ -1,6 +1,7 @@
 package com.egalaber.buildbro.core.service
 
 import com.egalaber.buildbro.BaseBuildBroSpec
+import com.egalaber.buildbro.api.fault.DataNotFoundException
 import com.egalaber.buildbro.api.model.IBuild
 import com.egalaber.buildbro.api.model.IDeployment
 import com.egalaber.buildbro.api.model.IDeploymentSearch
@@ -69,5 +70,27 @@ class DeploymentServiceTest extends BaseBuildBroSpec {
         null           | 10                | 'Empty search working'
         'staging'      | 1                 | 'Search by serverName'
         'noSuchServer' | 0                 | 'Search by non-existing serverName'
+    }
+
+    def "Current"() {
+        given: 'the server name'
+        String serverName = 'testserver'
+
+        when: 'load latest deployment'
+        IDeployment deployment = deploymentService.current(serverName)
+
+        then: 'the right one should be found'
+        deployment.id == 1
+    }
+
+    def "Current not finding data"() {
+        given: 'the server name'
+        String serverName = 'prod-1'
+
+        when: 'load latest deployment'
+        deploymentService.current(serverName)
+
+        then: 'no deployment found'
+        thrown(DataNotFoundException)
     }
 }
