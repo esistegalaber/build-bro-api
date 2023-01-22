@@ -1,22 +1,16 @@
 package com.egalaber.buildbro.api.v1.impl
 
 import com.egalaber.buildbro.api.BaseRestSpec
+import com.egalaber.buildbro.api.model.IBuild
 import com.egalaber.buildbro.api.model.IBuildSearch
 import com.egalaber.buildbro.api.model.IBuildSearchResult
-import com.egalaber.buildbro.api.model.IBuild
-import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import spock.lang.Ignore
 
-@Ignore
 class BuildEndpointImplSpec extends BaseRestSpec {
-    @LocalServerPort
-    Integer port
-
     def "Search"() {
         given:
-        String SEARCH_URL = "http://localhost:${port}/api/v1/builds/search"
+        String SEARCH_URL = "${baseUrl()}/builds/search"
         IBuildSearch search = new IBuildSearch(
                 project: 'backend'
         )
@@ -33,7 +27,7 @@ class BuildEndpointImplSpec extends BaseRestSpec {
 
     def "Search with Labels"() {
         given:
-        String SEARCH_URL = "http://localhost:${port}/api/v1/builds/search"
+        String SEARCH_URL = "${baseUrl()}/builds/search"
         IBuildSearch search = new IBuildSearch(
                 project: 'backend',
                 labels: [
@@ -54,7 +48,7 @@ class BuildEndpointImplSpec extends BaseRestSpec {
     def "Get"() {
         given:
         Long buildId = 1
-        String GET_URL = "http://localhost:${port}/api/v1/builds/${buildId}"
+        String GET_URL = "${baseUrl()}/builds/${buildId}"
 
         when:
         ResponseEntity<IBuild> responseEntity = restTemplate.getForEntity(GET_URL, IBuild)
@@ -69,7 +63,7 @@ class BuildEndpointImplSpec extends BaseRestSpec {
     def "Get non existing Build"() {
         given:
         Long buildId = -1
-        String GET_URL = "http://localhost:${port}/api/v1/builds/${buildId}"
+        String GET_URL = "${baseUrl()}/builds/${buildId}"
 
         when:
         ResponseEntity<IBuild> responseEntity = restTemplate.getForEntity(GET_URL, IBuild)
@@ -80,7 +74,7 @@ class BuildEndpointImplSpec extends BaseRestSpec {
 
     def "Create"() {
         given:
-        String CREATE_URL = "http://localhost:${port}/api/v1/builds/create"
+        String CREATE_URL = "${baseUrl()}/builds/create"
         IBuild build = new IBuild(
                 project: 'backend',
                 branch: 'hotfix',
@@ -100,7 +94,7 @@ class BuildEndpointImplSpec extends BaseRestSpec {
     def "AddLabels"() {
         given:
         Long buildId = 1
-        String ADD_LABEL_URL = "http://localhost:${port}/api/v1/builds/add-labels/${buildId}"
+        String ADD_LABEL_URL = "${baseUrl()}/builds/add-labels/${buildId}"
         Map<String, String> newLabels = [
                 'crazy-key': 'crazy-value'
         ]

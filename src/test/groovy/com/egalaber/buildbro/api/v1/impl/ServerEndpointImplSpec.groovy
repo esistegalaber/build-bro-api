@@ -4,13 +4,11 @@ import com.egalaber.buildbro.api.BaseRestSpec
 import com.egalaber.buildbro.api.model.IServer
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import spock.lang.Ignore
 
-@Ignore
 class ServerEndpointImplSpec extends BaseRestSpec {
     def "AllServers"() {
         given:
-        String ALL_SERVERS_URL = "http://localhost:${port}/api/v1/servers"
+        String ALL_SERVERS_URL = "${baseUrl()}/servers"
 
         when:
         ResponseEntity<IServer[]> response = restTemplate.getForEntity(ALL_SERVERS_URL, IServer[])
@@ -31,7 +29,7 @@ class ServerEndpointImplSpec extends BaseRestSpec {
         server.setId(1L)
         server.setNickName(newNick)
         server.setDescription(newDescription)
-        String UPDATE_SERVERS_URL = "http://localhost:${port}/api/v1/servers"
+        String UPDATE_SERVERS_URL = "${baseUrl()}/servers"
 
         when:
         ResponseEntity<IServer> response = restTemplate.postForEntity(UPDATE_SERVERS_URL, server, IServer)

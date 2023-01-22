@@ -4,17 +4,13 @@ import com.egalaber.buildbro.api.BaseRestSpec
 import com.egalaber.buildbro.api.model.IBuildNumber
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import spock.lang.Ignore
-import spock.lang.IgnoreRest
 
-@Ignore
 class BuildNumberEndpointImplSpec extends BaseRestSpec {
-
     def "Current() for existing project"() {
         given:
         String project = 'backend'
         String branch = 'main'
-        String GET_CURRENT_URL = "http://localhost:${port}/api/v1/build-numbers/current/${project}/${branch}"
+        String GET_CURRENT_URL = "${baseUrl()}/build-numbers/current/${project}/${branch}"
 
         when:
         ResponseEntity<IBuildNumber> current = restTemplate.getForEntity(GET_CURRENT_URL, IBuildNumber)
@@ -31,7 +27,7 @@ class BuildNumberEndpointImplSpec extends BaseRestSpec {
         given:
         String project = 'backend'
         String branch = 'master'
-        String GET_CURRENT_URL = "http://localhost:${port}/api/v1/build-numbers/current/${project}/${branch}"
+        String GET_CURRENT_URL = "${baseUrl()}/build-numbers/current/${project}/${branch}"
 
         when:
         ResponseEntity<IBuildNumber> first = restTemplate.getForEntity(GET_CURRENT_URL, IBuildNumber)
@@ -60,8 +56,8 @@ class BuildNumberEndpointImplSpec extends BaseRestSpec {
                 number: 20
         )
 
-        String NEXT_URL = "http://localhost:${port}/api/v1/build-numbers/next"
-        String SET_URL = "http://localhost:${port}/api/v1/build-numbers/set"
+        String NEXT_URL = "${baseUrl()}/build-numbers/next"
+        String SET_URL = "${baseUrl()}/build-numbers/set"
 
         when:
         //Call next

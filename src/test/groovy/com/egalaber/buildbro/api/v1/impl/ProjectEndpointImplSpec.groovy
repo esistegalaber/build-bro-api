@@ -5,13 +5,12 @@ import com.egalaber.buildbro.api.model.IBranch
 import com.egalaber.buildbro.api.model.IProject
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import spock.lang.Ignore
 
-@Ignore
 class ProjectEndpointImplSpec extends BaseRestSpec {
+
     def "GetProjectData"() {
         given:
-        String VERIFY_URL = "http://localhost:${port}/api/v1/projects"
+        String VERIFY_URL = "${baseUrl()}/projects"
         when:
         ResponseEntity<List> responseEntity = restTemplate.getForEntity(VERIFY_URL, List)
 
@@ -25,9 +24,9 @@ class ProjectEndpointImplSpec extends BaseRestSpec {
     def "Toggle Project active"() {
         given:
         Long projectId = 1L
-        String ACTIVATE_URL = "http://localhost:${port}/api/v1/projects/active/${projectId}"
-        String DE_ACTIVATE_URL = "http://localhost:${port}/api/v1/projects/inactive/${projectId}"
-        String WRONG_ID_URL = "http://localhost:${port}/api/v1/projects/inactive/-1"
+        String ACTIVATE_URL = "${baseUrl()}/projects/active/${projectId}"
+        String DE_ACTIVATE_URL = "${baseUrl()}/projects/inactive/${projectId}"
+        String WRONG_ID_URL = "${baseUrl()}/projects/inactive/-1"
         when:
         ResponseEntity<IProject> deActivation = restTemplate.postForEntity(DE_ACTIVATE_URL, null, IProject)
         ResponseEntity<IProject> activation = restTemplate.postForEntity(ACTIVATE_URL, null, IProject)
@@ -48,9 +47,9 @@ class ProjectEndpointImplSpec extends BaseRestSpec {
     def "Toggle Branch active"() {
         given:
         String branchId = 1L
-        String ACTIVATE_URL = "http://localhost:${port}/api/v1/projects/branch-active/${branchId}"
-        String DE_ACTIVATE_URL = "http://localhost:${port}/api/v1/projects/branch-inactive/${branchId}"
-        String WRONG_ID_URL = "http://localhost:${port}/api/v1/projects/branch-inactive/-1"
+        String ACTIVATE_URL = "${baseUrl()}/projects/branch-active/${branchId}"
+        String DE_ACTIVATE_URL = "${baseUrl()}/projects/branch-inactive/${branchId}"
+        String WRONG_ID_URL = "${baseUrl()}/projects/branch-inactive/-1"
         when:
         ResponseEntity<IBranch> deActivation = restTemplate.postForEntity(DE_ACTIVATE_URL, null, IBranch)
         ResponseEntity<IBranch> activation = restTemplate.postForEntity(ACTIVATE_URL, null, IBranch)

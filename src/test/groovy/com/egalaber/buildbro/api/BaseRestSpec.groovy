@@ -16,4 +16,8 @@ class BaseRestSpec extends Specification {
     TestRestTemplate restTemplate = new TestRestTemplate()
     @LocalServerPort
     Integer port
+
+    protected String baseUrl() {
+        return "http://localhost:" + port + "/api/v1"
+    }
 }

@@ -7,16 +7,13 @@ import com.egalaber.buildbro.api.model.IBuildTemplate
 import com.egalaber.buildbro.api.model.IExceptionInfo
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import spock.lang.Ignore
 
-@Ignore
 class BuildSetEndpointImplSpec extends BaseRestSpec {
     def "Create new, update and delete it"() {
         given:
         String newEnvName = 'new-crazy-env'
-        String CREATE_URL = "http://localhost:${port}/api/v1/build-sets"
-        String UPDATE_URL = "http://localhost:${port}/api/v1/build-sets/"
-        String DELETE_URL = "http://localhost:${port}/api/v1/build-sets/${newEnvName}"
+        String SAVE_URL = "${baseUrl()}/build-sets"
+        String DELETE_URL = "${baseUrl()}/build-sets/${newEnvName}"
         IBuildSetTemplate newEnvironment = new IBuildSetTemplate(
                 name: newEnvName,
                 buildTemplates: [
@@ -28,7 +25,7 @@ class BuildSetEndpointImplSpec extends BaseRestSpec {
         )
 
         when:
-        ResponseEntity<IBuildSetTemplate> created = restTemplate.postForEntity(CREATE_URL, newEnvironment, IBuildSetTemplate)
+        ResponseEntity<IBuildSetTemplate> created = restTemplate.postForEntity(SAVE_URL, newEnvironment, IBuildSetTemplate)
         IBuildSetTemplate toUpdate = created.getBody()
         toUpdate.getBuildTemplates().add(
                 new IBuildTemplate(
@@ -38,7 +35,7 @@ class BuildSetEndpointImplSpec extends BaseRestSpec {
                 )
 
         )
-        ResponseEntity<IBuildSetTemplate> updated = restTemplate.postForEntity(UPDATE_URL, toUpdate, IBuildSetTemplate)
+        ResponseEntity<IBuildSetTemplate> updated = restTemplate.postForEntity(SAVE_URL, toUpdate, IBuildSetTemplate)
 
         restTemplate.delete(DELETE_URL)
 
@@ -53,7 +50,7 @@ class BuildSetEndpointImplSpec extends BaseRestSpec {
     def "Get"() {
         given:
         String envName = 'main'
-        String GET_URL = "http://localhost:${port}/api/v1/build-sets/${envName}"
+        String GET_URL = "${baseUrl()}/build-sets/${envName}"
 
         when:
         ResponseEntity<IBuildSetTemplate> responseEntity = restTemplate.getForEntity(GET_URL, IBuildSetTemplate)
@@ -68,7 +65,7 @@ class BuildSetEndpointImplSpec extends BaseRestSpec {
     def "Get DataNotFound"() {
         given:
         String envName = 'wrongName'
-        String GET_URL = "http://localhost:${port}/api/v1//build-sets/${envName}"
+        String GET_URL = "${baseUrl()}/build-sets/${envName}"
 
         when:
         ResponseEntity<IExceptionInfo> responseEntity = restTemplate.getForEntity(GET_URL, IExceptionInfo)
@@ -82,7 +79,7 @@ class BuildSetEndpointImplSpec extends BaseRestSpec {
 
     def "List all BuildSet names"() {
         given:
-        String LIST_URL = "http://localhost:${port}/api/v1/build-sets/names"
+        String LIST_URL = "${baseUrl()}/build-sets/names"
 
         when:
         ResponseEntity<List> responseEntity = restTemplate.getForEntity(LIST_URL, List)
@@ -96,7 +93,7 @@ class BuildSetEndpointImplSpec extends BaseRestSpec {
 
     def "VerifyEnvironment with 1 articfact"() {
         given:
-        String VERIFY_URL = "http://localhost:${port}/api/v1/build-sets/verify"
+        String VERIFY_URL = "${baseUrl()}/build-sets/verify"
         IBuildTemplate artifact = new IBuildTemplate(
                 project: 'backend',
                 branch: 'main',
@@ -115,7 +112,7 @@ class BuildSetEndpointImplSpec extends BaseRestSpec {
     def "BuildSet of defined environment"() {
         given:
         String templateName = 'main'
-        String VERIFY_URL = "http://localhost:${port}/api/v1/build-sets/of/${templateName}"
+        String VERIFY_URL = "${baseUrl()}/build-sets/of/${templateName}"
         when:
         ResponseEntity<IBuildSet> responseEntity = restTemplate.getForEntity(VERIFY_URL, IBuildSet)
 
@@ -128,9 +125,10 @@ class BuildSetEndpointImplSpec extends BaseRestSpec {
 
     def "all BuildSets"() {
         given:
-        String VERIFY_URL = "http://localhost:${port}/api/v1/build-sets"
+        String GET_URL = "${baseUrl()}/build-sets"
+
         when:
-        ResponseEntity<List> responseEntity = restTemplate.getForEntity(VERIFY_URL, List)
+        ResponseEntity<List> responseEntity = restTemplate.getForEntity(GET_URL, List)
 
         then:
         responseEntity.getStatusCode() == HttpStatus.OK
