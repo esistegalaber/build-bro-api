@@ -1,5 +1,9 @@
 package com.egalaber.buildbro.core.service
 
+import static com.egalaber.buildbro.api.model.ApiModels.aBuild
+import static com.egalaber.buildbro.api.model.ApiModels.aDeployment
+import static com.egalaber.buildbro.api.model.ApiModels.aDeploymentSearch
+
 import com.egalaber.buildbro.BaseBuildBroSpec
 import com.egalaber.buildbro.api.fault.DataNotFoundException
 import com.egalaber.buildbro.api.model.IDeployment

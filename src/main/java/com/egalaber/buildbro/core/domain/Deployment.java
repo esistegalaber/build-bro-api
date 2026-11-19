@@ -1,6 +1,8 @@
 package com.egalaber.buildbro.core.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -12,6 +14,8 @@ import java.util.TreeSet;
 
 @Entity
 @Table(name = "deployment")
+@Getter
+@Setter
 public class Deployment implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,46 +42,6 @@ public class Deployment implements Serializable {
     @PrePersist
     public void prePersist() {
         this.deployedAt = LocalDateTime.now(ZoneOffset.UTC);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDateTime getDeployedAt() {
-        return deployedAt;
-    }
-
-    public void setDeployedAt(LocalDateTime deployedAt) {
-        this.deployedAt = deployedAt;
-    }
-
-    public Set<Build> getBuilds() {
-        return builds;
-    }
-
-    public void setBuilds(Set<Build> builds) {
-        this.builds = builds;
-    }
-
-    public Server getServer() {
-        return server;
-    }
-
-    public void setServer(Server server) {
-        this.server = server;
-    }
-
-    public Set<DeploymentLabel> getLabels() {
-        return labels;
-    }
-
-    public void setLabels(Set<DeploymentLabel> labels) {
-        this.labels = labels;
     }
 
     @Override

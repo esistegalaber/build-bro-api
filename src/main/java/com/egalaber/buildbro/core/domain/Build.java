@@ -1,6 +1,8 @@
 package com.egalaber.buildbro.core.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -14,6 +16,8 @@ import java.util.TreeSet;
                 @Index(name = "unq_idx_project_branch", columnList = "project,branch,build_number")
         }
 )
+@Getter
+@Setter
 public class Build implements Serializable {
     public Build() {
     }
@@ -42,46 +46,6 @@ public class Build implements Serializable {
 
     @OneToMany(mappedBy = "build", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<BuildLabel> labels = new TreeSet<>();
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getProject() {
-        return project;
-    }
-
-    public void setProject(String project) {
-        this.project = project;
-    }
-
-    public String getBranch() {
-        return branch;
-    }
-
-    public void setBranch(String branch) {
-        this.branch = branch;
-    }
-
-    public Long getBuildNumber() {
-        return buildNumber;
-    }
-
-    public void setBuildNumber(Long buildNumber) {
-        this.buildNumber = buildNumber;
-    }
-
-    public Set<BuildLabel> getLabels() {
-        return labels;
-    }
-
-    public void setLabels(Set<BuildLabel> labels) {
-        this.labels = labels;
-    }
 
     @Override
     public boolean equals(Object o) {

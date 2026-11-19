@@ -1,5 +1,10 @@
 package com.egalaber.buildbro.api.v1.impl
 
+import static com.egalaber.buildbro.api.model.ApiModels.aBuild
+import static com.egalaber.buildbro.api.model.ApiModels.aDeployment
+import static com.egalaber.buildbro.api.model.ApiModels.aDeploymentLabel
+import static com.egalaber.buildbro.api.model.ApiModels.aDeploymentSearch
+
 import com.egalaber.buildbro.api.BaseRestSpec
 import com.egalaber.buildbro.api.model.IDeployment
 import com.egalaber.buildbro.api.model.IDeploymentSearch

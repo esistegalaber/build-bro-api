@@ -1,12 +1,16 @@
 package com.egalaber.buildbro.core.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "branch")
+@Getter
+@Setter
 public class Branch implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,38 +24,6 @@ public class Branch implements Serializable {
     @Basic(optional = false)
     @Column(name = "active", nullable = false)
     private Boolean active = true;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Project getProject() {
-        return project;
-    }
-
-    public void setProject(Project project) {
-        this.project = project;
-    }
-
-    public Boolean getActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
 
     @Override
     public boolean equals(Object o) {

@@ -2,6 +2,8 @@ package com.egalaber.buildbro.core.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -13,6 +15,8 @@ import java.util.Objects;
                 @Index(name = "idx_build_label_value", columnList = "label_key")
         }
 )
+@Getter
+@Setter
 public class BuildLabel implements Serializable, Comparable<BuildLabel> {
     public BuildLabel() {
     }
@@ -39,38 +43,6 @@ public class BuildLabel implements Serializable, Comparable<BuildLabel> {
     @Basic(optional = false)
     @Column(name = "label_value", nullable = false)
     private String value;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Build getBuild() {
-        return build;
-    }
-
-    public void setBuild(Build build) {
-        this.build = build;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
 
     @Override
     public int compareTo(BuildLabel other) {
