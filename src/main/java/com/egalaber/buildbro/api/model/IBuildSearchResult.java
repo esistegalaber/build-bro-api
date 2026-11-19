@@ -18,12 +18,4 @@ public record IBuildSearchResult(
     public IBuildSearchResult {
         data = ModelCollections.list(data);
     }
-
-
-    @Override
-    public String toString() {
-        // data left out on purpose: its size is only bounded by the client-chosen pageSize
-        return "IBuildSearchResult[page=" + page + ", items=" + data.size() + ", totalElements=" + totalElements
-                + ", totalPages=" + totalPages + ", hasNext=" + hasNext + ", hasPrevious=" + hasPrevious + "]";
-    }
 }

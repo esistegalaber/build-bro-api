@@ -18,10 +18,4 @@ public record IDeployment(
         builds = ModelCollections.list(builds);
         labels = ModelCollections.list(labels);
     }
-
-    @Override
-    public String toString() {
-        // builds and labels left out on purpose: they can be long
-        return "IDeployment[id=" + id + ", serverName=" + serverName + ", deployedAt=" + deployedAt + "]";
-    }
 }
