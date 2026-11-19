@@ -1,5 +1,7 @@
 # Build Bro
 
+[![Build 'n Sonar](https://github.com/esistegalaber/build-bro-api/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/esistegalaber/build-bro-api/actions/workflows/build.yml)
+
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=esistegalaber_build-bro-api&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=esistegalaber_build-bro-api)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=esistegalaber_build-bro-api&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=esistegalaber_build-bro-api)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=esistegalaber_build-bro-api&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=esistegalaber_build-bro-api)
