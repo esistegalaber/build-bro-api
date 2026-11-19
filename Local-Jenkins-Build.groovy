@@ -30,7 +30,7 @@ pipeline {
         stage('Build Api') {
             steps {
                 script {
-                    sh "./gradlew clean build jacocoTestReport"
+                    sh "./mvnw -B clean verify"
                 }
             }
         }
