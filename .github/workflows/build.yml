@@ -30,7 +30,7 @@ jobs:
           collation server: 'utf8_general_ci'
 
       - uses: actions/checkout@v7
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
           java-version: '21'
@@ -40,4 +40,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar Dsonar.projectKey=esistegalaber_build-bro-api
