@@ -77,6 +77,8 @@ class BuildSetEndpointImplSpec extends BaseRestSpec {
 
         and:
         responseEntity.getBody().key == 'not-found'
+        responseEntity.getBody().description == 'No such data'
+        responseEntity.getBody().message == "No Environment found with name='wrongName'"
     }
 
     def "List all BuildSet names"() {

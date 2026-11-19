@@ -14,8 +14,8 @@ public class BuildBroExceptionHandler extends ResponseEntityExceptionHandler {
     ResponseEntity<IExceptionInfo> handleConversion(BuildBroException ex) {
         IExceptionInfo body = new IExceptionInfo(
                 ex.getKey(),
-                ex.getMessage(),
-                ex.getDescription()
+                ex.getDescription(),
+                ex.getMessage()
         );
         return new ResponseEntity<>(body, new HttpHeaders(), ex.getStatus());
     }
