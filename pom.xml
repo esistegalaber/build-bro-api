@@ -25,6 +25,9 @@
         <jacoco.version>0.8.16</jacoco.version>
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
 
+        <!-- MariaDB image used by the Testcontainers test database; override with -Dtest.mariadb.image=... -->
+        <test.mariadb.image>mariadb:10.10</test.mariadb.image>
+
         <sonar.projectKey>esistegalaber_build-bro-api</sonar.projectKey>
         <sonar.organization>esistegalaber</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -90,6 +93,17 @@
             <artifactId>spring-boot-restclient</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- MariaDB for tests, started by Testcontainers (needs a running Docker daemon) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-mariadb</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.spockframework</groupId>
             <artifactId>spock-core</artifactId>
@@ -151,6 +165,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <systemPropertyVariables>
+                        <test.mariadb.image>${test.mariadb.image}</test.mariadb.image>
+                    </systemPropertyVariables>
                     <includes>
                         <include>**/*Spec</include>
                         <include>**/*Test</include>

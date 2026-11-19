@@ -19,7 +19,9 @@ Build Bro is a Spring Boot 4.1 (Java 17+) REST API that tracks CI builds, build 
 
 Maven needs **JDK 17 or newer** (`JAVA_HOME`). CI builds with JDK 21. Spock specs (Groovy 5, `spock-*-groovy-5.0`) in `src/test/groovy` are compiled by `gmavenplus-plugin`, and Surefire is configured to pick up both `*Spec` and `*Test` classes.
 
-**Tests and the app need a running MariaDB.** There is no in-memory DB or Testcontainers. `application.properties` expects `jdbc:mariadb://localhost:3306/build_bruh` with user/password/database all set to `build_bruh`. Start one with:
+**Tests start their own MariaDB with Testcontainers, so they need a running Docker daemon** and nothing else. `TestDatabase` (in `src/test/groovy`) holds one static `MariaDBContainer`, which both base specs pull in with `@ImportTestcontainers`. `@ServiceConnection` points the datasource at it, overriding `spring.datasource.*`. The image is set by the `test.mariadb.image` Maven property (default `mariadb:10.10`), which you can override with `-Dtest.mariadb.image=mariadb:11.4`.
+
+**The app itself (`spring-boot:run`, the jar) still needs a real MariaDB.** `application.properties` expects `jdbc:mariadb://localhost:3306/build_bruh` with user/password/database all set to `build_bruh`. Start one with:
 
 ```bash
 docker run --name build_bruh_db -d -p 3306:3306 -e MYSQL_DATABASE=build_bruh -e MYSQL_USER=build_bruh \
@@ -49,6 +51,7 @@ Cross-cutting pieces:
 ## Tests
 
 - `BaseBuildBroSpec`: `@SpringBootTest` + `@Transactional` service-level specs.
+- Both base specs import the shared Testcontainers MariaDB (`@ImportTestcontainers(TestDatabase)`). New Spring test base classes need the same annotation.
 - `BaseRestSpec`: boots the server on the real port (`DEFINED_PORT`, 8080, so it will clash with a locally running app) and calls `/api/v1` through `TestRestTemplate`. In Boot 4 that class lives in `org.springframework.boot.resttestclient` and needs the `spring-boot-resttestclient` and `spring-boot-restclient` test dependencies. It is not transactional.
 - Both run `@Sql('/testdata.sql')` before each feature. That script deletes all tables and reseeds fixtures, so assertions rely on its data (e.g. project `backend`, branch `main`). When adding tables, add them to the delete list in FK-safe order.
 - `EqualsAndHashCode*Test` use EqualsVerifier on all domain entities and API models. New entities and models must satisfy it.

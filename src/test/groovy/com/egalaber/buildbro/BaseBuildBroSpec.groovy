@@ -1,6 +1,7 @@
 package com.egalaber.buildbro
 
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.testcontainers.context.ImportTestcontainers
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.transaction.annotation.Transactional
@@ -9,6 +10,7 @@ import spock.lang.Specification
 /**
  * Created by Josip.Mihelko @ Gmail
  */
+@ImportTestcontainers(TestDatabase)
 @SpringBootTest
 @ContextConfiguration
 @Transactional
