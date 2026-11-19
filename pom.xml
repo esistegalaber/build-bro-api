@@ -12,7 +12,7 @@
 
     <groupId>com.egalaber</groupId>
     <artifactId>build-bro-api</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0-SNAPSHOT</version>
     <name>build-bro-api</name>
     <description>Build Bro REST API</description>
 
