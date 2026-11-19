@@ -46,7 +46,8 @@ Cross-cutting pieces:
 - **Errors**: throw subclasses of `api.fault.BuildBroException` (`DataNotFoundException`, `InvalidRequestException`). These are checked exceptions that carry an HTTP status. `BuildBroExceptionHandler` turns them into `IExceptionInfo` JSON responses.
 - **Events**: `BuildEndpointImpl.create` publishes `BuildCreatedEvent`. `BuildCreatedEventListener` (`@Async`, enabled via `@EnableAsync`) calls `TrackingService`, which auto-creates the `Project`/`Branch` rows for the build. Projects and branches therefore come into existence as a side effect of build creation.
 - **Logging**: `core.aop.LoggingAspect` (registered via `@Import` in `BuildBroApiApplication`) logs every method result and exception in `core.service.*` and `api.v1.impl.*`.
-- OpenAPI/Swagger UI comes from springdoc.
+- **OpenAPI docs**: springdoc serves Swagger UI at `/swagger-ui/index.html` and the spec at `/v3/api-docs`. `api.OpenApiConfig` sets the title, the version (from `build-info`) and a relative server URL. It also adds 404/400 responses (schema `IExceptionInfo`) to every operation whose *implementation* method declares `DataNotFoundException`/`InvalidRequestException`, so don't add `@ApiResponse` for those by hand. Document endpoints on the interfaces (`@Tag`, `@Operation` with an explicit `operationId`, `@Parameter`) and models with `@Schema` on record components. `OpenApiDocsSpec` fails the build on an operation without summary, tag or explicit `operationId`.
+- **Static API docs**: `OpenApiDocsSpec` writes `target/openapi/openapi.{json,yaml}` during the tests, and `openapi-generator-maven-plugin` (`html2`) renders `target/openapi/html/index.html` in `package`. It is skipped with `-DskipTests`. CI uploads `target/openapi/` as the `api-docs` artifact. Avoid `**bold**`/`*italic*` in descriptions: the html2 renderer shows them as code. Backticks are fine.
 
 ## Tests
 

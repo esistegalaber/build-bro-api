@@ -23,6 +23,9 @@
         <equalsverifier.version>3.10.1</equalsverifier.version>
         <gmavenplus.version>5.1.0</gmavenplus.version>
         <jacoco.version>0.8.16</jacoco.version>
+        <!-- default for Surefire and for skipping the static API docs (they need the tests to run) -->
+        <skipTests>false</skipTests>
+        <openapi-generator.version>7.27.0</openapi-generator.version>
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
 
         <!-- MariaDB image used by the Testcontainers test database; override with -Dtest.mariadb.image=... -->
@@ -116,6 +119,12 @@
             <version>${spock.version}</version>
             <scope>test</scope>
         </dependency>
+        <!-- JsonSlurper/JsonOutput, used by OpenApiDocsSpec -->
+        <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy-json</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>nl.jqno.equalsverifier</groupId>
             <artifactId>equalsverifier</artifactId>
@@ -166,6 +175,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <systemPropertyVariables>
+                        <openapi.output.dir>${project.build.directory}/openapi</openapi.output.dir>
                         <test.mariadb.image>${test.mariadb.image}</test.mariadb.image>
                     </systemPropertyVariables>
                     <includes>
@@ -196,6 +206,34 @@
                 </executions>
             </plugin>
 
+            <!--
+              Static HTML API docs. OpenApiDocsSpec writes target/openapi/openapi.{json,yaml} while the tests run,
+              this renders target/openapi/html/index.html from it. Skipped with -DskipTests (no spec then).
+            -->
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>${openapi-generator.version}</version>
+                <executions>
+                    <execution>
+                        <id>static-api-docs</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.build.directory}/openapi/openapi.json</inputSpec>
+                            <!-- the spec only exists when the tests ran -->
+                            <skip>${skipTests}</skip>
+                            <generatorName>html2</generatorName>
+                            <output>${project.build.directory}/openapi/html</output>
+                            <addCompileSourceRoot>false</addCompileSourceRoot>
+                            <generateSupportingFiles>true</generateSupportingFiles>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.sonarsource.scanner.maven</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
@@ -205,6 +243,14 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <!-- META-INF/build-info.properties: provides the API version shown in the OpenAPI docs -->
+                    <execution>
+                        <goals>
+                            <goal>build-info</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <excludes>
                         <exclude>

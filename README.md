@@ -62,6 +62,9 @@ curl -s $API/deployments/staging-01
 All endpoints live under `/api/v1`. The full, interactive documentation is served by Swagger UI at
 <http://localhost:8080/swagger-ui/index.html> (OpenAPI spec at `/v3/api-docs`).
 
+`./mvnw verify` also writes static docs to `target/openapi/`: the spec as `openapi.json`/`openapi.yaml` and a
+self-contained HTML page at `html/index.html`. CI publishes the same files as the `api-docs` build artifact.
+
 | Area          | Endpoints                                                                                              |
 |---------------|--------------------------------------------------------------------------------------------------------|
 | Build numbers | `POST /build-numbers/next`, `GET /build-numbers/current/{project}/{branch}`, `POST /build-numbers/set`  |

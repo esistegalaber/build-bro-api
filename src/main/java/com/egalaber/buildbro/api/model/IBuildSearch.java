@@ -1,5 +1,6 @@
 package com.egalaber.buildbro.api.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.data.domain.Sort;
 
 import java.io.Serializable;
@@ -8,9 +9,18 @@ import java.util.Map;
 /**
  * Build search request. {@code minBuildNumber} and {@code maxBuildNumber} are exclusive bounds.
  */
-public record IBuildSearch(Integer pageSize, Integer page, String sortAttribute, String sortDirection,
-                           String project, String branch, Long minBuildNumber, Long maxBuildNumber,
-                           Map<String, String> labels) implements PagedSearch, Serializable {
+@Schema(description = "Build search criteria. All fields are optional.")
+public record IBuildSearch(
+        @Schema(description = "Results per page", defaultValue = "10", example = "10") Integer pageSize,
+        @Schema(description = "Zero-based page", defaultValue = "0", example = "0") Integer page,
+        @Schema(description = "Build attribute to sort by", defaultValue = "buildNumber", example = "buildNumber") String sortAttribute,
+        @Schema(description = "Sort direction", allowableValues = {"ASC", "DESC"}, defaultValue = "DESC") String sortDirection,
+        @Schema(description = "Only builds of this project", example = "backend") String project,
+        @Schema(description = "Only builds of this branch", example = "main") String branch,
+        @Schema(description = "Only build numbers greater than this (exclusive)", example = "10") Long minBuildNumber,
+        @Schema(description = "Only build numbers less than this (exclusive)", example = "20") Long maxBuildNumber,
+        @Schema(description = "Builds carrying any of these key/value labels", example = "{\"qa\": \"passed\"}") Map<String, String> labels
+) implements PagedSearch, Serializable {
 
     private static final String DEFAULT_SORT_ATTRIBUTE = "buildNumber";
 
