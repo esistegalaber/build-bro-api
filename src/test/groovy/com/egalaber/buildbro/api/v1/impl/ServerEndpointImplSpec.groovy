@@ -1,5 +1,7 @@
 package com.egalaber.buildbro.api.v1.impl
 
+import static com.egalaber.buildbro.api.model.ApiModels.*
+
 import com.egalaber.buildbro.api.BaseRestSpec
 import com.egalaber.buildbro.api.model.IServer
 import org.springframework.http.HttpStatus
@@ -25,10 +27,7 @@ class ServerEndpointImplSpec extends BaseRestSpec {
         given:
         String newNick = 'Glorious Test-machine'
         String newDescription = 'My private Server'
-        IServer server = new IServer()
-        server.setId(1L)
-        server.setNickName(newNick)
-        server.setDescription(newDescription)
+        IServer server = aServer(id: 1L, nickName: newNick, description: newDescription)
         String UPDATE_SERVERS_URL = "${baseUrl()}/servers"
 
         when:

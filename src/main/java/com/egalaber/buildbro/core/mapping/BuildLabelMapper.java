@@ -8,10 +8,6 @@ public class BuildLabelMapper {
     }
 
     public static IBuildLabel forApi(BuildLabel buildLabel) {
-        IBuildLabel toReturn = new IBuildLabel();
-        toReturn.setId(buildLabel.getId());
-        toReturn.setKey(buildLabel.getKey());
-        toReturn.setValue(buildLabel.getValue());
-        return toReturn;
+        return new IBuildLabel(buildLabel.getId(), buildLabel.getKey(), buildLabel.getValue());
     }
 }

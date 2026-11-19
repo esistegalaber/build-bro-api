@@ -2,80 +2,39 @@ package com.egalaber.buildbro.api.model;
 
 import org.springframework.data.domain.Sort;
 
-import java.util.HashMap;
+import java.io.Serializable;
 import java.util.Map;
 
-public class IBuildSearch extends BaseSearch {
+/**
+ * Build search request. {@code minBuildNumber} and {@code maxBuildNumber} are exclusive bounds.
+ */
+public record IBuildSearch(Integer pageSize, Integer page, String sortAttribute, String sortDirection,
+                           String project, String branch, Long minBuildNumber, Long maxBuildNumber,
+                           Map<String, String> labels) implements PagedSearch, Serializable {
+
     private static final String DEFAULT_SORT_ATTRIBUTE = "buildNumber";
-    private String project;
-    private String branch;
-    private Long minBuildNumber;
-    private Long maxBuildNumber;
-    private Map<String, String> labels = new HashMap<>();
 
-    public String getProject() {
-        return project;
+    public IBuildSearch {
+        labels = ModelCollections.map(labels);
     }
 
-    public void setProject(String project) {
-        this.project = project;
-    }
-
-    public String getBranch() {
-        return branch;
-    }
-
-    public void setBranch(String branch) {
-        this.branch = branch;
-    }
-
-    public Long getMinBuildNumber() {
-        return minBuildNumber;
-    }
-
-    public void setMinBuildNumber(Long minBuildNumber) {
-        this.minBuildNumber = minBuildNumber;
-    }
-
-    public Long getMaxBuildNumber() {
-        return maxBuildNumber;
-    }
-
-    public void setMaxBuildNumber(Long maxBuildNumber) {
-        this.maxBuildNumber = maxBuildNumber;
-    }
-
-    public Map<String, String> getLabels() {
-        return labels;
-    }
-
-    public void setLabels(Map<String, String> labels) {
-        this.labels = labels;
-    }
-
+    /**
+     * Search for the build a template points at: the given build number if it has one, else the latest build.
+     */
     public static IBuildSearch fromBuildTemplate(IBuildTemplate artifact) {
-        IBuildSearch newBuildSearch = new IBuildSearch();
-        newBuildSearch.setProject(artifact.getProject());
-        newBuildSearch.setBranch(artifact.getBranch());
-        newBuildSearch.setLabels(artifact.getLabels());
-        newBuildSearch.setPageSize(1);
-        newBuildSearch.setPage(0);
-        newBuildSearch.setSortAttribute(DEFAULT_SORT_ATTRIBUTE);
-        newBuildSearch.setSortDirection(Sort.Direction.DESC.name());
-
-        if (artifact.getBuildNumber() != null && artifact.getBuildNumber() > 0) {
-            // The min and max build number search params are exclusive
-            // so to ensure that only the provided build number is
-            // returned set the minBuildNumber to the buildNumber minus one
-            // and the maxBuildNumber to the buildNumber plus one
-            newBuildSearch.minBuildNumber = artifact.getBuildNumber() - 1;
-            newBuildSearch.maxBuildNumber = artifact.getBuildNumber() + 1;
+        Long minBuildNumber = null;
+        Long maxBuildNumber = null;
+        if (artifact.buildNumber() != null && artifact.buildNumber() > 0) {
+            // The bounds are exclusive, so widen by one on each side to match exactly this build number
+            minBuildNumber = artifact.buildNumber() - 1;
+            maxBuildNumber = artifact.buildNumber() + 1;
         }
-
-        return newBuildSearch;
+        return new IBuildSearch(1, 0, DEFAULT_SORT_ATTRIBUTE, Sort.Direction.DESC.name(),
+                artifact.project(), artifact.branch(), minBuildNumber, maxBuildNumber, artifact.labels());
     }
 
-    protected String defaultSortAttribute() {
+    @Override
+    public String defaultSortAttribute() {
         return DEFAULT_SORT_ATTRIBUTE;
     }
 }

@@ -11,33 +11,25 @@ public class SearchResultMapper {
     }
 
     public static IBuildSearchResult buildSearchResultToApi(Page<Build> result) {
-        IBuildSearchResult toReturn = new IBuildSearchResult();
-        toReturn.setData(
-                result.getContent().stream()
-                        .map(BuildMapper::toApi)
-                        .toList()
+        return new IBuildSearchResult(
+                result.getContent().stream().map(BuildMapper::toApi).toList(),
+                result.getNumber(),
+                result.getTotalElements(),
+                result.getTotalPages(),
+                result.hasNext(),
+                result.hasPrevious()
         );
-        toReturn.setPage(result.getNumber());
-        toReturn.setHasNext(result.hasNext());
-        toReturn.setHasPrevious(result.hasPrevious());
-        toReturn.setTotalElements(result.getTotalElements());
-        toReturn.setTotalPages(result.getTotalPages());
-        return toReturn;
     }
 
     public static IDeploymentSearchResult deploymentSearchResultToApi(Page<Deployment> result) {
-        IDeploymentSearchResult toReturn = new IDeploymentSearchResult();
-        toReturn.setData(
-                result.getContent().stream()
-                        .map(DeploymentMapper::toApi)
-                        .toList()
+        return new IDeploymentSearchResult(
+                result.getContent().stream().map(DeploymentMapper::toApi).toList(),
+                result.getNumber(),
+                result.getTotalElements(),
+                result.getTotalPages(),
+                result.hasNext(),
+                result.hasPrevious()
         );
-        toReturn.setPage(result.getNumber());
-        toReturn.setHasNext(result.hasNext());
-        toReturn.setHasPrevious(result.hasPrevious());
-        toReturn.setTotalElements(result.getTotalElements());
-        toReturn.setTotalPages(result.getTotalPages());
-        return toReturn;
     }
 
 

@@ -1,5 +1,7 @@
 package com.egalaber.buildbro.api.v1.impl
 
+import static com.egalaber.buildbro.api.model.ApiModels.*
+
 import com.egalaber.buildbro.api.BaseRestSpec
 import com.egalaber.buildbro.api.model.*
 import com.egalaber.buildbro.core.domain.BuildLabel
@@ -9,7 +11,7 @@ import org.springframework.http.ResponseEntity
 class DeploymentEndpointImplSpec extends BaseRestSpec {
     def "Search"() {
         given:
-        IDeploymentSearch search = new IDeploymentSearch()
+        IDeploymentSearch search = aDeploymentSearch()
         String SEARCH_URL = "${baseUrl()}/deployments/search"
 
         when:
@@ -26,10 +28,10 @@ class DeploymentEndpointImplSpec extends BaseRestSpec {
         given:
         String CREATE_URL = "${baseUrl()}/deployments"
         String serverName = "prod-1"
-        IDeployment newDeployment = new IDeployment(
+        IDeployment newDeployment = aDeployment(
                 serverName: serverName,
-                builds: [new IBuild(id: 1), new IBuild(id: 2), new IBuild(id: 3)],
-                labels: [new IDeploymentLabel(key: 'additional', value: 'info')]
+                builds: [aBuild(id: 1), aBuild(id: 2), aBuild(id: 3)],
+                labels: [aDeploymentLabel(key: 'additional', value: 'info')]
         )
 
         when:
@@ -56,7 +58,7 @@ class DeploymentEndpointImplSpec extends BaseRestSpec {
         current.getStatusCode() == HttpStatus.OK
 
         and:
-        !current.getBody().getBuilds().isEmpty()
+        !current.getBody().builds().isEmpty()
     }
 
     def "AddLabelsToBuilds"() {
@@ -73,6 +75,6 @@ class DeploymentEndpointImplSpec extends BaseRestSpec {
         updated.getStatusCode() == HttpStatus.OK
 
         and:
-        !updated.getBody().getBuilds().isEmpty()
+        !updated.getBody().builds().isEmpty()
     }
 }

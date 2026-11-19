@@ -8,15 +8,11 @@ public class ProjectMapper {
     }
 
     public static IProject toApi(Project project) {
-        IProject toReturn = new IProject();
-        toReturn.setId(project.getId());
-        toReturn.setName(project.getName());
-        toReturn.setActive(project.getActive());
-        toReturn.getBranches().addAll(
-                project.getBranches().stream()
-                        .map(BranchMapper::toApi)
-                        .toList()
+        return new IProject(
+                project.getId(),
+                project.getName(),
+                project.getActive(),
+                project.getBranches().stream().map(BranchMapper::toApi).toList()
         );
-        return toReturn;
     }
 }

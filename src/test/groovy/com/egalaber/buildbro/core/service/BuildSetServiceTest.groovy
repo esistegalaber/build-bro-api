@@ -1,5 +1,7 @@
 package com.egalaber.buildbro.core.service
 
+import static com.egalaber.buildbro.api.model.ApiModels.*
+
 import com.egalaber.buildbro.BaseBuildBroSpec
 import com.egalaber.buildbro.api.fault.InvalidRequestException
 import com.egalaber.buildbro.api.model.IBuildSetTemplate
@@ -32,14 +34,15 @@ class BuildSetServiceTest extends BaseBuildBroSpec {
 
     def "Save inserting new instance"() {
         given:
-        IBuildSetTemplate buildSetTemplate = new IBuildSetTemplate()
-        buildSetTemplate.setName("new-buildSetTemplate")
-        IBuildTemplate artifact = new IBuildTemplate(
+        IBuildTemplate artifact = aBuildTemplate(
                 project: 'some-project',
-                branch: 'some-branch'
+                branch: 'some-branch',
+                labels: ['some': 'label']
         )
-        artifact.getLabels().put('some', 'label')
-        buildSetTemplate.getBuildTemplates().add(artifact)
+        IBuildSetTemplate buildSetTemplate = aBuildSetTemplate(
+                name: 'new-buildSetTemplate',
+                buildTemplates: [artifact]
+        )
 
         when:
         IBuildSetTemplate inserted = service.save(buildSetTemplate)
@@ -48,25 +51,25 @@ class BuildSetServiceTest extends BaseBuildBroSpec {
         inserted.id
 
         and:
-        inserted.getBuildTemplates().size() == 1
+        inserted.buildTemplates().size() == 1
 
         and:
-        !inserted.getBuildTemplates().first().getLabels().isEmpty()
+        !inserted.buildTemplates().first().labels().isEmpty()
     }
 
 
     def "Save updating existing instance"() {
         given:
-        IBuildSetTemplate environment = new IBuildSetTemplate(
-                id: 1,
-                name: 'main'
-        )
-        IBuildTemplate artifact = new IBuildTemplate(
+        IBuildTemplate artifact = aBuildTemplate(
                 project: 'some-project',
-                branch: 'some-branch'
+                branch: 'some-branch',
+                labels: ['some': 'label']
         )
-        artifact.getLabels().put('some', 'label')
-        environment.getBuildTemplates().add(artifact)
+        IBuildSetTemplate environment = aBuildSetTemplate(
+                id: 1,
+                name: 'main',
+                buildTemplates: [artifact]
+        )
 
 
         when:
@@ -77,8 +80,7 @@ class BuildSetServiceTest extends BaseBuildBroSpec {
     }
 
     def "Save throwing Exception on duplicate Name"() {
-        IBuildSetTemplate environment = new IBuildSetTemplate()
-        environment.setName("main")
+        IBuildSetTemplate environment = aBuildSetTemplate(name: 'main')
 
         when:
         service.save(environment)
@@ -98,15 +100,10 @@ class BuildSetServiceTest extends BaseBuildBroSpec {
     }
 
     def "Attempts to update an Environment with an invalid ID"() {
-        IBuildSetTemplate environment = new IBuildSetTemplate()
-        environment.setName("testing")
-        service.save(environment)
-
-        environment.setId(-1L)
+        service.save(aBuildSetTemplate(name: 'testing'))
 
         when:
-        environment.setName("testing (update)")
-        service.save(environment)
+        service.save(aBuildSetTemplate(id: -1L, name: 'testing (update)'))
 
         then:
         thrown(InvalidRequestException)

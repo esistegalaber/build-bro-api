@@ -34,23 +34,20 @@ public class DeploymentService {
     }
 
     public IDeployment create(IDeployment deployment) {
-        Server theServer = serverService.findOrCreate(deployment.getServerName());
+        Server theServer = serverService.findOrCreate(deployment.serverName());
         Deployment toCreate = new Deployment();
         toCreate.setServer(theServer);
-        List<Long> buildIds = deployment.getBuilds().stream().map(IBuild::getId).toList();
+        List<Long> buildIds = deployment.builds().stream().map(IBuild::id).toList();
         buildRepository.findAllById(buildIds)
                 .forEach(toCreate.getBuilds()::add);
-        deployment.getLabels().forEach(
-                newLabel -> toCreate.getLabels().add(new DeploymentLabel(toCreate, newLabel.getKey(), newLabel.getValue()))
+        deployment.labels().forEach(
+                newLabel -> toCreate.getLabels().add(new DeploymentLabel(toCreate, newLabel.key(), newLabel.value()))
         );
         return DeploymentMapper.toApi(deploymentRepository.save(toCreate));
     }
 
     public IDeployment current(String serverName) throws DataNotFoundException {
-        IDeploymentSearch search = new IDeploymentSearch();
-        search.setServerName(serverName);
-        search.setPageSize(1);
-        return search(search).getData()
+        return search(IDeploymentSearch.forServer(serverName, 1)).data()
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new DataNotFoundException("No Deployment found for serverName='" + serverName + "'"));
@@ -58,14 +55,14 @@ public class DeploymentService {
 
     public IDeploymentSearchResult search(IDeploymentSearch search) {
         return SearchResultMapper.deploymentSearchResultToApi(
-                deploymentRepository.findAll(toSpecification(search), search.page())
+                deploymentRepository.findAll(toSpecification(search), search.pageRequest())
         );
     }
 
     private Specification<Deployment> toSpecification(IDeploymentSearch search) {
         Specification<Deployment> theSpec = DeploymentSpecs.allDeployments();
-        if (!ObjectUtils.isEmpty(search.getServerName())) {
-            return DeploymentSpecs.onServer(search.getServerName());
+        if (!ObjectUtils.isEmpty(search.serverName())) {
+            return DeploymentSpecs.onServer(search.serverName());
         }
         return theSpec;
     }
@@ -75,7 +72,7 @@ public class DeploymentService {
                 .orElseThrow(() -> new DataNotFoundException("No Deployment found with id='" + deploymentId + "'"));
         deployment.getBuilds().forEach(build ->
                 labels.forEach(label -> {
-                    build.getLabels().add(new BuildLabel(build, label.getKey(), label.getValue()));
+                    build.getLabels().add(new BuildLabel(build, label.key(), label.value()));
                     buildRepository.save(build);
                 })
         );

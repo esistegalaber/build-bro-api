@@ -1,5 +1,7 @@
 package com.egalaber.buildbro.api.v1.impl
 
+import static com.egalaber.buildbro.api.model.ApiModels.*
+
 import com.egalaber.buildbro.api.BaseRestSpec
 import com.egalaber.buildbro.api.model.IBuildSet
 import com.egalaber.buildbro.api.model.IBuildSetTemplate
@@ -14,10 +16,10 @@ class BuildSetEndpointImplSpec extends BaseRestSpec {
         String newEnvName = 'new-crazy-env'
         String SAVE_URL = "${baseUrl()}/build-sets"
         String DELETE_URL = "${baseUrl()}/build-sets/${newEnvName}"
-        IBuildSetTemplate newEnvironment = new IBuildSetTemplate(
+        IBuildSetTemplate newEnvironment = aBuildSetTemplate(
                 name: newEnvName,
                 buildTemplates: [
-                        new IBuildTemplate(
+                        aBuildTemplate(
                                 project: 'backend',
                                 branch: 'main'
                         )
@@ -26,14 +28,14 @@ class BuildSetEndpointImplSpec extends BaseRestSpec {
 
         when:
         ResponseEntity<IBuildSetTemplate> created = restTemplate.postForEntity(SAVE_URL, newEnvironment, IBuildSetTemplate)
-        IBuildSetTemplate toUpdate = created.getBody()
-        toUpdate.getBuildTemplates().add(
-                new IBuildTemplate(
+        IBuildSetTemplate toUpdate = aBuildSetTemplate(
+                id: created.body.id,
+                name: created.body.name,
+                buildTemplates: created.body.buildTemplates + aBuildTemplate(
                         project: 'frontend',
                         branch: 'main',
                         labels: ['integration-test': 'ok']
                 )
-
         )
         ResponseEntity<IBuildSetTemplate> updated = restTemplate.postForEntity(SAVE_URL, toUpdate, IBuildSetTemplate)
 
@@ -44,7 +46,7 @@ class BuildSetEndpointImplSpec extends BaseRestSpec {
         and:
         updated.statusCode == HttpStatus.OK
         and:
-        created.getBody().getId() == updated.getBody().getId()
+        created.getBody().id() == updated.getBody().id()
     }
 
     def "Get"() {
@@ -94,7 +96,7 @@ class BuildSetEndpointImplSpec extends BaseRestSpec {
     def "VerifyEnvironment with 1 articfact"() {
         given:
         String VERIFY_URL = "${baseUrl()}/build-sets/verify"
-        IBuildTemplate artifact = new IBuildTemplate(
+        IBuildTemplate artifact = aBuildTemplate(
                 project: 'backend',
                 branch: 'main',
                 labels: ['integration-test': 'ok']

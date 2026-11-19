@@ -8,11 +8,6 @@ public class BranchMapper {
     }
 
     public static IBranch toApi(Branch branch) {
-        IBranch toReturn = new IBranch();
-        toReturn.setId(branch.getId());
-        toReturn.setName(branch.getName());
-        toReturn.setActive(branch.getActive());
-        toReturn.setProjectId(branch.getProject().getId());
-        return toReturn;
+        return new IBranch(branch.getId(), branch.getName(), branch.getActive(), branch.getProject().getId());
     }
 }

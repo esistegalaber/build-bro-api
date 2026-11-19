@@ -1,5 +1,7 @@
 package com.egalaber.buildbro.core.service
 
+import static com.egalaber.buildbro.api.model.ApiModels.*
+
 import com.egalaber.buildbro.BaseBuildBroSpec
 import com.egalaber.buildbro.api.fault.DataNotFoundException
 import com.egalaber.buildbro.api.model.IServer
@@ -47,10 +49,7 @@ class ServerServiceTest extends BaseBuildBroSpec {
         given:
         String newNick = 'Glorious Test-machine'
         String newDescription = 'My private Server'
-        IServer server = new IServer()
-        server.setId(1L)
-        server.setNickName(newNick)
-        server.setDescription(newDescription)
+        IServer server = aServer(id: 1L, nickName: newNick, description: newDescription)
 
         when:
         IServer updated = serverService.updateServerDetails(server)
@@ -64,10 +63,7 @@ class ServerServiceTest extends BaseBuildBroSpec {
         given:
         String newNick = 'Glorious Test-machine'
         String newDescription = 'My private Server'
-        IServer server = new IServer()
-        server.setId(-1L)
-        server.setNickName(newNick)
-        server.setDescription(newDescription)
+        IServer server = aServer(id: -1L, nickName: newNick, description: newDescription)
 
         when:
         serverService.updateServerDetails(server)

@@ -45,10 +45,10 @@ public class ServerService {
     }
 
     public IServer updateServerDetails(IServer server) throws DataNotFoundException {
-        Server theServer = serverRepository.findById(server.getId()).orElseThrow(() ->
-                new DataNotFoundException("No server found for id='" + server.getId() + "'"));
-        theServer.setNickName(server.getNickName());
-        theServer.setDescription(server.getDescription());
+        Server theServer = serverRepository.findById(server.id()).orElseThrow(() ->
+                new DataNotFoundException("No server found for id='" + server.id() + "'"));
+        theServer.setNickName(server.nickName());
+        theServer.setDescription(server.description());
         return ServerMapper.toApi(serverRepository.save(theServer));
     }
 }

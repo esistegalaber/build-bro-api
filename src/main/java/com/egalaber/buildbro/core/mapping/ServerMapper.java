@@ -8,11 +8,6 @@ public class ServerMapper {
     }
 
     public static IServer toApi(Server server) {
-        IServer toReturn = new IServer();
-        toReturn.setId(server.getId());
-        toReturn.setName(server.getName());
-        toReturn.setNickName(server.getNickName());
-        toReturn.setDescription(server.getDescription());
-        return toReturn;
+        return new IServer(server.getId(), server.getName(), server.getNickName(), server.getDescription());
     }
 }

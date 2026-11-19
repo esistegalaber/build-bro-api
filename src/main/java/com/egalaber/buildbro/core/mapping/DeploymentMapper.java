@@ -8,20 +8,12 @@ public class DeploymentMapper {
     }
 
     public static IDeployment toApi(Deployment deployment) {
-        IDeployment toReturn = new IDeployment();
-        toReturn.setId(deployment.getId());
-        toReturn.setServerName(deployment.getServer().getName());
-        toReturn.setDeployedAt(deployment.getDeployedAt());
-        toReturn.getBuilds().addAll(
-                deployment.getBuilds().stream()
-                        .map(BuildMapper::toApi)
-                        .toList()
+        return new IDeployment(
+                deployment.getId(),
+                deployment.getServer().getName(),
+                deployment.getDeployedAt(),
+                deployment.getBuilds().stream().map(BuildMapper::toApi).toList(),
+                deployment.getLabels().stream().map(DeploymentLabelMapper::toApi).toList()
         );
-        toReturn.getLabels().addAll(
-                deployment.getLabels().stream()
-                        .map(DeploymentLabelMapper::toApi)
-                        .toList()
-        );
-        return toReturn;
     }
 }

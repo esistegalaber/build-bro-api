@@ -1,5 +1,7 @@
 package com.egalaber.buildbro.api.v1.impl
 
+import static com.egalaber.buildbro.api.model.ApiModels.*
+
 import com.egalaber.buildbro.api.BaseRestSpec
 import com.egalaber.buildbro.api.model.IBuild
 import com.egalaber.buildbro.api.model.IBuildSearch
@@ -11,7 +13,7 @@ class BuildEndpointImplSpec extends BaseRestSpec {
     def "Search"() {
         given:
         String SEARCH_URL = "${baseUrl()}/builds/search"
-        IBuildSearch search = new IBuildSearch(
+        IBuildSearch search = aBuildSearch(
                 project: 'backend'
         )
 
@@ -28,7 +30,7 @@ class BuildEndpointImplSpec extends BaseRestSpec {
     def "Search with Labels"() {
         given:
         String SEARCH_URL = "${baseUrl()}/builds/search"
-        IBuildSearch search = new IBuildSearch(
+        IBuildSearch search = aBuildSearch(
                 project: 'backend',
                 labels: [
                         'integration-test': 'broken'
@@ -75,7 +77,7 @@ class BuildEndpointImplSpec extends BaseRestSpec {
     def "Create"() {
         given:
         String CREATE_URL = "${baseUrl()}/builds/create"
-        IBuild build = new IBuild(
+        IBuild build = aBuild(
                 project: 'backend',
                 branch: 'hotfix',
                 buildNumber: 1

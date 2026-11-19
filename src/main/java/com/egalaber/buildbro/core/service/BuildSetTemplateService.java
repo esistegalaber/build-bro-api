@@ -43,14 +43,14 @@ public class BuildSetTemplateService {
 
     public IBuildSetTemplate save(IBuildSetTemplate template) throws InvalidRequestException {
         BuildSetTemplate theTemplate;
-        if (ObjectUtils.isEmpty(template.getId())) {
+        if (ObjectUtils.isEmpty(template.id())) {
             // new template case
             theTemplate = create(template);
         } else {
             // update template case
             theTemplate = update(template);
         }
-        List<BuildTemplate> buildTemplates = template.getBuildTemplates().stream()
+        List<BuildTemplate> buildTemplates = template.buildTemplates().stream()
                 .map(BuildTemplateMapper::toDomain)
                 .toList();
         theTemplate.getBuildTemplates().addAll(buildTemplates);
@@ -60,18 +60,18 @@ public class BuildSetTemplateService {
     }
 
     private BuildSetTemplate create(IBuildSetTemplate template) throws InvalidRequestException {
-        if (byName(template.getName()).isPresent()) {
-            throw new InvalidRequestException("BuildSetTemplate with name='" + template.getName() + "' already exists");
+        if (byName(template.name()).isPresent()) {
+            throw new InvalidRequestException("BuildSetTemplate with name='" + template.name() + "' already exists");
         }
         BuildSetTemplate toCreate = new BuildSetTemplate();
-        toCreate.setName(template.getName());
+        toCreate.setName(template.name());
         return buildSetTemplateRepository.save(toCreate);
     }
 
     private BuildSetTemplate update(IBuildSetTemplate template) throws InvalidRequestException {
-        BuildSetTemplate toUpdate = buildSetTemplateRepository.findById(template.getId())
-                .orElseThrow(() -> new InvalidRequestException("BuildSetTemplate with id='" + template.getId() + "' not found"));
-        toUpdate.setName(template.getName());
+        BuildSetTemplate toUpdate = buildSetTemplateRepository.findById(template.id())
+                .orElseThrow(() -> new InvalidRequestException("BuildSetTemplate with id='" + template.id() + "' not found"));
+        toUpdate.setName(template.name());
         buildTemplateRepository.deleteAllById(
                 toUpdate.getBuildTemplates().stream()
                         .map(BuildTemplate::getId)

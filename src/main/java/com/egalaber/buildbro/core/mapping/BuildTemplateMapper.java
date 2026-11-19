@@ -8,21 +8,21 @@ public class BuildTemplateMapper {
     }
 
     public static IBuildTemplate toApi(BuildTemplate template) {
-        IBuildTemplate toReturn = new IBuildTemplate();
-        toReturn.setId(template.getId());
-        toReturn.setProject(template.getProject());
-        toReturn.setBranch(template.getBranch());
-        toReturn.setBuildNumber(template.getBuildNumber());
-        toReturn.getLabels().putAll(template.getLabels());
-        return toReturn;
+        return new IBuildTemplate(
+                template.getId(),
+                template.getProject(),
+                template.getBranch(),
+                template.getBuildNumber(),
+                template.getLabels()
+        );
     }
 
     public static BuildTemplate toDomain(IBuildTemplate template) {
         BuildTemplate toReturn = new BuildTemplate();
-        toReturn.setProject(template.getProject());
-        toReturn.setBranch(template.getBranch());
-        toReturn.setBuildNumber(template.getBuildNumber());
-        toReturn.getLabels().putAll(template.getLabels());
+        toReturn.setProject(template.project());
+        toReturn.setBranch(template.branch());
+        toReturn.setBuildNumber(template.buildNumber());
+        toReturn.getLabels().putAll(template.labels());
         return toReturn;
     }
 }

@@ -24,11 +24,12 @@ public class StatsService {
     }
 
     public IBuildBroStats stats() {
-        IBuildBroStats stats = new IBuildBroStats();
-        stats.setNumberOfProjects(projectRepository.count());
-        stats.setNumberOfBranches(branchRepository.count());
-        stats.setNumberOfBuilds(buildRepository.count());
-        stats.setNumberOfLabels(buildLabelRepository.count());
-        return stats;
+        return new IBuildBroStats(
+                projectRepository.count(),
+                branchRepository.count(),
+                buildRepository.count(),
+                buildLabelRepository.count(),
+                0L // numberOfDeploys: not counted yet
+        );
     }
 }

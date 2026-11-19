@@ -18,7 +18,7 @@ public class BuildNumberEndpointImpl implements BuildNumberEndpoint {
 
     @Override
     public IBuildNumber next(IBranchedProject branchedProject) {
-        return buildNumberService.next(branchedProject.getProject(), branchedProject.getBranch());
+        return buildNumberService.next(branchedProject.project(), branchedProject.branch());
     }
 
     @Override
@@ -28,6 +28,6 @@ public class BuildNumberEndpointImpl implements BuildNumberEndpoint {
 
     @Override
     public IBuildNumber set(IBuildNumber buildNumber) {
-        return buildNumberService.set(buildNumber.getProject(), buildNumber.getBranch(), buildNumber.getNumber());
+        return buildNumberService.set(buildNumber.project(), buildNumber.branch(), buildNumber.number());
     }
 }

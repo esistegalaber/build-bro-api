@@ -1,5 +1,7 @@
 package com.egalaber.buildbro.core.service
 
+import static com.egalaber.buildbro.api.model.ApiModels.*
+
 import com.egalaber.buildbro.BaseBuildBroSpec
 import com.egalaber.buildbro.api.fault.DataNotFoundException
 import com.egalaber.buildbro.api.model.IBuild
@@ -18,9 +20,9 @@ class DeploymentServiceTest extends BaseBuildBroSpec {
     def "Create"() {
         given:
         String serverName = "prod-1"
-        IDeployment newDeployment = new IDeployment(
+        IDeployment newDeployment = aDeployment(
                 serverName: serverName,
-                builds: [new IBuild(id: 1), new IBuild(id: 2), new IBuild(id: 3)]
+                builds: [aBuild(id: 1), aBuild(id: 2), aBuild(id: 3)]
         )
         when:
         IDeployment created = deploymentService.create(newDeployment)
@@ -36,9 +38,9 @@ class DeploymentServiceTest extends BaseBuildBroSpec {
     def "Create on new Server"() {
         given:
         String serverName = "new-prod-3"
-        IDeployment newDeployment = new IDeployment(
+        IDeployment newDeployment = aDeployment(
                 serverName: serverName,
-                builds: [new IBuild(id: 1), new IBuild(id: 2), new IBuild(id: 3)]
+                builds: [aBuild(id: 1), aBuild(id: 2), aBuild(id: 3)]
         )
         when:
         IDeployment created = deploymentService.create(newDeployment)
@@ -54,8 +56,7 @@ class DeploymentServiceTest extends BaseBuildBroSpec {
     @Unroll("#message")
     def "Search"() {
         given:
-        IDeploymentSearch search = new IDeploymentSearch()
-        search.setServerName(serverName)
+        IDeploymentSearch search = aDeploymentSearch(serverName: serverName)
 
         when:
         IDeploymentSearchResult result = deploymentService.search(search)

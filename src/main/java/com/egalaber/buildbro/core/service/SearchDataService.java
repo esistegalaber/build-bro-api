@@ -9,7 +9,9 @@ import com.egalaber.buildbro.core.repository.ProjectSpecs;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -23,17 +25,16 @@ public class SearchDataService {
     }
 
     public ISearchData searchData() {
-        final ISearchData searchData = new ISearchData();
         List<Project> allProjects = projectRepository.findAll(ProjectSpecs.allProjects(false));
-        searchData.getProjectNames().addAll(allProjects.stream().map(Project::getName).toList());
-        allProjects
-                .forEach(project -> searchData.getProjectBranches().put(
-                        project.getName(),
-                        project.getBranches().stream()
-                                .map(Branch::getName)
-                                .toList()
-                ));
-        searchData.getLabelKeys().addAll(buildLabelRepository.distinctLabelKeys());
-        return searchData;
+        Map<String, List<String>> projectBranches = new LinkedHashMap<>();
+        allProjects.forEach(project -> projectBranches.put(
+                project.getName(),
+                project.getBranches().stream().map(Branch::getName).toList()
+        ));
+        return new ISearchData(
+                allProjects.stream().map(Project::getName).toList(),
+                projectBranches,
+                List.copyOf(buildLabelRepository.distinctLabelKeys())
+        );
     }
 }

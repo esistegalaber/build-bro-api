@@ -1,71 +1,24 @@
 package com.egalaber.buildbro.api.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The results of a query
+ * One page of search results.
  *
- * @param <R> the class of the results returned from the search
+ * @param <R> the type of the results returned from the search
  */
-public abstract class SearchResult<R extends Serializable> implements Serializable {
-    private List<R> data = new ArrayList<>();
-    private Integer page;
-    private Long totalElements;
-    private Integer totalPages;
-    private Boolean hasNext;
-    private Boolean hasPrevious;
+public interface SearchResult<R extends Serializable> extends Serializable {
 
-    protected SearchResult() {
-        //needed for JSON libs
-    }
+    List<R> data();
 
-    public List<R> getData() {
-        return data;
-    }
+    Integer page();
 
-    public void setData(List<R> data) {
-        this.data = data;
-    }
+    Long totalElements();
 
-    public Integer getPage() {
-        return page;
-    }
+    Integer totalPages();
 
-    public void setPage(Integer page) {
-        this.page = page;
-    }
+    Boolean hasNext();
 
-    public Long getTotalElements() {
-        return totalElements;
-    }
-
-    public void setTotalElements(Long totalElements) {
-        this.totalElements = totalElements;
-    }
-
-    public Integer getTotalPages() {
-        return totalPages;
-    }
-
-    public void setTotalPages(Integer totalPages) {
-        this.totalPages = totalPages;
-    }
-
-    public Boolean getHasNext() {
-        return hasNext;
-    }
-
-    public void setHasNext(Boolean hasNext) {
-        this.hasNext = hasNext;
-    }
-
-    public Boolean getHasPrevious() {
-        return hasPrevious;
-    }
-
-    public void setHasPrevious(Boolean hasPrevious) {
-        this.hasPrevious = hasPrevious;
-    }
+    Boolean hasPrevious();
 }

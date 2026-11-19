@@ -1,29 +1,19 @@
 package com.egalaber.buildbro.api.model;
 
-public class IDeploymentSearch extends BaseSearch {
+import java.io.Serializable;
+
+public record IDeploymentSearch(Integer pageSize, Integer page, String sortAttribute, String sortDirection,
+                                String serverName) implements PagedSearch, Serializable {
+
     private static final String DEFAULT_SORT_ATTRIBUTE = "deployedAt";
-    private String serverName;
 
-    public String getServerName() {
-        return serverName;
-    }
-
-    public void setServerName(String serverName) {
-        this.serverName = serverName;
-    }
-
-    protected String defaultSortAttribute() {
-        return DEFAULT_SORT_ATTRIBUTE;
+    /** The latest deployment(s) on one server. */
+    public static IDeploymentSearch forServer(String serverName, int pageSize) {
+        return new IDeploymentSearch(pageSize, null, null, null, serverName);
     }
 
     @Override
-    public String toString() {
-        return "IDeploymentSearch{" +
-                "serverName='" + serverName + '\'' +
-                ", pageSize=" + pageSize +
-                ", page=" + page +
-                ", sortAttribute='" + sortAttribute + '\'' +
-                ", sortDirection='" + sortDirection + '\'' +
-                '}';
+    public String defaultSortAttribute() {
+        return DEFAULT_SORT_ATTRIBUTE;
     }
 }

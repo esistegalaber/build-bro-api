@@ -8,10 +8,6 @@ public class BuildNumberMapper {
     }
 
     public static IBuildNumber toApi(BuildNumber buildNumber) {
-        IBuildNumber toReturn = new IBuildNumber();
-        toReturn.setBranch(buildNumber.getBranch());
-        toReturn.setProject(buildNumber.getProject());
-        toReturn.setNumber(buildNumber.getNumber());
-        return toReturn;
+        return new IBuildNumber(buildNumber.getProject(), buildNumber.getBranch(), buildNumber.getNumber());
     }
 }

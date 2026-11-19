@@ -1,5 +1,7 @@
 package com.egalaber.buildbro.core.service
 
+import static com.egalaber.buildbro.api.model.ApiModels.*
+
 import com.egalaber.buildbro.BaseBuildBroSpec
 import com.egalaber.buildbro.api.fault.DataNotFoundException
 import com.egalaber.buildbro.api.fault.InvalidRequestException
@@ -37,7 +39,7 @@ class BuildServiceTest extends BaseBuildBroSpec {
     def "Create"() {
         expect:
         service.create(
-                new IBuild(
+                aBuild(
                         project: 'backend',
                         branch: 'next',
                         buildNumber: 99
@@ -47,7 +49,7 @@ class BuildServiceTest extends BaseBuildBroSpec {
     def "Create duplicate Build"() {
         when:
         service.create(
-                new IBuild(
+                aBuild(
                         project: 'backend',
                         branch: 'next',
                         buildNumber: 1
@@ -59,12 +61,12 @@ class BuildServiceTest extends BaseBuildBroSpec {
 
     def "Create with labels"() {
         given:
-        IBuild newBuild = new IBuild(
+        IBuild newBuild = aBuild(
                 project: 'backend',
                 branch: 'next',
-                buildNumber: 100
+                buildNumber: 100,
+                labels: [aBuildLabel(key: 'some', value: 'value')]
         )
-        newBuild.getLabels().add(new IBuildLabel(key: 'some', value: 'value'))
         when:
         IBuild created = service.create(newBuild)
 
@@ -103,17 +105,15 @@ class BuildServiceTest extends BaseBuildBroSpec {
     @Unroll("#message")
     def "Search"() {
         given:
-        IBuildSearch buildSearch = new IBuildSearch(
+        IBuildSearch buildSearch = aBuildSearch(
                 project: theProject,
                 branch: theBranch,
                 minBuildNumber: theMinBuildNumber,
                 maxBuildNumber: theMaxBuildNumber,
                 pageSize: 100,
-                page: 0
+                page: 0,
+                labels: theLabelKey && theLabelValue ? [(theLabelKey): theLabelValue] : [:]
         )
-        if (theLabelKey && theLabelValue) {
-            buildSearch.labels[theLabelKey] = theLabelValue
-        }
         when:
         Page<Build> result = service.search(buildSearch)
 
@@ -147,20 +147,18 @@ class BuildServiceTest extends BaseBuildBroSpec {
 
     @Unroll("#message")
     def "Latest()"() {
-        IBuildTemplate buildTemplate = new IBuildTemplate(
+        IBuildTemplate buildTemplate = aBuildTemplate(
                 project: theProject,
-                branch: theBranch
+                branch: theBranch,
+                labels: theLabelKey && theLabelValue ? [(theLabelKey): theLabelValue] : [:]
         )
-        if (theLabelKey && theLabelValue) {
-            buildTemplate.getLabels().put(theLabelKey, theLabelValue)
-        }
         when:
         Optional<IBuild> latest = service.withBuildNumberOrLatest(buildTemplate)
 
         then:
         if (expectedBuildNumber) {
             latest.isPresent()
-            latest.get().getBuildNumber() == expectedBuildNumber
+            latest.get().buildNumber() == expectedBuildNumber
         } else {
             !latest.isPresent()
         }
@@ -197,9 +195,9 @@ class BuildServiceTest extends BaseBuildBroSpec {
 
         where:
         templates                                                                                                                | expectedSize | message
-        [new IBuildTemplate(project: 'backend', branch: 'main')] as Set                                                          | 1            | "buildsOf(): returns 1 builds for well-defined single BuildTemplate"
-        [new IBuildTemplate(project: 'backend', branch: 'main'), new IBuildTemplate(project: 'frontend', branch: 'main')] as Set | 2            | "buildsOf(): returns 2 builds for 2 well-defined BuildTemplates"
-        [new IBuildTemplate(project: 'missing', branch: 'main')] as Set                                                          | 0            | "buildsOf(): returns 0 builds for un-defined BuildTemplate"
+        [aBuildTemplate(project: 'backend', branch: 'main')] as Set                                                          | 1            | "buildsOf(): returns 1 builds for well-defined single BuildTemplate"
+        [aBuildTemplate(project: 'backend', branch: 'main'), aBuildTemplate(project: 'frontend', branch: 'main')] as Set | 2            | "buildsOf(): returns 2 builds for 2 well-defined BuildTemplates"
+        [aBuildTemplate(project: 'missing', branch: 'main')] as Set                                                          | 0            | "buildsOf(): returns 0 builds for un-defined BuildTemplate"
     }
 
     def "OfEnvironment with wrong env name"() {

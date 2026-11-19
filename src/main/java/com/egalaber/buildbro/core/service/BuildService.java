@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
@@ -41,14 +42,14 @@ public class BuildService {
     }
 
     public IBuild create(IBuild toCreate) throws InvalidRequestException {
-        Optional<Build> alreadyExisting = of(toCreate.getProject(), toCreate.getBranch(), toCreate.getBuildNumber());
+        Optional<Build> alreadyExisting = of(toCreate.project(), toCreate.branch(), toCreate.buildNumber());
         if (alreadyExisting.isPresent()) {
-            throw new InvalidRequestException("Build with project='" + toCreate.getProject() + "' branch='" + toCreate.getBranch() + "' buildNumber='" + toCreate.getBuildNumber() + "' already exists.");
+            throw new InvalidRequestException("Build with project='" + toCreate.project() + "' branch='" + toCreate.branch() + "' buildNumber='" + toCreate.buildNumber() + "' already exists.");
         }
-        Build newBuild = new Build(toCreate.getProject(), toCreate.getBranch(), toCreate.getBuildNumber());
-        toCreate.getLabels().forEach(buildLabel ->
+        Build newBuild = new Build(toCreate.project(), toCreate.branch(), toCreate.buildNumber());
+        toCreate.labels().forEach(buildLabel ->
                 newBuild.getLabels().add(
-                        new BuildLabel(newBuild, buildLabel.getKey(), buildLabel.getValue()))
+                        new BuildLabel(newBuild, buildLabel.key(), buildLabel.value()))
         );
         return BuildMapper.toApi(buildRepository.save(newBuild));
     }
@@ -69,13 +70,13 @@ public class BuildService {
     }
 
     public Page<Build> search(IBuildSearch search) {
-        return buildRepository.findAll(toSpecification(search), search.page());
+        return buildRepository.findAll(toSpecification(search), search.pageRequest());
     }
 
     private Specification<Build> toSpecification(IBuildSearch search) {
         Specification<Build> theQuerySpecification = BuildSpecs.allBuilds();
-        if (!search.getLabels().isEmpty()) {
-            Set<BuildLabel> labelsToSearch = labelsToInclude(search.getLabels());
+        if (!search.labels().isEmpty()) {
+            Set<BuildLabel> labelsToSearch = labelsToInclude(search.labels());
             if (labelsToSearch.isEmpty()) {
                 return BuildSpecs.noBuilds();
             } else {
@@ -85,24 +86,24 @@ public class BuildService {
             }
         }
 
-        if (!ObjectUtils.isEmpty(search.getProject())) {
+        if (!ObjectUtils.isEmpty(search.project())) {
             theQuerySpecification = theQuerySpecification.and(
-                    BuildSpecs.ofProject(search.getProject())
+                    BuildSpecs.ofProject(search.project())
             );
         }
-        if (!ObjectUtils.isEmpty(search.getBranch())) {
+        if (!ObjectUtils.isEmpty(search.branch())) {
             theQuerySpecification = theQuerySpecification.and(
-                    BuildSpecs.onBranch(search.getBranch())
+                    BuildSpecs.onBranch(search.branch())
             );
         }
-        if (search.getMinBuildNumber() != null) {
+        if (search.minBuildNumber() != null) {
             theQuerySpecification = theQuerySpecification.and(
-                    BuildSpecs.minBuildNumber(search.getMinBuildNumber())
+                    BuildSpecs.minBuildNumber(search.minBuildNumber())
             );
         }
-        if (search.getMaxBuildNumber() != null) {
+        if (search.maxBuildNumber() != null) {
             theQuerySpecification = theQuerySpecification.and(
-                    BuildSpecs.maxBuildNumber(search.getMaxBuildNumber())
+                    BuildSpecs.maxBuildNumber(search.maxBuildNumber())
             );
         }
         return theQuerySpecification;
@@ -131,7 +132,7 @@ public class BuildService {
      */
     Optional<IBuild> withBuildNumberOrLatest(IBuildTemplate template) {
         IBuildSearch theSearch = IBuildSearch.fromBuildTemplate(template);
-        Page<Build> searchResult = buildRepository.findAll(toSpecification(theSearch), theSearch.page());
+        Page<Build> searchResult = buildRepository.findAll(toSpecification(theSearch), theSearch.pageRequest());
         return searchResult.getContent()
                 .stream()
                 .findFirst()
@@ -143,13 +144,10 @@ public class BuildService {
     }
 
     public IBuildSet buildsOf(Set<IBuildTemplate> buildTemplates) {
-        IBuildSet buildSet = new IBuildSet();
-        buildSet.setName("verification-result");
-        buildTemplates
-                .forEach(template -> withBuildNumberOrLatest(template).ifPresent(
-                        theBuild -> buildSet.getBuilds().put(template.getProject(), theBuild)
-                ));
-        return buildSet;
+        Map<String, IBuild> builds = new TreeMap<>();
+        buildTemplates.forEach(template -> withBuildNumberOrLatest(template)
+                .ifPresent(theBuild -> builds.put(template.project(), theBuild)));
+        return new IBuildSet("verification-result", builds);
     }
 
 
@@ -157,13 +155,9 @@ public class BuildService {
         BuildSetTemplate buildSetTemplate = buildSetTemplateRepository.findOne(
                 BuildSetTemplateSpecs.byName(environmentName)
         ).orElseThrow(() -> new DataNotFoundException("No Environment found with name='${environmentName}'"));
-        IBuildSet buildSet = new IBuildSet();
-        buildSet.setName(buildSetTemplate.getName());
-
-        buildSetTemplate.getBuildTemplates()
-                .forEach(template -> withBuildNumberOrLatest(template).ifPresent(
-                        theBuild -> buildSet.getBuilds().put(template.getProject(), theBuild)
-                ));
-        return buildSet;
+        Map<String, IBuild> builds = new TreeMap<>();
+        buildSetTemplate.getBuildTemplates().forEach(template -> withBuildNumberOrLatest(template)
+                .ifPresent(theBuild -> builds.put(template.getProject(), theBuild)));
+        return new IBuildSet(buildSetTemplate.getName(), builds);
     }
 }

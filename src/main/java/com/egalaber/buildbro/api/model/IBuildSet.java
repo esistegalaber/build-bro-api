@@ -2,25 +2,13 @@ package com.egalaber.buildbro.api.model;
 
 import java.io.Serializable;
 import java.util.Map;
-import java.util.TreeMap;
 
-public class IBuildSet implements Serializable {
-    private String name;
-    private Map<String, IBuild> builds = new TreeMap<>();
+/**
+ * The concrete builds a build-set template resolves to, keyed (and sorted) by project name.
+ */
+public record IBuildSet(String name, Map<String, IBuild> builds) implements Serializable {
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Map<String, IBuild> getBuilds() {
-        return builds;
-    }
-
-    public void setBuilds(Map<String, IBuild> builds) {
-        this.builds = builds;
+    public IBuildSet {
+        builds = ModelCollections.sortedMap(builds);
     }
 }

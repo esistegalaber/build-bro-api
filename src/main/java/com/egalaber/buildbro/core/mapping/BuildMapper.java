@@ -8,14 +8,12 @@ public class BuildMapper {
     }
 
     public static IBuild toApi(Build build) {
-        IBuild toReturn = new IBuild();
-        toReturn.setBranch(build.getBranch());
-        toReturn.setProject(build.getProject());
-        toReturn.setId(build.getId());
-        toReturn.setBuildNumber(build.getBuildNumber());
-        build.getLabels().forEach(singleLabel ->
-                toReturn.getLabels().add(BuildLabelMapper.forApi(singleLabel))
+        return new IBuild(
+                build.getId(),
+                build.getProject(),
+                build.getBranch(),
+                build.getBuildNumber(),
+                build.getLabels().stream().map(BuildLabelMapper::forApi).toList()
         );
-        return toReturn;
     }
 }

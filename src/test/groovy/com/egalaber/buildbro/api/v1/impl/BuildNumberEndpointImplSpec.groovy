@@ -1,5 +1,7 @@
 package com.egalaber.buildbro.api.v1.impl
 
+import static com.egalaber.buildbro.api.model.ApiModels.*
+
 import com.egalaber.buildbro.api.BaseRestSpec
 import com.egalaber.buildbro.api.model.IBuildNumber
 import org.springframework.http.HttpStatus
@@ -46,11 +48,11 @@ class BuildNumberEndpointImplSpec extends BaseRestSpec {
         given:
         String project = 'backend'
         String branch = 'feature/feature-backend'
-        IBuildNumber nextBuildCount = new IBuildNumber(
+        IBuildNumber nextBuildCount = aBuildNumber(
                 project: project,
                 branch: branch
         )
-        IBuildNumber setBuildCount = new IBuildNumber(
+        IBuildNumber setBuildCount = aBuildNumber(
                 project: project,
                 branch: branch,
                 number: 20

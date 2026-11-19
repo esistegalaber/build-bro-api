@@ -8,10 +8,6 @@ public class DeploymentLabelMapper {
     }
 
     public static IDeploymentLabel toApi(DeploymentLabel deploymentLabel) {
-        IDeploymentLabel toReturn = new IDeploymentLabel();
-        toReturn.setId(deploymentLabel.getId());
-        toReturn.setKey(deploymentLabel.getKey());
-        toReturn.setValue(deploymentLabel.getValue());
-        return toReturn;
+        return new IDeploymentLabel(deploymentLabel.getId(), deploymentLabel.getKey(), deploymentLabel.getValue());
     }
 }

@@ -8,14 +8,10 @@ public class BuildSetTemplateMapper {
     }
 
     public static IBuildSetTemplate toApi(BuildSetTemplate template) {
-        IBuildSetTemplate toReturn = new IBuildSetTemplate();
-        toReturn.setId(template.getId());
-        toReturn.setName(template.getName());
-        toReturn.setBuildTemplates(
-                template.getBuildTemplates().stream()
-                        .map(BuildTemplateMapper::toApi)
-                        .toList()
+        return new IBuildSetTemplate(
+                template.getId(),
+                template.getName(),
+                template.getBuildTemplates().stream().map(BuildTemplateMapper::toApi).toList()
         );
-        return toReturn;
     }
 }

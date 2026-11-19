@@ -26,10 +26,10 @@ public class TrackingService {
     }
 
     public void handleBuildCreated(IBuild build) {
-        Project theProject = projectRepository.findOne(ProjectSpecs.projectNamed(build.getProject()))
-                .orElseGet(() -> createProject(build.getProject()));
-        Branch theBranch = branchRepository.findOne(BranchSpecs.branchOfProjectNamed(theProject, build.getBranch()))
-                .orElseGet(() -> createBranch(theProject, build.getBranch()));
+        Project theProject = projectRepository.findOne(ProjectSpecs.projectNamed(build.project()))
+                .orElseGet(() -> createProject(build.project()));
+        Branch theBranch = branchRepository.findOne(BranchSpecs.branchOfProjectNamed(theProject, build.branch()))
+                .orElseGet(() -> createBranch(theProject, build.branch()));
         log.info("handleBuildCreated(build={}) - theProject.id={}, theBranch.id={}", build, theProject.getId(), theBranch.getId());
     }
 
