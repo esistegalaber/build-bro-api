@@ -1,12 +1,9 @@
 package com.egalaber.buildbro.core.service
 
-import static com.egalaber.buildbro.api.model.ApiModels.*
-
 import com.egalaber.buildbro.BaseBuildBroSpec
 import com.egalaber.buildbro.api.fault.DataNotFoundException
 import com.egalaber.buildbro.api.fault.InvalidRequestException
 import com.egalaber.buildbro.api.model.IBuild
-import com.egalaber.buildbro.api.model.IBuildLabel
 import com.egalaber.buildbro.api.model.IBuildSearch
 import com.egalaber.buildbro.api.model.IBuildSet
 import com.egalaber.buildbro.api.model.IBuildTemplate

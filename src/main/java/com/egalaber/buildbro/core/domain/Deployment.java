@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -36,7 +37,7 @@ public class Deployment implements Serializable {
 
     @PrePersist
     public void prePersist() {
-        this.deployedAt = LocalDateTime.now();
+        this.deployedAt = LocalDateTime.now(ZoneOffset.UTC);
     }
 
     public Long getId() {

@@ -1,6 +1,6 @@
 package com.egalaber.buildbro.api.model
 
-import com.egalaber.buildbro.core.domain.*
+
 import nl.jqno.equalsverifier.EqualsVerifier
 import spock.lang.Specification
 

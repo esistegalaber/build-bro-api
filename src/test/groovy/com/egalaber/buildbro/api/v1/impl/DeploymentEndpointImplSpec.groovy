@@ -1,9 +1,9 @@
 package com.egalaber.buildbro.api.v1.impl
 
-import static com.egalaber.buildbro.api.model.ApiModels.*
-
 import com.egalaber.buildbro.api.BaseRestSpec
-import com.egalaber.buildbro.api.model.*
+import com.egalaber.buildbro.api.model.IDeployment
+import com.egalaber.buildbro.api.model.IDeploymentSearch
+import com.egalaber.buildbro.api.model.IDeploymentSearchResult
 import com.egalaber.buildbro.core.domain.BuildLabel
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
