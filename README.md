@@ -77,7 +77,8 @@ contract at `/openapi/build-bro-api.yaml` and shows it in Swagger UI at
 <http://localhost:8080/swagger-ui/index.html>.
 
 `./mvnw package` also writes static docs to `target/openapi/`: the contract and a self-contained HTML page at
-`html/index.html`. CI publishes the same files as the `api-docs` build artifact.
+`html/index.html`. `./redoc-docs.sh` (needs Node) adds a [Redocly](https://redocly.com/redoc-ce) rendering of the
+contract at `redoc/index.html`. CI publishes all of them as the `api-docs` build artifact.
 
 | Area          | Endpoints                                                                                              |
 |---------------|--------------------------------------------------------------------------------------------------------|
