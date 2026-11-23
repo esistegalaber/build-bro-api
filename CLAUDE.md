@@ -18,6 +18,7 @@ Build Bro is a Spring Boot 4.1 (Java 17+) REST API that tracks CI builds, build 
 ./mvnw spring-boot:run               # run the API on :8080
 ./mvnw verify sonar:sonar            # what CI runs on GitHub Actions
 ./mvnw generate-sources              # regenerate interfaces and models after editing the contract
+./redoc-docs.sh                      # Redocly rendering of the contract to target/openapi/redoc/index.html (needs Node)
 SERVER_PORT=18080 ./mvnw verify      # when something else holds :8080 (the REST specs use the real port)
 ```
 
@@ -51,7 +52,7 @@ Cross-cutting pieces:
 - **Events**: `BuildEndpointImpl.createBuild` publishes `BuildCreatedEvent`. `BuildCreatedEventListener` (`@Async`, enabled via `@EnableAsync`) calls `TrackingService`, which auto-creates the `Project`/`Branch` rows for the build. Projects and branches therefore come into existence as a side effect of build creation.
 - **Label definitions** (issue #7): optional, per label key (`LabelDefinitionService`). Every service method that writes labels (builds, deployments, labels added to a deployment's builds, build-set templates) must call `LabelValidator.check(...)` before writing; it only rejects when the `label.validation` setting is `STRICT`. `LabelValues` holds the lenient, case-insensitive value checks, which `LabelViolationService` also uses for the conformance report.
 - **Logging**: `core.aop.LoggingAspect` (registered via `@Import` in `BuildBroApiApplication`) logs every method result and exception in `core.service.*` and `api.v1.impl.*`.
-- **API docs**: the contract is the documentation. `api.ContractDocsConfig` serves it at `/openapi/build-bro-api.yaml`, and `static/swagger-ui/index.html` shows it in Swagger UI (`/swagger-ui/index.html`, from the `org.webjars:swagger-ui` webjar). There is no springdoc and no spec generated from the code (`/v3/api-docs` does not exist). In `package`, `openapi-generator` (`html2`) renders the contract to `target/openapi/html/index.html` and the contract is copied next to it; CI uploads `target/openapi/` as the `api-docs` artifact. Avoid `**bold**`/`*italic*` in contract descriptions: the html2 renderer shows them as code. Backticks are fine. Quote enum values such as `'OFF'`, `'ON'`, `'YES'`, `'NO'` in the contract: YAML 1.1 reads them bare as booleans.
+- **API docs**: the contract is the documentation. `api.ContractDocsConfig` serves it at `/openapi/build-bro-api.yaml`, and `static/swagger-ui/index.html` shows it in Swagger UI (`/swagger-ui/index.html`, from the `org.webjars:swagger-ui` webjar). There is no springdoc and no spec generated from the code (`/v3/api-docs` does not exist). Static docs: `./redoc-docs.sh` renders the contract with Redocly CLI (pinned version, via `npx`, so it needs Node; the Maven build does not) to `target/openapi/redoc/index.html`, and `package` copies the contract to `target/openapi/`. CI runs the script after `./mvnw verify` and uploads `target/openapi/` as the `api-docs` artifact. Contract descriptions are Markdown (Redoc and Swagger UI render it). Quote enum values such as `'OFF'`, `'ON'`, `'YES'`, `'NO'` in the contract: YAML 1.1 reads them bare as booleans.
 
 ## Tests
 
