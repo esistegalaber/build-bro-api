@@ -20,6 +20,8 @@ class SearchDataServiceTest extends BaseBuildBroSpec {
         !searchData.projectBranches.isEmpty()
         and:
         !searchData.labelKeys.isEmpty()
+        and:
+        searchData.labelDefinitions*.key == ['integration-test', 'jenkins-build', 'revision']
 
     }
 
