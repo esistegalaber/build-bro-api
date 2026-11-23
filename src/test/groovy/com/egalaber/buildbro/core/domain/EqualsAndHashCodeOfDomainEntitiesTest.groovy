@@ -86,4 +86,11 @@ class EqualsAndHashCodeOfDomainEntitiesTest extends Specification {
                 .usingGetClass()
                 .verify()
     }
+
+    def "Equals and hashCode of LabelDefinition"() {
+        expect:
+        EqualsVerifier.forClass(LabelDefinition)
+                .usingGetClass()
+                .verify()
+    }
 }

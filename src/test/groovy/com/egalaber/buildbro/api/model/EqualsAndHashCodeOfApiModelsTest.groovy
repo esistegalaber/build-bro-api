@@ -68,4 +68,11 @@ class EqualsAndHashCodeOfApiModelsTest extends Specification {
                 .usingGetClass()
                 .verify()
     }
+
+    def "Equals and hashCode of ILabelDefinition"() {
+        expect:
+        EqualsVerifier.simple().forClass(ILabelDefinition)
+                .usingGetClass()
+                .verify()
+    }
 }
