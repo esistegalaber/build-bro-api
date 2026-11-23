@@ -28,6 +28,10 @@ server X right now?* Build Bro answers them by acting as a central record that e
 - **Records builds.** After a successful build, the pipeline registers it (project, branch, build number) and can
   attach free-form **labels** (key/value pairs such as `git-sha`, `docker-image` or `qa=passed`). Labels can be added
   later, e.g. once a build has passed further testing.
+- **Optionally describes labels.** A *label definition* gives a label key a type (boolean, integer, URL, enum,
+  regular expression), the values it allows and a display style (info, success, warning, error). Definitions can
+  be added at any time: a conformance report shows which stored labels don't fit, and switching label validation to
+  `STRICT` then rejects labels that don't fit. Keys without a definition stay free-form.
 - **Keeps track of projects and branches** automatically. They are created the first time a build for them arrives,
   and can be marked active or inactive to hide old branches.
 - **Describes environments as build sets.** A *build-set template* is a named list of entries like
@@ -83,7 +87,8 @@ contract at `/openapi/build-bro-api.yaml` and shows it in Swagger UI at
 | Deployments   | `POST /deployments`, `GET /deployments/{serverName}`, `POST /deployments/search`, `POST /deployments/add-labels-to-builds/{id}` |
 | Servers       | `GET /servers`, `POST /servers`                                                                        |
 | Projects      | `GET /projects`, `POST /projects/{active,inactive}/{projectId}`, `POST /projects/{branch-active,branch-inactive}/{branchId}` |
-| Misc          | `GET /search-data` (known projects, branches, label keys), `GET /stats`                                |
+| Labels        | `GET /label-definitions`, `GET/PUT/DELETE /label-definitions/{key}`, `GET /label-violations`, `GET/PUT /label-settings` |
+| Misc          | `GET /search-data` (known projects, branches, label keys, label definitions), `GET /stats`             |
 
 ## Tech stack
 

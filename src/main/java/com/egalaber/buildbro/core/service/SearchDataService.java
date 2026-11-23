@@ -18,10 +18,12 @@ import java.util.Map;
 public class SearchDataService {
     private final ProjectRepository projectRepository;
     private final BuildLabelRepository buildLabelRepository;
+    private final LabelDefinitionService labelDefinitionService;
 
-    public SearchDataService(ProjectRepository projectRepository, BuildLabelRepository buildLabelRepository) {
+    public SearchDataService(ProjectRepository projectRepository, BuildLabelRepository buildLabelRepository, LabelDefinitionService labelDefinitionService) {
         this.projectRepository = projectRepository;
         this.buildLabelRepository = buildLabelRepository;
+        this.labelDefinitionService = labelDefinitionService;
     }
 
     public ISearchData searchData() {
@@ -34,7 +36,8 @@ public class SearchDataService {
         return new ISearchData(
                 allProjects.stream().map(Project::getName).toList(),
                 projectBranches,
-                List.copyOf(buildLabelRepository.distinctLabelKeys())
+                List.copyOf(buildLabelRepository.distinctLabelKeys()),
+                labelDefinitionService.all()
         );
     }
 }

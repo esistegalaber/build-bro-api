@@ -9,6 +9,8 @@ info:
 
     Pipelines ask Build Bro for the next build number of a project/branch, register the resulting build with free-form labels, resolve build sets (named templates such as an environment) into the concrete builds to ship, and record deployments per server.
 
+    Labels can optionally be described by label definitions (type, allowed values, display style), and enforced with label validation `STRICT`.
+
     Errors are returned as `IExceptionInfo`, with HTTP status 404 (`not-found`) or 400 (`invalid-request`).
   license:
     name: Apache 2.0
@@ -356,8 +358,10 @@ paths:
     get:
       tags: [Search data]
       operationId: getSearchData
-      summary: Known projects, branches and label keys
-      description: Active projects with their branch names, plus every label key used on any build.
+      summary: Known projects, branches, label keys and label definitions
+      description: >-
+        Active projects with their branch names, every label key used on any build, and all label definitions,
+        e.g. to offer typed label filters.
       responses:
         '200':
           description: OK
@@ -1117,6 +1121,13 @@ components:
           description: Every label key used on any build
           items:
             type: string
+        labelDefinitions:
+          type: array
+          description: >-
+            All label definitions, ordered by key, for builds and deployments alike (see `appliesTo`). Keys may
+            have a definition without being used yet, and used keys need not have one.
+          items:
+            $ref: '#/components/schemas/ILabelDefinition'
 
     # --- Build sets ---------------------------------------------------------------------------------------
 
