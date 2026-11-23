@@ -2,7 +2,7 @@ package com.egalaber.buildbro.api.fault;
 
 import org.springframework.http.HttpStatus;
 
-public abstract class BuildBroException extends Exception {
+public abstract class BuildBroException extends RuntimeException {
     private final HttpStatus status;
     private final String key;
     private final String description;

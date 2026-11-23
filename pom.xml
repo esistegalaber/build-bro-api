@@ -18,7 +18,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <springdoc.version>3.2.0</springdoc.version>
+        <swagger-ui.version>5.34.0</swagger-ui.version>
         <spock.version>2.5-groovy-5.0</spock.version>
         <equalsverifier.version>3.10.1</equalsverifier.version>
         <gmavenplus.version>5.1.0</gmavenplus.version>
@@ -46,10 +46,15 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
+        <!-- Swagger UI for the contract (static/swagger-ui/index.html); the locator allows version-less /webjars URLs -->
         <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>${springdoc.version}</version>
+            <groupId>org.webjars</groupId>
+            <artifactId>swagger-ui</artifactId>
+            <version>${swagger-ui.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>webjars-locator-lite</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -175,7 +180,6 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <systemPropertyVariables>
-                        <openapi.output.dir>${project.build.directory}/openapi</openapi.output.dir>
                         <test.mariadb.image>${test.mariadb.image}</test.mariadb.image>
                     </systemPropertyVariables>
                     <includes>
@@ -207,14 +211,57 @@
             </plugin>
 
             <!--
-              Static HTML API docs. OpenApiDocsSpec writes target/openapi/openapi.{json,yaml} while the tests run,
-              this renders target/openapi/html/index.html from it. Skipped with -DskipTests (no spec then).
+              Generates the API code from the contract, and renders the contract as static HTML docs
+              (target/openapi/html/index.html; CI publishes target/openapi/ as the api-docs artifact).
             -->
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
                 <version>${openapi-generator.version}</version>
                 <executions>
+                    <!--
+                      Contract first: the endpoint interfaces (api.v1, one per tag, e.g. BuildsApi) and the API model
+                      records (api.model) are generated from the contract into target/generated-sources/openapi.
+                      Change the contract, then implement the regenerated interfaces in api.v1.impl.
+                    -->
+                    <execution>
+                        <id>api-from-contract</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/build-bro-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <output>${project.build.directory}/generated-sources/openapi</output>
+                            <apiPackage>com.egalaber.buildbro.api.v1</apiPackage>
+                            <modelPackage>com.egalaber.buildbro.api.model</modelPackage>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <generateApiTests>false</generateApiTests>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateModelTests>false</generateModelTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <skipDefaultInterface>true</skipDefaultInterface>
+                                <useTags>true</useTags>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useResponseEntity>false</useResponseEntity>
+                                <useRecords>true</useRecords>
+                                <serializableModel>true</serializableModel>
+                                <!-- jackson-databind-nullable needs Jackson 2; Boot 4 uses Jackson 3 -->
+                                <openApiNullable>false</openApiNullable>
+                                <useBeanValidation>false</useBeanValidation>
+                                <!-- enums accept any case, e.g. sortDirection "desc" (the UI sends lowercase) -->
+                                <useEnumCaseInsensitive>true</useEnumCaseInsensitive>
+                                <!-- the docs are the contract itself (served at /openapi/build-bro-api.yaml), not annotations -->
+                                <documentationProvider>none</documentationProvider>
+                                <annotationLibrary>none</annotationLibrary>
+                                <!-- date-time as LocalDateTime, like the hand-written models: no offset in the JSON -->
+                                <dateLibrary>java8-localdatetime</dateLibrary>
+                            </configOptions>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>static-api-docs</id>
                         <phase>package</phase>
@@ -222,13 +269,34 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.build.directory}/openapi/openapi.json</inputSpec>
-                            <!-- the spec only exists when the tests ran -->
-                            <skip>${skipTests}</skip>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/build-bro-api.yaml</inputSpec>
                             <generatorName>html2</generatorName>
                             <output>${project.build.directory}/openapi/html</output>
                             <addCompileSourceRoot>false</addCompileSourceRoot>
                             <generateSupportingFiles>true</generateSupportingFiles>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Puts the contract next to the HTML docs in target/openapi/, for the api-docs CI artifact -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>contract-to-api-docs</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/openapi</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/src/main/resources/openapi</directory>
+                                </resource>
+                            </resources>
                         </configuration>
                     </execution>
                 </executions>
@@ -243,14 +311,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <executions>
-                    <!-- META-INF/build-info.properties: provides the API version shown in the OpenAPI docs -->
-                    <execution>
-                        <goals>
-                            <goal>build-info</goal>
-                        </goals>
-                    </execution>
-                </executions>
                 <configuration>
                     <excludes>
                         <exclude>

@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Build Bro API</title>
+  <!-- Swagger UI from the org.webjars:swagger-ui dependency; paths are relative so a context path works too -->
+  <link rel="stylesheet" href="../webjars/swagger-ui/swagger-ui.css">
+</head>
+<body>
+<div id="swagger-ui"></div>
+<script src="../webjars/swagger-ui/swagger-ui-bundle.js"></script>
+<script>
+  // Shows the API contract, the source of the API surface (src/main/resources/openapi/build-bro-api.yaml)
+  window.ui = SwaggerUIBundle({url: '../openapi/build-bro-api.yaml', dom_id: '#swagger-ui', deepLinking: true});
+</script>
+</body>
+</html>

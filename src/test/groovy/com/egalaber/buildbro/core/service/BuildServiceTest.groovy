@@ -207,6 +207,7 @@ class BuildServiceTest extends BaseBuildBroSpec {
         service.buildsOf('no-such-env')
 
         then:
-        thrown(DataNotFoundException)
+        DataNotFoundException e = thrown()
+        e.message == "No Environment found with name='no-such-env'"
     }
 }

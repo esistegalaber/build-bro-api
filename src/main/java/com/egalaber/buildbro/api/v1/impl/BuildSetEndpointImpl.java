@@ -1,8 +1,7 @@
 package com.egalaber.buildbro.api.v1.impl;
 
-import com.egalaber.buildbro.api.v1.BuildSetEndpoint;
+import com.egalaber.buildbro.api.v1.BuildSetsApi;
 import com.egalaber.buildbro.api.fault.DataNotFoundException;
-import com.egalaber.buildbro.api.fault.InvalidRequestException;
 import com.egalaber.buildbro.api.model.IBuildSet;
 import com.egalaber.buildbro.api.model.IBuildSetTemplate;
 import com.egalaber.buildbro.api.model.IBuildTemplate;
@@ -15,9 +14,12 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Implements {@link BuildSetsApi}, which is generated from the contract ({@code openapi/build-bro-api.yaml}).
+ */
 @RestController
 @Transactional
-public class BuildSetEndpointImpl implements BuildSetEndpoint {
+public class BuildSetEndpointImpl implements BuildSetsApi {
     private final BuildSetTemplateService buildSetTemplateService;
     private final BuildService buildService;
 
@@ -27,38 +29,38 @@ public class BuildSetEndpointImpl implements BuildSetEndpoint {
     }
 
     @Override
-    public List<String> names() {
+    public List<String> listBuildSetNames() {
         return buildSetTemplateService.allBuildSetTemplateNames();
     }
 
     @Override
-    public List<IBuildSetTemplate> all() {
+    public List<IBuildSetTemplate> listBuildSets() {
         return buildSetTemplateService.allBuildSetTemplates();
     }
 
     @Override
-    public IBuildSetTemplate save(IBuildSetTemplate template) throws InvalidRequestException {
+    public IBuildSetTemplate saveBuildSet(IBuildSetTemplate template) {
         return buildSetTemplateService.save(template);
     }
 
     @Override
-    public IBuildSetTemplate get(String name) throws DataNotFoundException {
+    public IBuildSetTemplate getBuildSet(String name) {
         return buildSetTemplateService.byName(name)
                 .orElseThrow(() -> new DataNotFoundException("No Environment found with name='" + name + "'"));
     }
 
     @Override
-    public IBuildSet verify(Set<IBuildTemplate> buildTemplates) {
+    public IBuildSet resolveBuildTemplates(Set<IBuildTemplate> buildTemplates) {
         return buildService.buildsOf(buildTemplates);
     }
 
     @Override
-    public IBuildSet buildsOf(String name) throws DataNotFoundException {
+    public IBuildSet resolveBuildSet(String name) {
         return buildService.buildsOf(name);
     }
 
     @Override
-    public void delete(String name) {
+    public void deleteBuildSet(String name) {
         buildSetTemplateService.delete(name);
     }
 }

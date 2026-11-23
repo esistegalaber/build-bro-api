@@ -3,6 +3,8 @@ package com.egalaber.buildbro.core.mapping;
 import com.egalaber.buildbro.api.model.IBuildTemplate;
 import com.egalaber.buildbro.core.domain.BuildTemplate;
 
+import java.util.TreeMap;
+
 public class BuildTemplateMapper {
     private BuildTemplateMapper() {
     }
@@ -13,7 +15,7 @@ public class BuildTemplateMapper {
                 template.getProject(),
                 template.getBranch(),
                 template.getBuildNumber(),
-                template.getLabels()
+                new TreeMap<>(template.getLabels()) // a sorted copy, not the persistent collection
         );
     }
 

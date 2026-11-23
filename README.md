@@ -66,11 +66,14 @@ curl -s $API/deployments/staging-01
 
 ## API overview
 
-All endpoints live under `/api/v1`. The full, interactive documentation is served by Swagger UI at
-<http://localhost:8080/swagger-ui/index.html> (OpenAPI spec at `/v3/api-docs`).
+All endpoints live under `/api/v1`. The API is defined contract first: the OpenAPI contract
+[`src/main/resources/openapi/build-bro-api.yaml`](src/main/resources/openapi/build-bro-api.yaml) is the source of
+the API surface, and the build generates the endpoint interfaces and API models from it. The running app serves the
+contract at `/openapi/build-bro-api.yaml` and shows it in Swagger UI at
+<http://localhost:8080/swagger-ui/index.html>.
 
-`./mvnw verify` also writes static docs to `target/openapi/`: the spec as `openapi.json`/`openapi.yaml` and a
-self-contained HTML page at `html/index.html`. CI publishes the same files as the `api-docs` build artifact.
+`./mvnw package` also writes static docs to `target/openapi/`: the contract and a self-contained HTML page at
+`html/index.html`. CI publishes the same files as the `api-docs` build artifact.
 
 | Area          | Endpoints                                                                                              |
 |---------------|--------------------------------------------------------------------------------------------------------|
@@ -84,7 +87,7 @@ self-contained HTML page at `html/index.html`. CI publishes the same files as th
 
 ## Tech stack
 
-Java 17+, Spring Boot 4, Spring Data JPA / Hibernate, MariaDB with Flyway migrations, springdoc-openapi.
+Java 17+, Spring Boot 4, Spring Data JPA / Hibernate, MariaDB with Flyway migrations, OpenAPI contract first (openapi-generator, Swagger UI).
 Tests are Spock specifications that run against a MariaDB started by Testcontainers.
 
 ## Build

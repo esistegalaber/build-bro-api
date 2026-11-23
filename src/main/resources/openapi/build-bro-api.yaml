@@ -1,0 +1,1170 @@
+# Build Bro API contract: the source of the API surface (contract first, see issue #5).
+# Change the API here first, then implement it. Keep JSON property names stable: the UI depends on them.
+openapi: 3.0.3
+info:
+  title: Build Bro API
+  version: 0.3.0
+  description: |-
+    Keeps track of what your CI has built and where it has been deployed.
+
+    Pipelines ask Build Bro for the next build number of a project/branch, register the resulting build with free-form labels, resolve build sets (named templates such as an environment) into the concrete builds to ship, and record deployments per server.
+
+    Errors are returned as `IExceptionInfo`, with HTTP status 404 (`not-found`) or 400 (`invalid-request`).
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+  - url: /
+    description: This Build Bro instance
+
+tags:
+  - name: Builds
+    description: Register builds produced by CI pipelines, label them and search for them.
+  - name: Build numbers
+    description: >-
+      Build number counters, one per project/branch pair. Pipelines use these instead of the CI server's job
+      number, so numbering survives re-created jobs or a change of CI system.
+  - name: Servers
+    description: Deployment targets. Servers are created automatically by their first deployment.
+  - name: Projects
+    description: >-
+      Projects and their branches. They are created automatically when the first build for them is registered.
+      Inactive projects are left out of the search data; the active flag of a branch is informational, e.g. to
+      mark merged branches.
+  - name: Stats
+    description: Overall numbers, e.g. for a dashboard.
+  - name: Search data
+    description: Values for building search forms in a UI.
+  - name: Build sets
+    description: >-
+      Build-set templates describe a set of builds by rules, e.g. an environment: "backend from main labelled
+      qa=passed, frontend from main". Resolving a template returns the concrete builds that currently match.
+  - name: Deployments
+    description: Record which builds were deployed to which server, and when.
+
+paths:
+
+  # --- Builds ---------------------------------------------------------------------------------------------
+
+  /api/v1/builds/create:
+    post:
+      tags: [Builds]
+      operationId: createBuild
+      summary: Register a build
+      description: >-
+        Records a finished build. Project and branch are created on the fly the first time a build for them
+        arrives. The id in the request is ignored. Fails if a build with the same project, branch and build
+        number already exists.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IBuild'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IBuild'
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+
+  /api/v1/builds/{buildId}:
+    get:
+      tags: [Builds]
+      operationId: getBuild
+      summary: Get a build
+      description: Returns a single build, including its labels.
+      parameters:
+        - $ref: '#/components/parameters/BuildId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IBuild'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/builds/add-labels/{buildId}:
+    post:
+      tags: [Builds]
+      operationId: addBuildLabels
+      summary: Add labels to a build
+      description: Attaches additional key/value labels to an existing build, e.g. once it has passed further testing.
+      parameters:
+        - $ref: '#/components/parameters/BuildId'
+      requestBody:
+        required: true
+        description: Labels to add, as key/value pairs
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: string
+            example:
+              qa: passed
+              docker-image: backend:42
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IBuild'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/builds/search:
+    post:
+      tags: [Builds]
+      operationId: searchBuilds
+      summary: Search builds
+      description: >-
+        Pages through builds matching all given criteria; every criterion is optional, so `{}` returns the
+        latest builds. `minBuildNumber`/`maxBuildNumber` are exclusive bounds. When `labels` are given, a build
+        matches if it carries any of them (key and value must both match). Defaults: page 0, 10 per page,
+        sorted by `buildNumber` descending.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IBuildSearch'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IBuildSearchResult'
+
+  # --- Build numbers --------------------------------------------------------------------------------------
+
+  /api/v1/build-numbers/current/{project}/{branch}:
+    get:
+      tags: [Build numbers]
+      operationId: currentBuildNumber
+      summary: Current build number
+      description: Returns the counter without changing it; 0 if no number has been handed out yet.
+      parameters:
+        - $ref: '#/components/parameters/ProjectName'
+        - $ref: '#/components/parameters/BranchName'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IBuildNumber'
+
+  /api/v1/build-numbers/next:
+    post:
+      tags: [Build numbers]
+      operationId: nextBuildNumber
+      summary: Next build number
+      description: Increments and returns the counter of the project/branch. The first call for a new pair returns 1.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IBranchedProject'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IBuildNumber'
+
+  /api/v1/build-numbers/set:
+    post:
+      tags: [Build numbers]
+      operationId: setBuildNumber
+      summary: Set build number
+      description: >-
+        Sets the counter of a project/branch to the given number, e.g. to continue an existing numbering. The
+        next call to 'Next build number' returns this number + 1.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IBuildNumber'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IBuildNumber'
+
+  # --- Servers --------------------------------------------------------------------------------------------
+
+  /api/v1/servers:
+    get:
+      tags: [Servers]
+      operationId: listServers
+      summary: List servers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IServer'
+    post:
+      tags: [Servers]
+      operationId: updateServer
+      summary: Update server details
+      description: Updates nick name and description of the server with the given `id`; its name cannot be changed.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IServer'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IServer'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # --- Projects -------------------------------------------------------------------------------------------
+
+  /api/v1/projects:
+    get:
+      tags: [Projects]
+      operationId: listProjects
+      summary: List projects
+      description: All projects with their branches, including inactive ones.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IProject'
+
+  /api/v1/projects/active/{projectId}:
+    post:
+      tags: [Projects]
+      operationId: activateProject
+      summary: Activate a project
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IProject'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/projects/inactive/{projectId}:
+    post:
+      tags: [Projects]
+      operationId: deactivateProject
+      summary: Deactivate a project
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IProject'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/projects/branch-active/{branchId}:
+    post:
+      tags: [Projects]
+      operationId: activateBranch
+      summary: Activate a branch
+      parameters:
+        - $ref: '#/components/parameters/BranchId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IBranch'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/projects/branch-inactive/{branchId}:
+    post:
+      tags: [Projects]
+      operationId: deactivateBranch
+      summary: Deactivate a branch
+      parameters:
+        - $ref: '#/components/parameters/BranchId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IBranch'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # --- Stats ----------------------------------------------------------------------------------------------
+
+  /api/v1/stats:
+    get:
+      tags: [Stats]
+      operationId: getStats
+      summary: Counts of projects, branches, builds and labels
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IBuildBroStats'
+
+  # --- Search data ----------------------------------------------------------------------------------------
+
+  /api/v1/search-data:
+    get:
+      tags: [Search data]
+      operationId: getSearchData
+      summary: Known projects, branches and label keys
+      description: Active projects with their branch names, plus every label key used on any build.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ISearchData'
+
+  # --- Build sets -----------------------------------------------------------------------------------------
+
+  /api/v1/build-sets:
+    get:
+      tags: [Build sets]
+      operationId: listBuildSets
+      summary: List build-set templates
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IBuildSetTemplate'
+    post:
+      tags: [Build sets]
+      operationId: saveBuildSet
+      summary: Create or update a build-set template
+      description: >-
+        Without an `id` a new template is created; its name must be unique. With an `id` the existing template
+        is updated and its build templates are replaced by the ones sent.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IBuildSetTemplate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IBuildSetTemplate'
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+
+  /api/v1/build-sets/names:
+    get:
+      tags: [Build sets]
+      operationId: listBuildSetNames
+      summary: List build-set names
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /api/v1/build-sets/{name}:
+    get:
+      tags: [Build sets]
+      operationId: getBuildSet
+      summary: Get a build-set template
+      parameters:
+        - $ref: '#/components/parameters/BuildSetName'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IBuildSetTemplate'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Build sets]
+      operationId: deleteBuildSet
+      summary: Delete a build-set template
+      description: Does nothing if no build set has that name.
+      parameters:
+        - $ref: '#/components/parameters/BuildSetName'
+      responses:
+        '200':
+          description: OK
+
+  /api/v1/build-sets/of/{name}:
+    get:
+      tags: [Build sets]
+      operationId: resolveBuildSet
+      summary: Resolve a build-set template
+      description: >-
+        Returns, per project, the build each template of the build set selects: the pinned build number if set,
+        else the latest build matching branch and labels. Templates that match no build are left out.
+      parameters:
+        - $ref: '#/components/parameters/BuildSetName'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IBuildSet'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/build-sets/verify:
+    post:
+      tags: [Build sets]
+      operationId: resolveBuildTemplates
+      summary: Resolve ad-hoc build templates
+      description: >-
+        Resolves the given build templates without saving them, e.g. to check what a template would select.
+        Templates that match no build are left out of the result.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              uniqueItems: true
+              items:
+                $ref: '#/components/schemas/IBuildTemplate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IBuildSet'
+
+  # --- Deployments ----------------------------------------------------------------------------------------
+
+  /api/v1/deployments:
+    post:
+      tags: [Deployments]
+      operationId: createDeployment
+      summary: Record a deployment
+      description: >-
+        Records that the given builds (referenced by `id`; other build fields are ignored) were deployed to
+        `serverName` now. The server is created if it is not known yet. Build ids that do not exist are skipped.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IDeployment'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IDeployment'
+
+  /api/v1/deployments/{serverName}:
+    get:
+      tags: [Deployments]
+      operationId: currentDeployment
+      summary: Current deployment of a server
+      description: Returns the latest deployment to the server.
+      parameters:
+        - name: serverName
+          in: path
+          required: true
+          description: Server name
+          example: staging-01
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IDeployment'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/deployments/add-labels-to-builds/{deploymentId}:
+    post:
+      tags: [Deployments]
+      operationId: addLabelsToDeployedBuilds
+      summary: Label all builds of a deployment
+      description: Adds the labels to every build of the deployment, e.g. `qa=passed` after tests ran against it.
+      parameters:
+        - name: deploymentId
+          in: path
+          required: true
+          description: Deployment id
+          example: 1
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        description: Labels to add; ids are ignored
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/IBuildLabel'
+            example:
+              - key: qa
+                value: passed
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IDeployment'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/deployments/search:
+    post:
+      tags: [Deployments]
+      operationId: searchDeployments
+      summary: Search deployments
+      description: 'Pages through deployments, optionally of one server. Defaults: page 0, 10 per page, newest first.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IDeploymentSearch'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IDeploymentSearchResult'
+
+components:
+
+  parameters:
+    BuildId:
+      name: buildId
+      in: path
+      required: true
+      description: Build id
+      example: 1
+      schema:
+        type: integer
+        format: int64
+    ProjectId:
+      name: projectId
+      in: path
+      required: true
+      description: Project id
+      example: 1
+      schema:
+        type: integer
+        format: int64
+    BranchId:
+      name: branchId
+      in: path
+      required: true
+      description: Branch id
+      example: 1
+      schema:
+        type: integer
+        format: int64
+    ProjectName:
+      name: project
+      in: path
+      required: true
+      description: Project name
+      example: backend
+      schema:
+        type: string
+    BranchName:
+      name: branch
+      in: path
+      required: true
+      description: Branch name
+      example: main
+      schema:
+        type: string
+    BuildSetName:
+      name: name
+      in: path
+      required: true
+      description: Build-set name
+      example: staging
+      schema:
+        type: string
+
+  responses:
+    NotFound:
+      description: The requested data does not exist (key `not-found`).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/IExceptionInfo'
+    InvalidRequest:
+      description: The request was invalid (key `invalid-request`).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/IExceptionInfo'
+
+  schemas:
+
+    # --- Builds -------------------------------------------------------------------------------------------
+
+    IBuild:
+      type: object
+      description: A build registered by a CI pipeline.
+      required: [project, branch, buildNumber]
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Build id, assigned by Build Bro. Ignored when registering a build; used to reference builds in deployments.
+          example: 42
+        project:
+          type: string
+          description: Project name
+          example: backend
+        branch:
+          type: string
+          description: Branch name
+          example: main
+        buildNumber:
+          type: integer
+          format: int64
+          description: Build number, unique per project and branch
+          example: 17
+        labels:
+          type: array
+          description: Free-form key/value labels, e.g. git-sha or docker-image
+          items:
+            $ref: '#/components/schemas/IBuildLabel'
+
+    IBuildLabel:
+      type: object
+      description: A key/value label on a build.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Label id, assigned by Build Bro
+          example: 7
+          readOnly: true
+        key:
+          type: string
+          description: Label key
+          example: git-sha
+        value:
+          type: string
+          description: Label value
+          example: 3f2c1ab
+
+    IBuildSearch:
+      type: object
+      description: Build search criteria. All fields are optional.
+      properties:
+        pageSize:
+          type: integer
+          format: int32
+          description: Results per page
+          default: 10
+          example: 10
+        page:
+          type: integer
+          format: int32
+          description: Zero-based page
+          default: 0
+          example: 0
+        sortAttribute:
+          type: string
+          description: Build attribute to sort by
+          default: buildNumber
+          example: buildNumber
+        sortDirection:
+          allOf:
+            - $ref: '#/components/schemas/SortDirection'
+          description: Sort direction
+          default: DESC
+        project:
+          type: string
+          description: Only builds of this project
+          example: backend
+        branch:
+          type: string
+          description: Only builds of this branch
+          example: main
+        minBuildNumber:
+          type: integer
+          format: int64
+          description: Only build numbers greater than this (exclusive)
+          example: 10
+        maxBuildNumber:
+          type: integer
+          format: int64
+          description: Only build numbers less than this (exclusive)
+          example: 20
+        labels:
+          type: object
+          description: Builds carrying any of these key/value labels
+          additionalProperties:
+            type: string
+          example:
+            qa: passed
+
+    IBuildSearchResult:
+      type: object
+      description: One page of build search results.
+      properties:
+        data:
+          type: array
+          description: The results on this page
+          items:
+            $ref: '#/components/schemas/IBuild'
+        page:
+          type: integer
+          format: int32
+          description: Zero-based page number
+          example: 0
+        totalElements:
+          type: integer
+          format: int64
+          description: Number of matches over all pages
+          example: 57
+        totalPages:
+          type: integer
+          format: int32
+          description: Number of pages
+          example: 6
+        hasNext:
+          type: boolean
+          description: Whether a next page exists
+          example: true
+        hasPrevious:
+          type: boolean
+          description: Whether a previous page exists
+          example: false
+
+    # --- Build numbers ------------------------------------------------------------------------------------
+
+    IBranchedProject:
+      type: object
+      description: A project/branch pair.
+      properties:
+        project:
+          type: string
+          description: Project name
+          example: backend
+        branch:
+          type: string
+          description: Branch name
+          example: main
+
+    IBuildNumber:
+      type: object
+      description: The build number counter of a project/branch.
+      properties:
+        project:
+          type: string
+          description: Project name
+          example: backend
+        branch:
+          type: string
+          description: Branch name
+          example: main
+        number:
+          type: integer
+          format: int64
+          default: 0
+          description: Last build number handed out; 0 if none yet
+          example: 17
+
+    # --- Servers ------------------------------------------------------------------------------------------
+
+    IServer:
+      type: object
+      description: A deployment target.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Server id, assigned by Build Bro
+          example: 1
+        name:
+          type: string
+          description: Server name, as used when recording deployments. Cannot be changed.
+          example: staging-01
+        nickName:
+          type: string
+          description: Optional display name
+          example: Staging (EU)
+        description:
+          type: string
+          description: Optional free text
+          example: Shared staging environment
+
+    # --- Projects -----------------------------------------------------------------------------------------
+
+    IProject:
+      type: object
+      description: A project and its branches.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Project id
+          example: 1
+        name:
+          type: string
+          description: Project name
+          example: backend
+        active:
+          type: boolean
+          description: Inactive projects are left out of the search data
+          example: true
+        branches:
+          type: array
+          description: Branches of the project
+          items:
+            $ref: '#/components/schemas/IBranch'
+
+    IBranch:
+      type: object
+      description: A branch of a project.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Branch id
+          example: 1
+        name:
+          type: string
+          description: Branch name
+          example: main
+        active:
+          type: boolean
+          description: Informational flag, e.g. false for merged branches
+          example: true
+        projectId:
+          type: integer
+          format: int64
+          description: Id of the project the branch belongs to
+          example: 1
+
+    # --- Stats and search data ----------------------------------------------------------------------------
+
+    IBuildBroStats:
+      type: object
+      description: Overall counts.
+      properties:
+        numberOfProjects:
+          type: integer
+          format: int64
+          default: 0
+          description: Number of projects
+          example: 4
+        numberOfBranches:
+          type: integer
+          format: int64
+          default: 0
+          description: Number of branches
+          example: 12
+        numberOfBuilds:
+          type: integer
+          format: int64
+          default: 0
+          description: Number of builds
+          example: 340
+        numberOfLabels:
+          type: integer
+          format: int64
+          default: 0
+          description: Number of build labels
+          example: 910
+        numberOfDeploys:
+          type: integer
+          format: int64
+          default: 0
+          description: Number of deployments (not counted yet, always 0)
+          example: 0
+
+    ISearchData:
+      type: object
+      description: Values for building search forms.
+      properties:
+        projectNames:
+          type: array
+          description: Names of all active projects
+          items:
+            type: string
+        projectBranches:
+          type: object
+          description: Branch names per active project
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        labelKeys:
+          type: array
+          description: Every label key used on any build
+          items:
+            type: string
+
+    # --- Build sets ---------------------------------------------------------------------------------------
+
+    IBuildSetTemplate:
+      type: object
+      description: A named set of build templates, e.g. describing an environment.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Template id. Leave empty to create a new build set; set it to update an existing one.
+          example: 1
+        name:
+          type: string
+          description: Unique name of the build set
+          example: staging
+        buildTemplates:
+          type: array
+          description: One template per project
+          items:
+            $ref: '#/components/schemas/IBuildTemplate'
+
+    IBuildTemplate:
+      type: object
+      description: >-
+        A rule selecting one build of a project: a pinned build number, or else the latest build of the branch
+        carrying all given labels.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Template id, assigned by Build Bro
+          readOnly: true
+        project:
+          type: string
+          description: Project name
+          example: backend
+        branch:
+          type: string
+          description: Branch name
+          example: main
+        buildNumber:
+          type: integer
+          format: int64
+          description: Pin to this build number; leave empty to select the latest matching build
+          example: 17
+        labels:
+          type: object
+          description: Labels the selected build must carry
+          additionalProperties:
+            type: string
+          example:
+            qa: passed
+
+    IBuildSet:
+      type: object
+      description: The concrete builds a build set resolves to.
+      properties:
+        name:
+          type: string
+          description: Name of the build set, or `verification-result` for ad-hoc templates
+          example: staging
+        builds:
+          type: object
+          description: Selected build per project name
+          additionalProperties:
+            $ref: '#/components/schemas/IBuild'
+
+    # --- Deployments --------------------------------------------------------------------------------------
+
+    IDeployment:
+      type: object
+      description: A set of builds deployed to a server at one point in time.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Deployment id, assigned by Build Bro
+          example: 5
+          readOnly: true
+        serverName:
+          type: string
+          description: Name of the server deployed to; unknown servers are created
+          example: staging-01
+        deployedAt:
+          type: string
+          format: date-time
+          description: When the deployment was recorded (UTC), set by Build Bro
+          readOnly: true
+        builds:
+          type: array
+          description: Deployed builds. When recording a deployment only their `id` is used.
+          items:
+            $ref: '#/components/schemas/IBuild'
+        labels:
+          type: array
+          description: Labels of the deployment itself
+          items:
+            $ref: '#/components/schemas/IDeploymentLabel'
+
+    IDeploymentLabel:
+      type: object
+      description: A key/value label on a deployment.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Label id, assigned by Build Bro
+          example: 3
+          readOnly: true
+        key:
+          type: string
+          description: Label key
+          example: triggered-by
+        value:
+          type: string
+          description: Label value
+          example: release-pipeline
+
+    IDeploymentSearch:
+      type: object
+      description: Deployment search criteria. All fields are optional.
+      properties:
+        pageSize:
+          type: integer
+          format: int32
+          description: Results per page
+          default: 10
+          example: 10
+        page:
+          type: integer
+          format: int32
+          description: Zero-based page
+          default: 0
+          example: 0
+        sortAttribute:
+          type: string
+          description: Deployment attribute to sort by
+          default: deployedAt
+          example: deployedAt
+        sortDirection:
+          allOf:
+            - $ref: '#/components/schemas/SortDirection'
+          description: Sort direction
+          default: DESC
+        serverName:
+          type: string
+          description: Only deployments to this server
+          example: staging-01
+
+    IDeploymentSearchResult:
+      type: object
+      description: One page of deployment search results.
+      properties:
+        data:
+          type: array
+          description: The results on this page
+          items:
+            $ref: '#/components/schemas/IDeployment'
+        page:
+          type: integer
+          format: int32
+          description: Zero-based page number
+          example: 0
+        totalElements:
+          type: integer
+          format: int64
+          description: Number of matches over all pages
+          example: 57
+        totalPages:
+          type: integer
+          format: int32
+          description: Number of pages
+          example: 6
+        hasNext:
+          type: boolean
+          description: Whether a next page exists
+          example: true
+        hasPrevious:
+          type: boolean
+          description: Whether a previous page exists
+          example: false
+
+    # --- Errors -------------------------------------------------------------------------------------------
+
+    IExceptionInfo:
+      type: object
+      description: Error response body.
+      properties:
+        key:
+          type: string
+          description: Machine-readable error key
+          enum: [not-found, invalid-request]
+          example: not-found
+        description:
+          type: string
+          description: Generic description of the error key
+          example: No such data
+        message:
+          type: string
+          description: What exactly went wrong
+          example: No Build found for buildId='42'
+
+    # --- Shared -------------------------------------------------------------------------------------------
+
+    SortDirection:
+      type: string
+      description: Sort direction. Accepted in any case on input (e.g. `desc`).
+      enum: [ASC, DESC]

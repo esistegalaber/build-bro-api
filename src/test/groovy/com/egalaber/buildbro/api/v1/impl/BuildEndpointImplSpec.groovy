@@ -47,6 +47,38 @@ class BuildEndpointImplSpec extends BaseRestSpec {
         !responseEntity.getBody().data.isEmpty()
     }
 
+    def "Search accepts the sort direction in any case: #sortDirection"() {
+        given: 'raw JSON, as clients such as the UI send it (the UI sends lowercase)'
+        String SEARCH_URL = "${baseUrl()}/builds/search"
+        Map search = [project: 'backend', branch: 'main', sortDirection: sortDirection]
+
+        when:
+        ResponseEntity<IBuildSearchResult> responseEntity = restTemplate.postForEntity(SEARCH_URL, search, IBuildSearchResult)
+
+        then:
+        responseEntity.statusCode == HttpStatus.OK
+
+        and:
+        List<Long> buildNumbers = responseEntity.getBody().data*.buildNumber
+        buildNumbers.size() > 1
+        buildNumbers == (ascending ? buildNumbers.sort(false) : buildNumbers.sort(false).reverse())
+
+        where:
+        sortDirection | ascending
+        'asc'         | true
+        'ASC'         | true
+        'desc'        | false
+        'Desc'        | false
+    }
+
+    def "Search rejects an unknown sort direction"() {
+        when:
+        ResponseEntity<Map> responseEntity = restTemplate.postForEntity("${baseUrl()}/builds/search", [sortDirection: 'sideways'], Map)
+
+        then:
+        responseEntity.statusCode == HttpStatus.BAD_REQUEST
+    }
+
     def "Get"() {
         given:
         Long buildId = 1

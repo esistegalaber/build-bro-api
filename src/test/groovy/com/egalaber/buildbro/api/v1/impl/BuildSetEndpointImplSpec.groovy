@@ -76,7 +76,8 @@ class BuildSetEndpointImplSpec extends BaseRestSpec {
         responseEntity.statusCode == HttpStatus.NOT_FOUND
 
         and:
-        responseEntity.getBody().key == 'not-found'
+        responseEntity.getBody().key == IExceptionInfo.KeyEnum.NOT_FOUND
+        responseEntity.getBody().key.value == 'not-found'
         responseEntity.getBody().description == 'No such data'
         responseEntity.getBody().message == "No Environment found with name='wrongName'"
     }

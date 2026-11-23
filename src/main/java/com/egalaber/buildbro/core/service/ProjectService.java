@@ -34,14 +34,14 @@ public class ProjectService {
                 .toList();
     }
 
-    public IProject setProjectActive(Long projectId, boolean active) throws DataNotFoundException {
+    public IProject setProjectActive(Long projectId, boolean active) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new DataNotFoundException("No Project found with id='" + projectId + "'"));
         project.setActive(active);
         return ProjectMapper.toApi(projectRepository.save(project));
     }
 
-    public IBranch setBranchActive(Long branchId, boolean active) throws DataNotFoundException {
+    public IBranch setBranchActive(Long branchId, boolean active) {
         Branch branch = branchRepository.findById(branchId)
                 .orElseThrow(() -> new DataNotFoundException("No Branch found with id='" + branchId + "'"));
         branch.setActive(active);

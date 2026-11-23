@@ -41,7 +41,7 @@ public class BuildSetTemplateService {
         return buildSetTemplateRepository.findOne(BuildSetTemplateSpecs.byName(name));
     }
 
-    public IBuildSetTemplate save(IBuildSetTemplate template) throws InvalidRequestException {
+    public IBuildSetTemplate save(IBuildSetTemplate template) {
         BuildSetTemplate theTemplate;
         if (ObjectUtils.isEmpty(template.id())) {
             // new template case
@@ -59,7 +59,7 @@ public class BuildSetTemplateService {
         );
     }
 
-    private BuildSetTemplate create(IBuildSetTemplate template) throws InvalidRequestException {
+    private BuildSetTemplate create(IBuildSetTemplate template) {
         if (byName(template.name()).isPresent()) {
             throw new InvalidRequestException("BuildSetTemplate with name='" + template.name() + "' already exists");
         }
@@ -68,7 +68,7 @@ public class BuildSetTemplateService {
         return buildSetTemplateRepository.save(toCreate);
     }
 
-    private BuildSetTemplate update(IBuildSetTemplate template) throws InvalidRequestException {
+    private BuildSetTemplate update(IBuildSetTemplate template) {
         BuildSetTemplate toUpdate = buildSetTemplateRepository.findById(template.id())
                 .orElseThrow(() -> new InvalidRequestException("BuildSetTemplate with id='" + template.id() + "' not found"));
         toUpdate.setName(template.name());

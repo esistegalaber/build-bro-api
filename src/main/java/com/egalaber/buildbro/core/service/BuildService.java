@@ -41,7 +41,7 @@ public class BuildService {
         return buildRepository.findById(id).map(BuildMapper::toApi);
     }
 
-    public IBuild create(IBuild toCreate) throws InvalidRequestException {
+    public IBuild create(IBuild toCreate) {
         Optional<Build> alreadyExisting = of(toCreate.project(), toCreate.branch(), toCreate.buildNumber());
         if (alreadyExisting.isPresent()) {
             throw new InvalidRequestException("Build with project='" + toCreate.project() + "' branch='" + toCreate.branch() + "' buildNumber='" + toCreate.buildNumber() + "' already exists.");
@@ -54,7 +54,7 @@ public class BuildService {
         return BuildMapper.toApi(buildRepository.save(newBuild));
     }
 
-    public IBuild addLabels(Long buildId, Map<String, String> labels) throws DataNotFoundException {
+    public IBuild addLabels(Long buildId, Map<String, String> labels) {
         final Build theBuild = buildRepository.findById(buildId)
                 .orElseThrow(() -> new DataNotFoundException("No Build found for buildId='" + buildId + "'"));
         labels.forEach((key, value) ->
@@ -70,7 +70,7 @@ public class BuildService {
     }
 
     public Page<Build> search(IBuildSearch search) {
-        return buildRepository.findAll(toSpecification(search), search.pageRequest());
+        return buildRepository.findAll(toSpecification(search), Paging.of(search));
     }
 
     private Specification<Build> toSpecification(IBuildSearch search) {
@@ -131,12 +131,28 @@ public class BuildService {
      * @return the associated Build or "empty" if no Build was found
      */
     Optional<IBuild> withBuildNumberOrLatest(IBuildTemplate template) {
-        IBuildSearch theSearch = IBuildSearch.fromBuildTemplate(template);
-        Page<Build> searchResult = buildRepository.findAll(toSpecification(theSearch), theSearch.pageRequest());
+        IBuildSearch theSearch = searchFor(template);
+        Page<Build> searchResult = buildRepository.findAll(toSpecification(theSearch), Paging.of(theSearch));
         return searchResult.getContent()
                 .stream()
                 .findFirst()
                 .map(BuildMapper::toApi);
+    }
+
+    /**
+     * Search for the build a template points at: the given build number if it has one, else the latest build.
+     */
+    private static IBuildSearch searchFor(IBuildTemplate template) {
+        Long minBuildNumber = null;
+        Long maxBuildNumber = null;
+        if (template.buildNumber() != null && template.buildNumber() > 0) {
+            // The bounds are exclusive, so widen by one on each side to match exactly this build number
+            minBuildNumber = template.buildNumber() - 1;
+            maxBuildNumber = template.buildNumber() + 1;
+        }
+        // page size 1, first page, default sorting (latest build first)
+        return new IBuildSearch(1, 0, null, null,
+                template.project(), template.branch(), minBuildNumber, maxBuildNumber, template.labels());
     }
 
     Optional<IBuild> withBuildNumberOrLatest(BuildTemplate template) {
@@ -151,10 +167,10 @@ public class BuildService {
     }
 
 
-    public IBuildSet buildsOf(String environmentName) throws DataNotFoundException {
+    public IBuildSet buildsOf(String environmentName) {
         BuildSetTemplate buildSetTemplate = buildSetTemplateRepository.findOne(
                 BuildSetTemplateSpecs.byName(environmentName)
-        ).orElseThrow(() -> new DataNotFoundException("No Environment found with name='${environmentName}'"));
+        ).orElseThrow(() -> new DataNotFoundException("No Environment found with name='" + environmentName + "'"));
         Map<String, IBuild> builds = new TreeMap<>();
         buildSetTemplate.getBuildTemplates().forEach(template -> withBuildNumberOrLatest(template)
                 .ifPresent(theBuild -> builds.put(template.getProject(), theBuild)));
