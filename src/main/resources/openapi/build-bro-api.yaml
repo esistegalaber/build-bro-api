@@ -714,6 +714,28 @@ components:
       type: object
       description: Build search criteria. All fields are optional.
       properties:
+        pageSize:
+          type: integer
+          format: int32
+          description: Results per page
+          default: 10
+          example: 10
+        page:
+          type: integer
+          format: int32
+          description: Zero-based page
+          default: 0
+          example: 0
+        sortAttribute:
+          type: string
+          description: Build attribute to sort by
+          default: buildNumber
+          example: buildNumber
+        sortDirection:
+          allOf:
+            - $ref: '#/components/schemas/SortDirection'
+          description: Sort direction
+          default: DESC
         project:
           type: string
           description: Only builds of this project
@@ -739,28 +761,6 @@ components:
             type: string
           example:
             qa: passed
-        page:
-          type: integer
-          format: int32
-          description: Zero-based page
-          default: 0
-          example: 0
-        pageSize:
-          type: integer
-          format: int32
-          description: Results per page
-          default: 10
-          example: 10
-        sortAttribute:
-          type: string
-          description: Build attribute to sort by
-          default: buildNumber
-          example: buildNumber
-        sortDirection:
-          type: string
-          description: Sort direction
-          enum: [ASC, DESC]
-          default: DESC
 
     IBuildSearchResult:
       type: object
@@ -776,16 +776,16 @@ components:
           format: int32
           description: Zero-based page number
           example: 0
-        totalPages:
-          type: integer
-          format: int32
-          description: Number of pages
-          example: 6
         totalElements:
           type: integer
           format: int64
           description: Number of matches over all pages
           example: 57
+        totalPages:
+          type: integer
+          format: int32
+          description: Number of pages
+          example: 6
         hasNext:
           type: boolean
           description: Whether a next page exists
@@ -886,11 +886,6 @@ components:
           format: int64
           description: Branch id
           example: 1
-        projectId:
-          type: integer
-          format: int64
-          description: Id of the project the branch belongs to
-          example: 1
         name:
           type: string
           description: Branch name
@@ -899,6 +894,11 @@ components:
           type: boolean
           description: Informational flag, e.g. false for merged branches
           example: true
+        projectId:
+          type: integer
+          format: int64
+          description: Id of the project the branch belongs to
+          example: 1
 
     # --- Stats and search data ----------------------------------------------------------------------------
 
@@ -1076,32 +1076,32 @@ components:
       type: object
       description: Deployment search criteria. All fields are optional.
       properties:
-        serverName:
-          type: string
-          description: Only deployments to this server
-          example: staging-01
-        page:
-          type: integer
-          format: int32
-          description: Zero-based page
-          default: 0
-          example: 0
         pageSize:
           type: integer
           format: int32
           description: Results per page
           default: 10
           example: 10
+        page:
+          type: integer
+          format: int32
+          description: Zero-based page
+          default: 0
+          example: 0
         sortAttribute:
           type: string
           description: Deployment attribute to sort by
           default: deployedAt
           example: deployedAt
         sortDirection:
-          type: string
+          allOf:
+            - $ref: '#/components/schemas/SortDirection'
           description: Sort direction
-          enum: [ASC, DESC]
           default: DESC
+        serverName:
+          type: string
+          description: Only deployments to this server
+          example: staging-01
 
     IDeploymentSearchResult:
       type: object
@@ -1117,16 +1117,16 @@ components:
           format: int32
           description: Zero-based page number
           example: 0
-        totalPages:
-          type: integer
-          format: int32
-          description: Number of pages
-          example: 6
         totalElements:
           type: integer
           format: int64
           description: Number of matches over all pages
           example: 57
+        totalPages:
+          type: integer
+          format: int32
+          description: Number of pages
+          example: 6
         hasNext:
           type: boolean
           description: Whether a next page exists
@@ -1147,11 +1147,18 @@ components:
           description: Machine-readable error key
           enum: [not-found, invalid-request]
           example: not-found
-        message:
-          type: string
-          description: What exactly went wrong
-          example: No Build found for buildId='42'
         description:
           type: string
           description: Generic description of the error key
           example: No such data
+        message:
+          type: string
+          description: What exactly went wrong
+          example: No Build found for buildId='42'
+
+    # --- Shared -------------------------------------------------------------------------------------------
+
+    SortDirection:
+      type: string
+      description: Sort direction
+      enum: [ASC, DESC]

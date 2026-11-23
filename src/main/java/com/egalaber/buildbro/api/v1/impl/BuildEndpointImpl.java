@@ -1,11 +1,10 @@
 package com.egalaber.buildbro.api.v1.impl;
 
 import com.egalaber.buildbro.api.fault.DataNotFoundException;
-import com.egalaber.buildbro.api.fault.InvalidRequestException;
 import com.egalaber.buildbro.api.model.IBuild;
 import com.egalaber.buildbro.api.model.IBuildSearch;
 import com.egalaber.buildbro.api.model.IBuildSearchResult;
-import com.egalaber.buildbro.api.v1.BuildEndpoint;
+import com.egalaber.buildbro.api.v1.BuildsApi;
 import com.egalaber.buildbro.core.domain.Build;
 import com.egalaber.buildbro.core.events.BuildCreatedEvent;
 import com.egalaber.buildbro.core.service.BuildService;
@@ -18,9 +17,12 @@ import java.util.Map;
 
 import static com.egalaber.buildbro.core.mapping.SearchResultMapper.buildSearchResultToApi;
 
+/**
+ * Implements {@link BuildsApi}, which is generated from the contract ({@code openapi/build-bro-api.yaml}).
+ */
 @RestController
 @Transactional
-public class BuildEndpointImpl implements BuildEndpoint {
+public class BuildEndpointImpl implements BuildsApi {
     protected final ApplicationEventPublisher applicationEventPublisher;
     private final BuildService buildService;
 
@@ -30,26 +32,26 @@ public class BuildEndpointImpl implements BuildEndpoint {
     }
 
     @Override
-    public IBuildSearchResult search(IBuildSearch search) {
+    public IBuildSearchResult searchBuilds(IBuildSearch search) {
         Page<Build> found = buildService.search(search);
         return buildSearchResultToApi(found);
     }
 
     @Override
-    public IBuild get(Long buildId) throws DataNotFoundException {
+    public IBuild getBuild(Long buildId) {
         return buildService.byId(buildId)
                 .orElseThrow(() -> new DataNotFoundException("No Build found for buildId='" + buildId + "'"));
     }
 
     @Override
-    public IBuild create(IBuild build) throws InvalidRequestException {
+    public IBuild createBuild(IBuild build) {
         IBuild created = buildService.create(build);
         applicationEventPublisher.publishEvent(new BuildCreatedEvent(build));
         return created;
     }
 
     @Override
-    public IBuild addLabels(Long buildId, Map<String, String> buildLabels) throws DataNotFoundException {
+    public IBuild addBuildLabels(Long buildId, Map<String, String> buildLabels) {
         return buildService.addLabels(buildId, buildLabels);
     }
 }

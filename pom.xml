@@ -215,6 +215,50 @@
                 <artifactId>openapi-generator-maven-plugin</artifactId>
                 <version>${openapi-generator.version}</version>
                 <executions>
+                    <!--
+                      Contract first: the endpoint interfaces (api.v1, one per tag, e.g. BuildsApi) and the API model
+                      records (api.model) are generated from the contract into target/generated-sources/openapi.
+                      Change the contract, then implement the regenerated interfaces in api.v1.impl.
+                    -->
+                    <execution>
+                        <id>api-from-contract</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/build-bro-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <output>${project.build.directory}/generated-sources/openapi</output>
+                            <apiPackage>com.egalaber.buildbro.api.v1</apiPackage>
+                            <modelPackage>com.egalaber.buildbro.api.model</modelPackage>
+                            <!-- migration to contract first (#5): only what has been moved over so far -->
+                            <apisToGenerate>Builds</apisToGenerate>
+                            <modelsToGenerate>IBuild,IBuildLabel,IBuildSearch,IBuildSearchResult,SortDirection</modelsToGenerate>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <generateApiTests>false</generateApiTests>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateModelTests>false</generateModelTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <skipDefaultInterface>true</skipDefaultInterface>
+                                <useTags>true</useTags>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useResponseEntity>false</useResponseEntity>
+                                <useRecords>true</useRecords>
+                                <serializableModel>true</serializableModel>
+                                <!-- jackson-databind-nullable needs Jackson 2; Boot 4 uses Jackson 3 -->
+                                <openApiNullable>false</openApiNullable>
+                                <useBeanValidation>false</useBeanValidation>
+                                <!-- keeps springdoc's runtime docs (Swagger UI) as rich as the contract -->
+                                <documentationProvider>springdoc</documentationProvider>
+                                <annotationLibrary>swagger2</annotationLibrary>
+                                <!-- date-time as LocalDateTime, like the hand-written models: no offset in the JSON -->
+                                <dateLibrary>java8-localdatetime</dateLibrary>
+                            </configOptions>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>static-api-docs</id>
                         <phase>package</phase>
