@@ -44,7 +44,7 @@ public class ServerService {
         return serverRepository.save(newServer);
     }
 
-    public IServer updateServerDetails(IServer server) throws DataNotFoundException {
+    public IServer updateServerDetails(IServer server) {
         Server theServer = serverRepository.findById(server.id()).orElseThrow(() ->
                 new DataNotFoundException("No server found for id='" + server.id() + "'"));
         theServer.setNickName(server.nickName());

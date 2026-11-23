@@ -46,7 +46,7 @@ public class DeploymentService {
         return DeploymentMapper.toApi(deploymentRepository.save(toCreate));
     }
 
-    public IDeployment current(String serverName) throws DataNotFoundException {
+    public IDeployment current(String serverName) {
         return search(latestOn(serverName)).data()
                 .stream()
                 .findFirst()
@@ -72,7 +72,7 @@ public class DeploymentService {
         return theSpec;
     }
 
-    public IDeployment addLabelsToBuilds(Long deploymentId, List<IBuildLabel> labels) throws DataNotFoundException {
+    public IDeployment addLabelsToBuilds(Long deploymentId, List<IBuildLabel> labels) {
         Deployment deployment = deploymentRepository.findById(deploymentId)
                 .orElseThrow(() -> new DataNotFoundException("No Deployment found with id='" + deploymentId + "'"));
         deployment.getBuilds().forEach(build ->

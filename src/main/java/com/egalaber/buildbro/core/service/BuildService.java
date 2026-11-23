@@ -41,7 +41,7 @@ public class BuildService {
         return buildRepository.findById(id).map(BuildMapper::toApi);
     }
 
-    public IBuild create(IBuild toCreate) throws InvalidRequestException {
+    public IBuild create(IBuild toCreate) {
         Optional<Build> alreadyExisting = of(toCreate.project(), toCreate.branch(), toCreate.buildNumber());
         if (alreadyExisting.isPresent()) {
             throw new InvalidRequestException("Build with project='" + toCreate.project() + "' branch='" + toCreate.branch() + "' buildNumber='" + toCreate.buildNumber() + "' already exists.");
@@ -54,7 +54,7 @@ public class BuildService {
         return BuildMapper.toApi(buildRepository.save(newBuild));
     }
 
-    public IBuild addLabels(Long buildId, Map<String, String> labels) throws DataNotFoundException {
+    public IBuild addLabels(Long buildId, Map<String, String> labels) {
         final Build theBuild = buildRepository.findById(buildId)
                 .orElseThrow(() -> new DataNotFoundException("No Build found for buildId='" + buildId + "'"));
         labels.forEach((key, value) ->
@@ -167,10 +167,10 @@ public class BuildService {
     }
 
 
-    public IBuildSet buildsOf(String environmentName) throws DataNotFoundException {
+    public IBuildSet buildsOf(String environmentName) {
         BuildSetTemplate buildSetTemplate = buildSetTemplateRepository.findOne(
                 BuildSetTemplateSpecs.byName(environmentName)
-        ).orElseThrow(() -> new DataNotFoundException("No Environment found with name='${environmentName}'"));
+        ).orElseThrow(() -> new DataNotFoundException("No Environment found with name='" + environmentName + "'"));
         Map<String, IBuild> builds = new TreeMap<>();
         buildSetTemplate.getBuildTemplates().forEach(template -> withBuildNumberOrLatest(template)
                 .ifPresent(theBuild -> builds.put(template.getProject(), theBuild)));
