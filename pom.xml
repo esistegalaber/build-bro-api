@@ -20,7 +20,7 @@
         <java.version>17</java.version>
         <swagger-ui.version>5.34.0</swagger-ui.version>
         <spock.version>2.5-groovy-5.0</spock.version>
-        <equalsverifier.version>3.10.1</equalsverifier.version>
+        <equalsverifier.version>4.5.2</equalsverifier.version>
         <gmavenplus.version>5.1.0</gmavenplus.version>
         <jacoco.version>0.8.16</jacoco.version>
         <!-- default for Surefire and for skipping the static API docs (they need the tests to run) -->

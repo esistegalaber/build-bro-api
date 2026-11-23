@@ -1,8 +1,8 @@
 package com.egalaber.buildbro.core.domain
 
 
-import jakarta.persistence.Id
 import nl.jqno.equalsverifier.EqualsVerifier
+import nl.jqno.equalsverifier.Warning
 import spock.lang.Specification
 
 class EqualsAndHashCodeOfDomainEntitiesTest extends Specification {
@@ -98,7 +98,7 @@ class EqualsAndHashCodeOfDomainEntitiesTest extends Specification {
     def "Equals and hashCode of Setting"() {
         expect:
         EqualsVerifier.forClass(Setting)
-                .withIgnoredAnnotations(Id) // the key is a natural key, so equals uses it
+                .suppress(Warning.SURROGATE_OR_BUSINESS_KEY) // the key is a natural key, so equals uses it
                 .usingGetClass()
                 .verify()
     }

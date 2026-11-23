@@ -2,6 +2,7 @@ package com.egalaber.buildbro.api.model
 
 
 import nl.jqno.equalsverifier.EqualsVerifier
+import nl.jqno.equalsverifier.Warning
 import spock.lang.Specification
 
 class EqualsAndHashCodeOfApiModelsTest extends Specification {
@@ -72,6 +73,8 @@ class EqualsAndHashCodeOfApiModelsTest extends Specification {
     def "Equals and hashCode of ILabelDefinition"() {
         expect:
         EqualsVerifier.simple().forClass(ILabelDefinition)
+                // two values other than the contract default (LabelType.STRING), which the constructor puts in for null
+                .withPrefabValues(LabelType, LabelType.ENUM, LabelType.URL)
                 .usingGetClass()
                 .verify()
     }
@@ -93,6 +96,8 @@ class EqualsAndHashCodeOfApiModelsTest extends Specification {
     def "Equals and hashCode of ILabelSettings"() {
         expect:
         EqualsVerifier.simple().forClass(ILabelSettings)
+                // the constructor turns null into the default OFF, and LabelValidation has no second non-default value
+                .suppress(Warning.NULL_FIELDS)
                 .usingGetClass()
                 .verify()
     }
