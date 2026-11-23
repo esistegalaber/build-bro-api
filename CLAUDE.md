@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Build Bro is a Spring Boot 4.1 (Java 17+) REST API that tracks CI builds, build numbers, build-set templates ("environments"), servers and deployments. It is backed by MariaDB with Flyway migrations. Tests are written in Groovy with Spock.
+Build Bruh is a Spring Boot 4.1 (Java 17+) REST API that tracks CI builds, build numbers, build-set templates ("environments"), servers and deployments. It is backed by MariaDB with Flyway migrations. Tests are written in Groovy with Spock.
 
 **The API is contract first.** The OpenAPI contract `src/main/resources/openapi/build-bro-api.yaml` is the source of the API surface. `openapi-generator` (execution `api-from-contract` in `pom.xml`) generates the endpoint interfaces and the API model records from it into `target/generated-sources/openapi` during `generate-sources`. To change the API, edit the contract first, then implement what the regenerated code demands. The UI (`../build-bro-ui`) depends on the JSON, so property names, types and order must stay stable unless the change is meant to break clients.
 

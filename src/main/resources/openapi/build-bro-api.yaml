@@ -1,13 +1,13 @@
-# Build Bro API contract: the source of the API surface (contract first, see issue #5).
+# Build Bruh API contract: the source of the API surface (contract first, see issue #5).
 # Change the API here first, then implement it. Keep JSON property names stable: the UI depends on them.
 openapi: 3.0.3
 info:
-  title: Build Bro API
+  title: Build Bruh API
   version: 0.3.0
   description: |-
     Keeps track of what your CI has built and where it has been deployed.
 
-    Pipelines ask Build Bro for the next build number of a project/branch, register the resulting build with free-form labels, resolve build sets (named templates such as an environment) into the concrete builds to ship, and record deployments per server.
+    Pipelines ask Build Bruh for the next build number of a project/branch, register the resulting build with free-form labels, resolve build sets (named templates such as an environment) into the concrete builds to ship, and record deployments per server.
 
     Labels can optionally be described by label definitions (type, allowed values, display style), and enforced with label validation `STRICT`.
 
@@ -17,7 +17,7 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0
 servers:
   - url: /
-    description: This Build Bro instance
+    description: This Build Bruh instance
 
 tags:
   - name: Builds
@@ -832,7 +832,7 @@ components:
         id:
           type: integer
           format: int64
-          description: Build id, assigned by Build Bro. Ignored when registering a build; used to reference builds in deployments.
+          description: Build id, assigned by Build Bruh. Ignored when registering a build; used to reference builds in deployments.
           example: 42
         project:
           type: string
@@ -860,7 +860,7 @@ components:
         id:
           type: integer
           format: int64
-          description: Label id, assigned by Build Bro
+          description: Label id, assigned by Build Bruh
           example: 7
           readOnly: true
         key:
@@ -1000,7 +1000,7 @@ components:
         id:
           type: integer
           format: int64
-          description: Server id, assigned by Build Bro
+          description: Server id, assigned by Build Bruh
           example: 1
         name:
           type: string
@@ -1159,7 +1159,7 @@ components:
         id:
           type: integer
           format: int64
-          description: Template id, assigned by Build Bro
+          description: Template id, assigned by Build Bruh
           readOnly: true
         project:
           type: string
@@ -1205,7 +1205,7 @@ components:
         id:
           type: integer
           format: int64
-          description: Deployment id, assigned by Build Bro
+          description: Deployment id, assigned by Build Bruh
           example: 5
           readOnly: true
         serverName:
@@ -1215,7 +1215,7 @@ components:
         deployedAt:
           type: string
           format: date-time
-          description: When the deployment was recorded (UTC), set by Build Bro
+          description: When the deployment was recorded (UTC), set by Build Bruh
           readOnly: true
         builds:
           type: array
@@ -1235,7 +1235,7 @@ components:
         id:
           type: integer
           format: int64
-          description: Label id, assigned by Build Bro
+          description: Label id, assigned by Build Bruh
           example: 3
           readOnly: true
         key:
