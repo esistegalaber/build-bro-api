@@ -1,6 +1,7 @@
 package com.egalaber.buildbro.core.service;
 
 import com.egalaber.buildbro.api.model.IBuildSearch;
+import com.egalaber.buildbro.api.model.IDeploymentSearch;
 import com.egalaber.buildbro.api.model.SortDirection;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -17,6 +18,10 @@ final class Paging {
     }
 
     static PageRequest of(IBuildSearch search) {
+        return of(search.page(), search.pageSize(), search.sortAttribute(), search.sortDirection());
+    }
+
+    static PageRequest of(IDeploymentSearch search) {
         return of(search.page(), search.pageSize(), search.sortAttribute(), search.sortDirection());
     }
 

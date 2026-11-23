@@ -825,6 +825,7 @@ components:
         number:
           type: integer
           format: int64
+          default: 0
           description: Last build number handed out; 0 if none yet
           example: 17
 
@@ -909,26 +910,31 @@ components:
         numberOfProjects:
           type: integer
           format: int64
+          default: 0
           description: Number of projects
           example: 4
         numberOfBranches:
           type: integer
           format: int64
+          default: 0
           description: Number of branches
           example: 12
         numberOfBuilds:
           type: integer
           format: int64
+          default: 0
           description: Number of builds
           example: 340
         numberOfLabels:
           type: integer
           format: int64
+          default: 0
           description: Number of build labels
           example: 910
         numberOfDeploys:
           type: integer
           format: int64
+          default: 0
           description: Number of deployments (not counted yet, always 0)
           example: 0
 
@@ -1160,5 +1166,5 @@ components:
 
     SortDirection:
       type: string
-      description: Sort direction
+      description: Sort direction. Accepted in any case on input (e.g. `desc`).
       enum: [ASC, DESC]

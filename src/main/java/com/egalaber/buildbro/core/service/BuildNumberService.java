@@ -29,7 +29,7 @@ public class BuildNumberService {
         return of(project, branch)
                 .map(BuildNumberMapper::toApi)
                 .orElse(
-                        new IBuildNumber(project, branch)
+                        new IBuildNumber(project, branch, 0L)
                 );
     }
 

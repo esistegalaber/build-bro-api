@@ -47,7 +47,7 @@ public class DeploymentService {
     }
 
     public IDeployment current(String serverName) throws DataNotFoundException {
-        return search(IDeploymentSearch.forServer(serverName, 1)).data()
+        return search(latestOn(serverName)).data()
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new DataNotFoundException("No Deployment found for serverName='" + serverName + "'"));
@@ -55,8 +55,13 @@ public class DeploymentService {
 
     public IDeploymentSearchResult search(IDeploymentSearch search) {
         return SearchResultMapper.deploymentSearchResultToApi(
-                deploymentRepository.findAll(toSpecification(search), search.pageRequest())
+                deploymentRepository.findAll(toSpecification(search), Paging.of(search))
         );
+    }
+
+    /** The latest deployment on one server: first page of one, default sorting (newest first). */
+    private static IDeploymentSearch latestOn(String serverName) {
+        return new IDeploymentSearch(1, 0, null, null, serverName);
     }
 
     private Specification<Deployment> toSpecification(IDeploymentSearch search) {

@@ -13,7 +13,7 @@ public class BuildBroExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(BuildBroException.class)
     ResponseEntity<IExceptionInfo> handleConversion(BuildBroException ex) {
         IExceptionInfo body = new IExceptionInfo(
-                ex.getKey(),
+                IExceptionInfo.KeyEnum.fromValue(ex.getKey()),
                 ex.getDescription(),
                 ex.getMessage()
         );

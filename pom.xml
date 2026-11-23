@@ -232,9 +232,6 @@
                             <output>${project.build.directory}/generated-sources/openapi</output>
                             <apiPackage>com.egalaber.buildbro.api.v1</apiPackage>
                             <modelPackage>com.egalaber.buildbro.api.model</modelPackage>
-                            <!-- migration to contract first (#5): only what has been moved over so far -->
-                            <apisToGenerate>Builds</apisToGenerate>
-                            <modelsToGenerate>IBuild,IBuildLabel,IBuildSearch,IBuildSearchResult,SortDirection</modelsToGenerate>
                             <generateSupportingFiles>false</generateSupportingFiles>
                             <generateApiTests>false</generateApiTests>
                             <generateApiDocumentation>false</generateApiDocumentation>
@@ -251,6 +248,8 @@
                                 <!-- jackson-databind-nullable needs Jackson 2; Boot 4 uses Jackson 3 -->
                                 <openApiNullable>false</openApiNullable>
                                 <useBeanValidation>false</useBeanValidation>
+                                <!-- enums accept any case, e.g. sortDirection "desc" (the UI sends lowercase) -->
+                                <useEnumCaseInsensitive>true</useEnumCaseInsensitive>
                                 <!-- keeps springdoc's runtime docs (Swagger UI) as rich as the contract -->
                                 <documentationProvider>springdoc</documentationProvider>
                                 <annotationLibrary>swagger2</annotationLibrary>
