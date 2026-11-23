@@ -11,5 +11,5 @@ export REDOCLY_SUPPRESS_UPDATE_NOTICE=true
 
 npx --yes @redocly/cli@2.82.0 build-docs src/main/resources/openapi/build-bro-api.yaml \
   --inlineBundle \
-  --title "Build Bro API" \
+  --title "Build Bruh API" \
   --output target/openapi/redoc/index.html

@@ -23,7 +23,7 @@
         <equalsverifier.version>4.5.2</equalsverifier.version>
         <gmavenplus.version>5.1.0</gmavenplus.version>
         <jacoco.version>0.8.16</jacoco.version>
-        <!-- default for Surefire and for skipping the static API docs (they need the tests to run) -->
+        <!-- default for Surefire -->
         <skipTests>false</skipTests>
         <openapi-generator.version>7.27.0</openapi-generator.version>
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
@@ -210,10 +210,7 @@
                 </executions>
             </plugin>
 
-            <!--
-              Generates the API code from the contract, and renders the contract as static HTML docs
-              (target/openapi/html/index.html; CI publishes target/openapi/ as the api-docs artifact).
-            -->
+            <!-- Generates the API code from the contract -->
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
@@ -262,24 +259,10 @@
                             </configOptions>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>static-api-docs</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi/build-bro-api.yaml</inputSpec>
-                            <generatorName>html2</generatorName>
-                            <output>${project.build.directory}/openapi/html</output>
-                            <addCompileSourceRoot>false</addCompileSourceRoot>
-                            <generateSupportingFiles>true</generateSupportingFiles>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
 
-            <!-- Puts the contract next to the HTML docs in target/openapi/, for the api-docs CI artifact -->
+            <!-- Copies the contract to target/openapi/, for the api-docs CI artifact (redoc-docs.sh adds the HTML page) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
