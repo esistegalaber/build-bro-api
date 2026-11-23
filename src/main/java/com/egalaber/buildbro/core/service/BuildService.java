@@ -6,6 +6,7 @@ import com.egalaber.buildbro.api.model.IBuild;
 import com.egalaber.buildbro.api.model.IBuildSearch;
 import com.egalaber.buildbro.api.model.IBuildSet;
 import com.egalaber.buildbro.api.model.IBuildTemplate;
+import com.egalaber.buildbro.api.model.LabelTarget;
 import com.egalaber.buildbro.core.domain.Build;
 import com.egalaber.buildbro.core.domain.BuildLabel;
 import com.egalaber.buildbro.core.domain.BuildSetTemplate;
@@ -30,8 +31,10 @@ public class BuildService {
     private final BuildRepository buildRepository;
     private final BuildLabelRepository buildLabelRepository;
     private final BuildSetTemplateRepository buildSetTemplateRepository;
+    private final LabelValidator labelValidator;
 
-    public BuildService(BuildRepository buildRepository, BuildLabelRepository buildLabelRepository, BuildSetTemplateRepository buildSetTemplateRepository) {
+    public BuildService(BuildRepository buildRepository, BuildLabelRepository buildLabelRepository, BuildSetTemplateRepository buildSetTemplateRepository, LabelValidator labelValidator) {
+        this.labelValidator = labelValidator;
         this.buildRepository = buildRepository;
         this.buildLabelRepository = buildLabelRepository;
         this.buildSetTemplateRepository = buildSetTemplateRepository;
@@ -46,6 +49,7 @@ public class BuildService {
         if (alreadyExisting.isPresent()) {
             throw new InvalidRequestException("Build with project='" + toCreate.project() + "' branch='" + toCreate.branch() + "' buildNumber='" + toCreate.buildNumber() + "' already exists.");
         }
+        labelValidator.check(LabelTarget.BUILD, toCreate.labels(), label -> new LabelValidator.Label(label.key(), label.value()));
         Build newBuild = new Build(toCreate.project(), toCreate.branch(), toCreate.buildNumber());
         toCreate.labels().forEach(buildLabel ->
                 newBuild.getLabels().add(
@@ -57,6 +61,7 @@ public class BuildService {
     public IBuild addLabels(Long buildId, Map<String, String> labels) {
         final Build theBuild = buildRepository.findById(buildId)
                 .orElseThrow(() -> new DataNotFoundException("No Build found for buildId='" + buildId + "'"));
+        labelValidator.check(LabelTarget.BUILD, labels);
         labels.forEach((key, value) ->
                 theBuild.getLabels().add(new BuildLabel(theBuild, key, value)
                 ));

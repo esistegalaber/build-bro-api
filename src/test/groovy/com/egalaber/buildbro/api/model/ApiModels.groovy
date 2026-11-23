@@ -39,6 +39,8 @@ final class ApiModels {
 
     static ILabelDefinition aLabelDefinition(Map args = [:]) { create(ILabelDefinition, args) }
 
+    static ILabelSettings aLabelSettings(Map args = [:]) { create(ILabelSettings, args) }
+
     /** Calls the canonical constructor of {@code type}, taking each component from {@code args} by name. */
     static <T extends Record> T create(Class<T> type, Map args) {
         RecordComponent[] components = type.recordComponents

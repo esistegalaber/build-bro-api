@@ -58,7 +58,7 @@ paths:
       description: >-
         Records a finished build. Project and branch are created on the fly the first time a build for them
         arrives. The id in the request is ignored. Fails if a build with the same project, branch and build
-        number already exists.
+        number already exists. When label validation is `STRICT`, fails if a label does not fit its label definition.
       requestBody:
         required: true
         content:
@@ -98,7 +98,9 @@ paths:
       tags: [Builds]
       operationId: addBuildLabels
       summary: Add labels to a build
-      description: Attaches additional key/value labels to an existing build, e.g. once it has passed further testing.
+      description: >-
+        Attaches additional key/value labels to an existing build, e.g. once it has passed further testing.
+        When label validation is `STRICT`, fails if a label does not fit its label definition.
       parameters:
         - $ref: '#/components/parameters/BuildId'
       requestBody:
@@ -120,6 +122,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/IBuild'
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
         '404':
           $ref: '#/components/responses/NotFound'
 
@@ -384,7 +388,8 @@ paths:
       summary: Create or update a build-set template
       description: >-
         Without an `id` a new template is created; its name must be unique. With an `id` the existing template
-        is updated and its build templates are replaced by the ones sent.
+        is updated and its build templates are replaced by the ones sent. When label validation is `STRICT`,
+        fails if a template's label does not fit its label definition (a build could never carry it).
       requestBody:
         required: true
         content:
@@ -498,6 +503,7 @@ paths:
       description: >-
         Records that the given builds (referenced by `id`; other build fields are ignored) were deployed to
         `serverName` now. The server is created if it is not known yet. Build ids that do not exist are skipped.
+        When label validation is `STRICT`, fails if a label does not fit its label definition.
       requestBody:
         required: true
         content:
@@ -511,6 +517,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/IDeployment'
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
 
   /api/v1/deployments/{serverName}:
     get:
@@ -541,7 +549,9 @@ paths:
       tags: [Deployments]
       operationId: addLabelsToDeployedBuilds
       summary: Label all builds of a deployment
-      description: Adds the labels to every build of the deployment, e.g. `qa=passed` after tests ran against it.
+      description: >-
+        Adds the labels to every build of the deployment, e.g. `qa=passed` after tests ran against it.
+        When label validation is `STRICT`, fails if a label does not fit its label definition.
       parameters:
         - name: deploymentId
           in: path
@@ -570,6 +580,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/IDeployment'
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
         '404':
           $ref: '#/components/responses/NotFound'
 
@@ -636,9 +648,18 @@ paths:
         Creates the definition of the label key, or replaces it if one exists (keys are compared ignoring case).
         The key is taken from the path; a `key` in the body is ignored. Fails if the definition is inconsistent,
         e.g. an `ENUM` without `allowedValues`, an invalid `pattern`, or a `valueStyles` entry for a value the
-        definition does not allow. Existing labels are never changed.
+        definition does not allow. Existing labels are never changed; the response lists the stored labels that
+        do not fit the new definition. With `dryRun` nothing is saved, so the effect of a change can be checked
+        first.
       parameters:
         - $ref: '#/components/parameters/LabelKey'
+        - name: dryRun
+          in: query
+          required: false
+          description: Only validate and report; do not save
+          schema:
+            type: boolean
+            default: false
       requestBody:
         required: true
         content:
@@ -651,7 +672,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ILabelDefinition'
+                $ref: '#/components/schemas/ILabelDefinitionChange'
         '400':
           $ref: '#/components/responses/InvalidRequest'
     delete:
@@ -666,6 +687,57 @@ paths:
       responses:
         '200':
           description: OK
+
+  /api/v1/label-violations:
+    get:
+      tags: [Label definitions]
+      operationId: listLabelViolations
+      summary: Stored labels that do not fit their definition
+      description: >-
+        Conformance report over all label definitions: every stored build and deployment label whose key has a
+        definition but whose value does not fit it, or that sits on an entity the definition is not meant for.
+        Values that differ only in case are counted together. Labels without a definition are never listed.
+        Use it before switching label validation to `STRICT`.
+      responses:
+        '200':
+          description: OK, ordered by key, target and value
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ILabelViolation'
+
+  /api/v1/label-settings:
+    get:
+      tags: [Label definitions]
+      operationId: getLabelSettings
+      summary: Get the label settings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ILabelSettings'
+    put:
+      tags: [Label definitions]
+      operationId: saveLabelSettings
+      summary: Change the label settings
+      description: Switching to `STRICT` does not touch stored labels; check `label-violations` first.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ILabelSettings'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ILabelSettings'
 
 components:
 
@@ -1282,6 +1354,65 @@ components:
             passed: SUCCESS
             pending: WARNING
             failed: ERROR
+
+    ILabelDefinitionChange:
+      type: object
+      description: Result of saving a label definition.
+      properties:
+        definition:
+          $ref: '#/components/schemas/ILabelDefinition'
+        violations:
+          type: array
+          description: Stored labels with this key that do not fit the (new) definition
+          items:
+            $ref: '#/components/schemas/ILabelViolation'
+
+    ILabelViolation:
+      type: object
+      description: >-
+        Stored labels that do not fit their label definition: one entry per key and value for `INVALID_VALUE`,
+        one per key for `WRONG_TARGET`.
+      properties:
+        key:
+          type: string
+          description: Label key
+          example: qa
+        value:
+          type: string
+          description: The offending value; empty for `WRONG_TARGET`
+          example: pass
+        target:
+          $ref: '#/components/schemas/LabelTarget'
+        reason:
+          $ref: '#/components/schemas/LabelViolationReason'
+        count:
+          type: integer
+          format: int64
+          description: Number of builds or deployments carrying this label
+          example: 3
+
+    LabelViolationReason:
+      type: string
+      description: >-
+        Why a label does not fit: `INVALID_VALUE` (the value is not allowed by the definition) or `WRONG_TARGET`
+        (the label sits on an entity its definition does not apply to).
+      enum: [INVALID_VALUE, WRONG_TARGET]
+
+    ILabelSettings:
+      type: object
+      description: Instance-wide label settings.
+      properties:
+        labelValidation:
+          $ref: '#/components/schemas/LabelValidation'
+
+    LabelValidation:
+      type: string
+      description: >-
+        `OFF`: label definitions are only used for display and the conformance report. `STRICT`: a label whose
+        key has a definition is rejected (400) when its value does not fit or the definition does not apply to
+        the entity. Labels without a definition are always accepted. Accepted in any case on input.
+      enum: ['OFF', 'STRICT'] # quoted: YAML 1.1 reads a bare OFF as false
+      default: 'OFF'
 
     LabelTarget:
       type: string

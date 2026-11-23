@@ -2,6 +2,8 @@ package com.egalaber.buildbro.core.service;
 
 import com.egalaber.buildbro.api.fault.InvalidRequestException;
 import com.egalaber.buildbro.api.model.ILabelDefinition;
+import com.egalaber.buildbro.api.model.ILabelDefinitionChange;
+import com.egalaber.buildbro.api.model.ILabelViolation;
 import com.egalaber.buildbro.api.model.LabelStyle;
 import com.egalaber.buildbro.api.model.LabelTarget;
 import com.egalaber.buildbro.api.model.LabelType;
@@ -20,6 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.StreamSupport;
@@ -31,9 +34,11 @@ import java.util.stream.StreamSupport;
 @Transactional
 public class LabelDefinitionService {
     private final LabelDefinitionRepository labelDefinitionRepository;
+    private final LabelViolationService labelViolationService;
 
-    public LabelDefinitionService(LabelDefinitionRepository labelDefinitionRepository) {
+    public LabelDefinitionService(LabelDefinitionRepository labelDefinitionRepository, LabelViolationService labelViolationService) {
         this.labelDefinitionRepository = labelDefinitionRepository;
+        this.labelViolationService = labelViolationService;
     }
 
     public List<ILabelDefinition> all() {
@@ -42,19 +47,36 @@ public class LabelDefinitionService {
                 .toList();
     }
 
+    /** All definitions by key, looked up ignoring case. */
+    public Map<String, ILabelDefinition> allByKey() {
+        Map<String, ILabelDefinition> byKey = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        all().forEach(definition -> byKey.put(definition.key(), definition));
+        return byKey;
+    }
+
+    /** The conformance report: stored labels that do not fit their definition. */
+    public List<ILabelViolation> violations() {
+        return labelViolationService.violationsOf(all());
+    }
+
     public Optional<ILabelDefinition> byKey(String key) {
         return find(key).map(LabelDefinitionMapper::toApi);
     }
 
     /**
-     * Creates the definition of {@code key}, or replaces the existing one. The key of {@code definition} is
-     * ignored; the stored key takes the spelling of {@code key}.
+     * Creates the definition of {@code key}, or replaces the existing one, and reports the stored labels that do
+     * not fit it. The key of {@code definition} is ignored; the stored key takes the spelling of {@code key}.
+     * With {@code dryRun} nothing is saved.
      */
-    public ILabelDefinition save(String key, ILabelDefinition definition) {
+    public ILabelDefinitionChange save(String key, ILabelDefinition definition, boolean dryRun) {
         ILabelDefinition normalised = validated(key, definition);
-        LabelDefinition toSave = find(normalised.key()).orElseGet(LabelDefinition::new);
-        LabelDefinitionMapper.copy(normalised, toSave);
-        return LabelDefinitionMapper.toApi(labelDefinitionRepository.save(toSave));
+        ILabelDefinition result = normalised;
+        if (!dryRun) {
+            LabelDefinition toSave = find(normalised.key()).orElseGet(LabelDefinition::new);
+            LabelDefinitionMapper.copy(normalised, toSave);
+            result = LabelDefinitionMapper.toApi(labelDefinitionRepository.save(toSave));
+        }
+        return new ILabelDefinitionChange(result, labelViolationService.violationsOf(List.of(result)));
     }
 
     public void delete(String key) {

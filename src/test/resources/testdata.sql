@@ -7,6 +7,8 @@ from label_definition_allowed_value;
 delete
 from label_definition;
 delete
+from setting;
+delete
 from deployed_builds;
 delete
 from deployment_label;

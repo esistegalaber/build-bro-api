@@ -2,7 +2,9 @@ package com.egalaber.buildbro.core.service
 
 import static com.egalaber.buildbro.api.model.ApiModels.aLabelDefinition
 
+import com.egalaber.buildbro.api.model.LabelTarget
 import com.egalaber.buildbro.api.model.LabelType
+import com.egalaber.buildbro.api.model.LabelViolationReason
 import spock.lang.Specification
 
 class LabelValuesTest extends Specification {
@@ -40,5 +42,37 @@ class LabelValuesTest extends Specification {
         LabelType.REGEX   | null                 | '[0-9a-f]{7}' | 'abc1234'                   || true
         LabelType.REGEX   | null                 | '[0-9a-f]{7}' | 'ABC1234'                   || true
         LabelType.REGEX   | null                 | '[0-9a-f]{7}' | 'abc12345'                  || false
+    }
+
+    def "violation of #value on #target: #reason"() {
+        given:
+        def definition = aLabelDefinition(key: 'qa', type: LabelType.ENUM, appliesTo: [LabelTarget.BUILD], allowedValues: ['passed'])
+
+        expect:
+        LabelValues.violation(definition, target, value) == Optional.ofNullable(reason)
+
+        where:
+        target                | value    || reason
+        LabelTarget.BUILD      | 'Passed' || null
+        LabelTarget.BUILD      | 'pass'   || LabelViolationReason.INVALID_VALUE
+        LabelTarget.DEPLOYMENT | 'passed' || LabelViolationReason.WRONG_TARGET
+        LabelTarget.DEPLOYMENT | 'pass'   || LabelViolationReason.WRONG_TARGET
+    }
+
+    def "expectation of #type"() {
+        given:
+        def definition = aLabelDefinition(key: 'k', type: type, allowedValues: allowedValues, pattern: pattern)
+
+        expect:
+        LabelValues.expectation(definition) == expected
+
+        where:
+        type              | allowedValues        | pattern || expected
+        LabelType.STRING  | null                 | null    || 'any value'
+        LabelType.BOOLEAN | null                 | null    || 'true or false'
+        LabelType.INTEGER | null                 | null    || 'a whole number'
+        LabelType.URL     | null                 | null    || 'an absolute http(s) URL'
+        LabelType.ENUM    | ['passed', 'failed'] | null    || 'one of passed, failed'
+        LabelType.REGEX   | null                 | '\\d+'  || 'a value matching \\d+'
     }
 }
