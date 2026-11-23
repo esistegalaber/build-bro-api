@@ -1,5 +1,11 @@
-# noinspection SqlWithoutWhereForFile
+-- noinspection SqlWithoutWhereForFile
 
+delete
+from label_definition_value_style;
+delete
+from label_definition_allowed_value;
+delete
+from label_definition;
 delete
 from deployed_builds;
 delete
@@ -511,3 +517,17 @@ VALUES (1, 'part-of-build-set', 'main', 1),
        (4, 'part-of-build-set', 'main', 1),
        (5, 'part-of-build-set', 'main', 1),
        (6, 'part-of-build-set', 'feature', 1);
+
+-- label definitions (issue #7); 'part-of-build-set' stays undefined
+insert into label_definition (id, label_key, display_name, description, applies_to_build, applies_to_deployment, label_type, pattern, style)
+values (1, 'integration-test', 'Integration test', 'Outcome of the integration test suite', 1, 0, 'ENUM', null, null),
+       (2, 'jenkins-build', 'Jenkins build', 'The Jenkins job run that produced the build', 1, 0, 'URL', null, 'INFO'),
+       (3, 'revision', 'Revision', 'Commit hash the build was made from', 1, 0, 'REGEX', '[0-9a-f]{64}', null);
+
+insert into label_definition_allowed_value (label_definition_id, position, label_value)
+values (1, 0, 'ok'),
+       (1, 1, 'broken');
+
+insert into label_definition_value_style (label_definition_id, label_value, style)
+values (1, 'ok', 'SUCCESS'),
+       (1, 'broken', 'ERROR');

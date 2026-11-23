@@ -41,6 +41,10 @@ tags:
       qa=passed, frontend from main". Resolving a template returns the concrete builds that currently match.
   - name: Deployments
     description: Record which builds were deployed to which server, and when.
+  - name: Label definitions
+    description: >-
+      Optional, admin-managed schema for the key/value labels of builds and deployments: a type, allowed values
+      and a semantic display style per label key. Without definitions, labels stay free-form.
 
 paths:
 
@@ -589,6 +593,80 @@ paths:
               schema:
                 $ref: '#/components/schemas/IDeploymentSearchResult'
 
+  # --- Label definitions --------------------------------------------------------------------------------
+
+  /api/v1/label-definitions:
+    get:
+      tags: [Label definitions]
+      operationId: listLabelDefinitions
+      summary: List label definitions
+      description: All label definitions, ordered by key.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ILabelDefinition'
+
+  /api/v1/label-definitions/{key}:
+    get:
+      tags: [Label definitions]
+      operationId: getLabelDefinition
+      summary: Get a label definition
+      description: Keys are compared ignoring case.
+      parameters:
+        - $ref: '#/components/parameters/LabelKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ILabelDefinition'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Label definitions]
+      operationId: saveLabelDefinition
+      summary: Create or replace a label definition
+      description: >-
+        Creates the definition of the label key, or replaces it if one exists (keys are compared ignoring case).
+        The key is taken from the path; a `key` in the body is ignored. Fails if the definition is inconsistent,
+        e.g. an `ENUM` without `allowedValues`, an invalid `pattern`, or a `valueStyles` entry for a value the
+        definition does not allow. Existing labels are never changed.
+      parameters:
+        - $ref: '#/components/parameters/LabelKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ILabelDefinition'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ILabelDefinition'
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+    delete:
+      tags: [Label definitions]
+      operationId: deleteLabelDefinition
+      summary: Delete a label definition
+      description: >-
+        Removes the definition only; labels with that key stay as they are. Does nothing if no definition exists
+        for the key.
+      parameters:
+        - $ref: '#/components/parameters/LabelKey'
+      responses:
+        '200':
+          description: OK
+
 components:
 
   parameters:
@@ -641,6 +719,14 @@ components:
       required: true
       description: Build-set name
       example: staging
+      schema:
+        type: string
+    LabelKey:
+      name: key
+      in: path
+      required: true
+      description: Label key, compared ignoring case
+      example: qa
       schema:
         type: string
 
@@ -1141,6 +1227,82 @@ components:
           type: boolean
           description: Whether a previous page exists
           example: false
+
+    # --- Label definitions ------------------------------------------------------------------------------
+
+    ILabelDefinition:
+      type: object
+      description: >-
+        The definition of a label key: which entities it is meant for, what values it takes and how the UI shows
+        it. Values are compared leniently: ignoring case, and for `BOOLEAN`, `INTEGER` and `URL` ignoring
+        surrounding whitespace.
+      properties:
+        key:
+          type: string
+          description: The label key this definition describes. Unique, ignoring case.
+          example: qa
+        displayName:
+          type: string
+          description: Optional display name for the UI
+          example: QA result
+        description:
+          type: string
+          description: Optional free text
+          example: Outcome of the QA test suite
+        appliesTo:
+          type: array
+          description: Entities the label is meant for. Empty means both; duplicates are ignored.
+          items:
+            $ref: '#/components/schemas/LabelTarget'
+          example: [BUILD]
+        type:
+          $ref: '#/components/schemas/LabelType'
+        allowedValues:
+          type: array
+          description: >-
+            For `ENUM` only, and required there: the allowed values, in display order. Unique, ignoring case.
+          items:
+            type: string
+          example: [passed, pending, failed]
+        pattern:
+          type: string
+          description: >-
+            For `REGEX` only, and required there: a Java regular expression a value must match completely.
+          example: '[0-9a-f]{7,40}'
+        style:
+          $ref: '#/components/schemas/LabelStyle'
+        valueStyles:
+          type: object
+          description: >-
+            Optional style per value, overriding `style`. Each value must be allowed by the definition; values
+            are unique, ignoring case.
+          additionalProperties:
+            $ref: '#/components/schemas/LabelStyle'
+          example:
+            passed: SUCCESS
+            pending: WARNING
+            failed: ERROR
+
+    LabelTarget:
+      type: string
+      description: An entity that carries labels. Accepted in any case on input.
+      enum: [BUILD, DEPLOYMENT]
+
+    LabelType:
+      type: string
+      description: >-
+        Type of a label's values. `STRING` takes anything, `BOOLEAN` `true`/`false`, `INTEGER` a whole number,
+        `URL` an absolute http(s) URL, `ENUM` one of `allowedValues`, `REGEX` a value matching `pattern`. Accepted
+        in any case on input.
+      enum: [STRING, BOOLEAN, INTEGER, URL, ENUM, REGEX]
+      default: STRING
+
+    LabelStyle:
+      type: string
+      description: >-
+        Semantic display style of a label; the UI maps it to its theme. No style means neutral. Accepted in any
+        case on input.
+      enum: [INFO, SUCCESS, WARNING, ERROR]
 
     # --- Errors -------------------------------------------------------------------------------------------
 

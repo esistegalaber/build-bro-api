@@ -63,7 +63,7 @@ class ContractSpec extends BaseRestSpec {
         } as Set
 
         expect: 'a generated interface without a @RestController would show up as missing'
-        inContract.size() == 27
+        inContract.size() == 31
         (inContract - implemented) == [] as Set
         (implemented - inContract) == [] as Set
     }
