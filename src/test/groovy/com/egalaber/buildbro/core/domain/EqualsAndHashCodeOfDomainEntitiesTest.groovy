@@ -1,6 +1,7 @@
 package com.egalaber.buildbro.core.domain
 
 
+import jakarta.persistence.Id
 import nl.jqno.equalsverifier.EqualsVerifier
 import spock.lang.Specification
 
@@ -90,6 +91,14 @@ class EqualsAndHashCodeOfDomainEntitiesTest extends Specification {
     def "Equals and hashCode of LabelDefinition"() {
         expect:
         EqualsVerifier.forClass(LabelDefinition)
+                .usingGetClass()
+                .verify()
+    }
+
+    def "Equals and hashCode of Setting"() {
+        expect:
+        EqualsVerifier.forClass(Setting)
+                .withIgnoredAnnotations(Id) // the key is a natural key, so equals uses it
                 .usingGetClass()
                 .verify()
     }

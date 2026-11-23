@@ -2,6 +2,7 @@ package com.egalaber.buildbro.core.service;
 
 import com.egalaber.buildbro.api.fault.InvalidRequestException;
 import com.egalaber.buildbro.api.model.IBuildSetTemplate;
+import com.egalaber.buildbro.api.model.LabelTarget;
 import com.egalaber.buildbro.core.domain.BuildSetTemplate;
 import com.egalaber.buildbro.core.domain.BuildTemplate;
 import com.egalaber.buildbro.core.mapping.BuildSetTemplateMapper;
@@ -22,8 +23,10 @@ import java.util.stream.StreamSupport;
 public class BuildSetTemplateService {
     private final BuildSetTemplateRepository buildSetTemplateRepository;
     private final BuildTemplateRepository buildTemplateRepository;
+    private final LabelValidator labelValidator;
 
-    public BuildSetTemplateService(BuildSetTemplateRepository buildSetTemplateRepository, BuildTemplateRepository buildTemplateRepository) {
+    public BuildSetTemplateService(BuildSetTemplateRepository buildSetTemplateRepository, BuildTemplateRepository buildTemplateRepository, LabelValidator labelValidator) {
+        this.labelValidator = labelValidator;
         this.buildSetTemplateRepository = buildSetTemplateRepository;
         this.buildTemplateRepository = buildTemplateRepository;
     }
@@ -42,6 +45,8 @@ public class BuildSetTemplateService {
     }
 
     public IBuildSetTemplate save(IBuildSetTemplate template) {
+        // a template matches build labels, so its labels must be valid build labels
+        template.buildTemplates().forEach(buildTemplate -> labelValidator.check(LabelTarget.BUILD, buildTemplate.labels()));
         BuildSetTemplate theTemplate;
         if (ObjectUtils.isEmpty(template.id())) {
             // new template case

@@ -26,14 +26,17 @@ public class DeploymentService {
     private final DeploymentRepository deploymentRepository;
     private final ServerService serverService;
     private final BuildRepository buildRepository;
+    private final LabelValidator labelValidator;
 
-    public DeploymentService(DeploymentRepository deploymentRepository, ServerService serverService, BuildRepository buildRepository) {
+    public DeploymentService(DeploymentRepository deploymentRepository, ServerService serverService, BuildRepository buildRepository, LabelValidator labelValidator) {
+        this.labelValidator = labelValidator;
         this.deploymentRepository = deploymentRepository;
         this.serverService = serverService;
         this.buildRepository = buildRepository;
     }
 
     public IDeployment create(IDeployment deployment) {
+        labelValidator.check(LabelTarget.DEPLOYMENT, deployment.labels(), label -> new LabelValidator.Label(label.key(), label.value()));
         Server theServer = serverService.findOrCreate(deployment.serverName());
         Deployment toCreate = new Deployment();
         toCreate.setServer(theServer);
@@ -75,6 +78,7 @@ public class DeploymentService {
     public IDeployment addLabelsToBuilds(Long deploymentId, List<IBuildLabel> labels) {
         Deployment deployment = deploymentRepository.findById(deploymentId)
                 .orElseThrow(() -> new DataNotFoundException("No Deployment found with id='" + deploymentId + "'"));
+        labelValidator.check(LabelTarget.BUILD, labels, label -> new LabelValidator.Label(label.key(), label.value()));
         deployment.getBuilds().forEach(build ->
                 labels.forEach(label -> {
                     build.getLabels().add(new BuildLabel(build, label.key(), label.value()));
