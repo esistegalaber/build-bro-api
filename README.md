@@ -1,4 +1,4 @@
-# Build Bro
+# Build Bruh
 
 [![Build 'n Sonar](https://github.com/esistegalaber/build-bro-api/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/esistegalaber/build-bro-api/actions/workflows/build.yml)
 
@@ -15,11 +15,11 @@
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=esistegalaber_build-bro-api&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=esistegalaber_build-bro-api)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=esistegalaber_build-bro-api&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=esistegalaber_build-bro-api)
 
-Build Bro is a small REST service that keeps track of **what your CI has built and where it has been deployed**.
+Build Bruh is a small REST service that keeps track of **what your CI has built and where it has been deployed**.
 
 When many projects and branches are built in different pipelines, simple questions get hard to answer:
 *What is the latest build of `backend` on `main`? Which builds make up our staging environment? What is running on
-server X right now?* Build Bro answers them by acting as a central record that every pipeline talks to.
+server X right now?* Build Bruh answers them by acting as a central record that every pipeline talks to.
 
 ## What it does
 

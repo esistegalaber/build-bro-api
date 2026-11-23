@@ -14,7 +14,7 @@
     <artifactId>build-bro-api</artifactId>
     <version>0.3.0-SNAPSHOT</version>
     <name>build-bro-api</name>
-    <description>Build Bro REST API</description>
+    <description>Build Bruh REST API</description>
 
     <properties>
         <java.version>17</java.version>
