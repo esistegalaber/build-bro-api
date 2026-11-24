@@ -254,9 +254,15 @@
                                 <!-- the docs are the contract itself (served at /openapi/build-bro-api.yaml), not annotations -->
                                 <documentationProvider>none</documentationProvider>
                                 <annotationLibrary>none</annotationLibrary>
-                                <!-- date-time as LocalDateTime, like the hand-written models: no offset in the JSON -->
-                                <dateLibrary>java8-localdatetime</dateLibrary>
+                                <dateLibrary>java8</dateLibrary>
                             </configOptions>
+                            <!-- date-time as Instant: always UTC, written as "2026-11-22T19:42:48Z" (#15) -->
+                            <typeMappings>
+                                <typeMapping>DateTime=Instant</typeMapping>
+                            </typeMappings>
+                            <importMappings>
+                                <importMapping>Instant=java.time.Instant</importMapping>
+                            </importMappings>
                         </configuration>
                     </execution>
                 </executions>

@@ -5,8 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -23,7 +22,7 @@ public class Deployment implements Serializable {
 
     @Basic(optional = false)
     @Column(name = "deployed_at")
-    private LocalDateTime deployedAt;
+    private Instant deployedAt;
 
     @OneToMany(targetEntity = Build.class, fetch = FetchType.EAGER)
     @JoinTable(name = "deployed_builds",
@@ -41,7 +40,7 @@ public class Deployment implements Serializable {
 
     @PrePersist
     public void prePersist() {
-        this.deployedAt = LocalDateTime.now(ZoneOffset.UTC);
+        this.deployedAt = Instant.now();
     }
 
     @Override
