@@ -28,7 +28,12 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
+      # Dependabot runs get no Actions secrets (SONAR_TOKEN would be empty): build and test without Sonar
+      - name: Build (Dependabot, without Sonar)
+        if: github.actor == 'dependabot[bot]'
+        run: ./mvnw -B verify
       - name: Build and SonarLyze
+        if: github.actor != 'dependabot[bot]'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
