@@ -17,7 +17,7 @@
     <description>Build Bruh REST API</description>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>25</java.version>
         <swagger-ui.version>5.35.1</swagger-ui.version>
         <spock.version>2.5-groovy-5.0</spock.version>
         <equalsverifier.version>4.5.2</equalsverifier.version>
@@ -175,10 +175,49 @@
                 </executions>
             </plugin>
 
+            <!-- Fails the build early with a clear message on a JDK older than java.version -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce-java-version</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>[${java.version},)</version>
+                                    <message>Build Bruh API needs JDK ${java.version} or newer (see .sdkmanrc).</message>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Sets the property net.bytebuddy:byte-buddy-agent:jar (the agent jar's path) for Surefire's argLine -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>agent-paths</id>
+                        <goals>
+                            <goal>properties</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <!-- @{argLine} keeps JaCoCo's agent. Mocking needs ByteBuddy's agent: load it at startup, since
+                         JDK 21+ warns about attaching it dynamically and a future JDK will refuse to -->
+                    <argLine>@{argLine} -javaagent:${net.bytebuddy:byte-buddy-agent:jar}</argLine>
                     <systemPropertyVariables>
                         <test.mariadb.image>${test.mariadb.image}</test.mariadb.image>
                     </systemPropertyVariables>

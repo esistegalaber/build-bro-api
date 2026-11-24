@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Build Bruh is a Spring Boot 4.1 (Java 17+) REST API that tracks CI builds, build numbers, build-set templates ("environments"), servers and deployments. It is backed by MariaDB with Flyway migrations. Tests are written in Groovy with Spock.
+Build Bruh is a Spring Boot 4.2 (Java 25) REST API that tracks CI builds, build numbers, build-set templates ("environments"), servers and deployments. It is backed by MariaDB with Flyway migrations. Tests are written in Groovy with Spock.
 
 **The API is contract first.** The OpenAPI contract `src/main/resources/openapi/build-bro-api.yaml` is the source of the API surface. `openapi-generator` (execution `api-from-contract` in `pom.xml`) generates the endpoint interfaces and the API model records from it into `target/generated-sources/openapi` during `generate-sources`. To change the API, edit the contract first, then implement what the regenerated code demands. The UI (`../build-bro-ui`) depends on the JSON, so property names, types and order must stay stable unless the change is meant to break clients.
 
@@ -22,7 +22,7 @@ Build Bruh is a Spring Boot 4.1 (Java 17+) REST API that tracks CI builds, build
 SERVER_PORT=18080 ./mvnw verify      # when something else holds :8080 (the REST specs use the real port)
 ```
 
-Maven needs **JDK 17 or newer** (`JAVA_HOME`). CI builds with JDK 21. Spock specs (Groovy 5, `spock-*-groovy-5.0`) in `src/test/groovy` are compiled by `gmavenplus-plugin`, and Surefire is configured to pick up both `*Spec` and `*Test` classes.
+Maven needs **JDK 25 or newer** (`JAVA_HOME`); the Enforcer plugin stops the build on an older JDK. `.sdkmanrc` names the JDK for SDKMAN (`sdk env install`); bump its patch version now and then. CI builds with Temurin 25. Spock specs (Groovy 5, `spock-*-groovy-5.0`) in `src/test/groovy` are compiled by `gmavenplus-plugin`, and Surefire is configured to pick up both `*Spec` and `*Test` classes.
 
 **Tests start their own MariaDB with Testcontainers, so they need a running Docker daemon** and nothing else. `TestDatabase` (in `src/test/groovy`) holds one static `MariaDBContainer`, which both base specs pull in with `@ImportTestcontainers`. `@ServiceConnection` points the datasource at it, overriding `spring.datasource.*`. The image is set by the `test.mariadb.image` Maven property (default `mariadb:10.10`), which you can override with `-Dtest.mariadb.image=mariadb:11.4`.
 
