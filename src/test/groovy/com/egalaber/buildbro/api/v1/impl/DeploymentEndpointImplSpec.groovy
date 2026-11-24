@@ -66,6 +66,19 @@ class DeploymentEndpointImplSpec extends BaseRestSpec {
         !current.getBody().builds().isEmpty()
     }
 
+    def "deployedAt is sent in UTC, with a Z"() {
+        when: 'reading the raw JSON, not a deserialized IDeployment'
+        ResponseEntity<Map> current = restTemplate.getForEntity("${baseUrl()}/deployments/testserver", Map)
+        ResponseEntity<Map> found = restTemplate.postForEntity("${baseUrl()}/deployments/search", aDeploymentSearch(), Map)
+
+        then:
+        current.getBody().deployedAt ==~ /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z/
+        and:
+        found.getBody().data.every { it.deployedAt ==~ /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z/ }
+        and:
+        !found.getBody().data.isEmpty()
+    }
+
     def "AddLabelsToBuilds"() {
         given:
         String ADD_BUILD_LABELS_URL = "${baseUrl()}/deployments/add-labels-to-builds/1"
