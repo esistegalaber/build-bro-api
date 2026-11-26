@@ -117,6 +117,23 @@ docker run --name build_bruh_db -d -p 3306:3306 -e MYSQL_DATABASE=build_bruh -e 
 
 The schema is created and migrated by Flyway on startup. The API listens on port 8080.
 
+## Health checks
+
+For orchestrators, load balancers and people, without credentials, on the API's port:
+
+| Check     | URL                          | `200` means                                    | Not `200` (`503`)                                       |
+|-----------|------------------------------|------------------------------------------------|---------------------------------------------------------|
+| Liveness  | `/actuator/health/liveness`  | The process works. Ignores the database.       | Broken; restarting it may help.                          |
+| Readiness | `/actuator/health/readiness` | Ready to serve: started, and the database answers. | Don't send traffic: the database is unreachable, or it is shutting down. |
+
+```shell
+curl -s http://localhost:8080/actuator/health/readiness
+# -> {"status":"UP"}
+```
+
+`/actuator/health` combines both. The responses show only the status, no details. While the API shuts down, it refuses new
+connections, so the checks fail with connection refused instead of `503`; requests in progress still finish.
+
 ## Run as Docker service
 
 ```shell
