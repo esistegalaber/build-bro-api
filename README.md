@@ -93,12 +93,12 @@ CI publishes both as the `api-docs` build artifact.
 
 ## Tech stack
 
-Java 17+, Spring Boot 4, Spring Data JPA / Hibernate, MariaDB with Flyway migrations, OpenAPI contract first (openapi-generator, Swagger UI).
+Java 25, Spring Boot 4, Spring Data JPA / Hibernate, MariaDB with Flyway migrations, OpenAPI contract first (openapi-generator, Swagger UI).
 Tests are Spock specifications that run against a MariaDB started by Testcontainers.
 
 ## Build
 
-Requires JDK 17 or newer, and a running Docker daemon for the tests.
+Requires JDK 25 or newer, and a running Docker daemon for the tests.
 
 ```shell
 ./mvnw verify
