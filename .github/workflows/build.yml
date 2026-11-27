@@ -83,6 +83,8 @@ jobs:
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: build-bro-api:ci
+          # The action's default Trivy (v0.70.0) failed to install; Dependabot doesn't update this, so bump it by hand
+          version: v0.76.2
           severity: HIGH,CRITICAL
           ignore-unfixed: true
           exit-code: '1'
