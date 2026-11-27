@@ -8,9 +8,11 @@ WORKDIR /build
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
 COPY src/ src/
+# Release builds pass the git tag's version (VERSION=0.3.0); otherwise the pom's default 1.0-SNAPSHOT applies (#28)
+ARG VERSION
 # The cache mount keeps Maven's repository (and the wrapper's Maven) between builds without putting it in a layer
 RUN --mount=type=cache,target=/root/.m2 \
-    ./mvnw -B -ntp package -DskipTests \
+    ./mvnw -B -ntp package -DskipTests ${VERSION:+-Drevision=$VERSION} \
  && cp target/build-bro-api-*.jar application.jar \
  && java -Djarmode=tools -jar application.jar extract --layers --destination extracted
 

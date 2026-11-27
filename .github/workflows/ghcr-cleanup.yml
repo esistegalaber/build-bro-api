@@ -1,0 +1,50 @@
+# Deletes images from ghcr.io/esistegalaber/build-bro-api that are no longer needed (#28):
+# - when a PR is closed (merged or not): its pr-<N> image
+# - weekly and by hand: untagged images (replaced PR images, leftovers) and all but the 20 newest sha-<7>
+#   images of main. Release tags (X.Y.Z, X.Y, latest) and main are never deleted.
+# Actions are pinned to full commit SHAs; the comment names the version.
+name: Clean up images
+
+on:
+  pull_request:
+    types: [ closed ]
+  schedule:
+    - cron: '30 4 * * 1'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  pr-image:
+    name: Delete the PR's image
+    # Dependabot and fork PRs publish no image (read-only token), so there is nothing to delete
+    if: >-
+      github.event_name == 'pull_request'
+      && github.event.pull_request.head.repo.full_name == github.repository
+      && github.event.pull_request.user.login != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - uses: dataaxiom/ghcr-cleanup-action@ac45a8c04b1eb4b27974ca79a0a74f344c93664b # v1.3.0
+        with:
+          package: build-bro-api
+          delete-tags: pr-${{ github.event.pull_request.number }}
+
+  prune:
+    name: Prune old images
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - uses: dataaxiom/ghcr-cleanup-action@ac45a8c04b1eb4b27974ca79a0a74f344c93664b # v1.3.0
+        with:
+          package: build-bro-api
+          # keep-n-tagged applies to the delete-tags subset: the 20 newest main commit images stay.
+          # A sha tag on the current main image is only unlinked if older, never the image itself.
+          delete-tags: sha-*
+          keep-n-tagged: 20
+          # Safety net: these tags win over every other rule (release tags never match sha-* anyway)
+          exclude-tags: main,latest
+          delete-untagged: true

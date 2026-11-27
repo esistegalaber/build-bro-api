@@ -10,11 +10,20 @@ name: Build 'n Sonar
 on:
   push:
     branches: [ "main" ]
+    # A GitHub release vX.Y.Z (on a main commit) publishes the image X.Y.Z, X.Y and latest (#28)
+    tags: [ "v*" ]
   pull_request:
     types: [ opened, synchronize, reopened ]
 
 permissions:
   contents: read
+
+# One run per ref at a time. On main, runs queue, so the main image always ends on the newest commit (a
+# pending run is replaced by a newer one, so a commit in between may get no image). On PRs, a new push
+# cancels the running one: its image would be replaced anyway.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -28,12 +37,13 @@ jobs:
           java-version: '25'
           distribution: 'temurin'
           cache: maven
-      # Dependabot runs get no Actions secrets (SONAR_TOKEN would be empty): build and test without Sonar
-      - name: Build (Dependabot, without Sonar)
-        if: github.actor == 'dependabot[bot]'
+      # Without Sonar: Dependabot runs get no Actions secrets (SONAR_TOKEN would be empty), and release tags
+      # would show up in Sonar as a branch each
+      - name: Build (Dependabot and release tags, without Sonar)
+        if: github.actor == 'dependabot[bot]' || startsWith(github.ref, 'refs/tags/v')
         run: ./mvnw -B verify
       - name: Build and SonarLyze
-        if: github.actor != 'dependabot[bot]'
+        if: github.actor != 'dependabot[bot]' && !startsWith(github.ref, 'refs/tags/v')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -47,11 +57,18 @@ jobs:
           name: api-docs
           path: target/openapi/
 
-  # Builds, scans and smoke-tests the Docker image (#23). Never pushes it: publishing is a separate ticket.
-  # Runs after build, so no image is built when the tests fail.
+  # Builds, scans and smoke-tests the Docker image (#23), then publishes exactly that image to GHCR (#28).
+  # Runs after build, so nothing is built or published when the tests fail; the push is the last step, so
+  # only an image that passed Trivy and the smoke test is published.
   docker:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      # Dependabot and fork PRs get a read-only token: their image is built and checked, but not published
+      CAN_PUBLISH: ${{ github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]') }}
     services:
       mariadb:
         image: mariadb:10.10
@@ -68,6 +85,19 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      # Tags: pr-<N> on PRs; main and sha-<7> on main; X.Y.Z, X.Y and latest (flavor latest=auto: release
+      # tags that aren't pre-releases) on vX.Y.Z tags. Plus the OCI labels version, revision and created.
+      - name: Image tags and labels
+        id: meta
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=ref,event=pr
+            type=raw,value=main,enable={{is_default_branch}}
+            type=sha,prefix=sha-,enable={{is_default_branch}}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
       # amd64 only; the Dockerfile is architecture-neutral, so it also builds natively on arm64
       - name: Build image
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
@@ -75,6 +105,9 @@ jobs:
           context: .
           platforms: linux/amd64
           tags: build-bro-api:ci
+          labels: ${{ steps.meta.outputs.labels }}
+          # The jar's version: the release's X.Y.Z on vX.Y.Z tags, otherwise the pom's 1.0-SNAPSHOT
+          build-args: VERSION=${{ startsWith(github.ref, 'refs/tags/v') && steps.meta.outputs.version || '' }}
           load: true
           push: false
           cache-from: type=gha
@@ -111,3 +144,26 @@ jobs:
       - name: Container logs
         if: failure()
         run: docker logs api || true
+      # Publishes the image that was just tested (retagged, not rebuilt)
+      - name: Log in to GHCR
+        if: env.CAN_PUBLISH == 'true'
+        uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish to GHCR
+        if: env.CAN_PUBLISH == 'true'
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+        run: |
+          for tag in $TAGS; do
+            docker tag build-bro-api:ci "$tag"
+            docker push "$tag"
+          done
+          {
+            echo "### Published"
+            for tag in $TAGS; do echo "- \`$tag\`"; done
+            echo
+            echo "Digest: \`$(docker inspect --format '{{index .RepoDigests 0}}' build-bro-api:ci)\`"
+          } >> "$GITHUB_STEP_SUMMARY"
