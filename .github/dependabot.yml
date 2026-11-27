@@ -20,3 +20,15 @@ updates:
         update-types:
           - minor
           - patch
+
+  # The base images in the Dockerfile, pinned by digest: Dependabot updates the tag and the digest.
+  # The docker job in build.yml builds, scans and smoke-tests every such PR.
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      docker-minor-and-patch:
+        update-types:
+          - minor
+          - patch

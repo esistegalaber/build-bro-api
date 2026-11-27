@@ -46,3 +46,68 @@ jobs:
         with:
           name: api-docs
           path: target/openapi/
+
+  # Builds, scans and smoke-tests the Docker image (#23). Never pushes it: publishing is a separate ticket.
+  # Runs after build, so no image is built when the tests fail.
+  docker:
+    needs: build
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:10.10
+        env:
+          MARIADB_DATABASE: build_bruh
+          MARIADB_USER: build_bruh
+          MARIADB_PASSWORD: build_bruh
+          MARIADB_ROOT_PASSWORD: build_bruh
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "healthcheck.sh --connect --innodb_initialized"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      # amd64 only; the Dockerfile is architecture-neutral, so it also builds natively on arm64
+      - name: Build image
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          platforms: linux/amd64
+          tags: build-bro-api:ci
+          load: true
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: build-bro-api:ci
+          # The action's default Trivy (v0.70.0) failed to install; Dependabot doesn't update this, so bump it by hand
+          version: v0.76.2
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'
+      - name: Check that the image doesn't run as root
+        run: |
+          user=$(docker inspect --format '{{.Config.User}}' build-bro-api:ci)
+          echo "Image user: '$user'"
+          case "$user" in ""|0|0:*|root|root:*) echo "::error::The image runs as root"; exit 1;; esac
+      # Read-only root filesystem, like production should run it. Readiness answers 200 once Flyway has migrated,
+      # the API is up and it reaches the database (#24)
+      - name: Smoke test against MariaDB
+        run: |
+          docker run -d --name api --read-only --tmpfs /tmp --network host \
+            -e SPRING_DATASOURCE_URL=jdbc:mariadb://127.0.0.1:3306/build_bruh \
+            -e SPRING_DATASOURCE_USERNAME=build_bruh \
+            -e SPRING_DATASOURCE_PASSWORD=build_bruh \
+            build-bro-api:ci
+          for _ in $(seq 1 60); do
+            if curl -fsS http://localhost:8080/actuator/health/readiness; then echo; echo "Ready"; exit 0; fi
+            sleep 2
+          done
+          echo "::error::The API was not ready within 120 s"
+          exit 1
+      - name: Container logs
+        if: failure()
+        run: docker logs api || true

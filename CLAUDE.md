@@ -33,7 +33,14 @@ docker run --name build_bruh_db -d -p 3306:3306 -e MYSQL_DATABASE=build_bruh -e 
 
 (`setup-db.sh` does roughly the same but uses an inconsistent container name and a `build_bruh` docker network. Create that network first or use the command above.)
 
-Docker image: `./mvnw package`, then build the `Dockerfile`, which copies `target/build-bro-api-0.2.0.jar`, so update the Dockerfile when `<version>` changes in `pom.xml`. At runtime it takes `DB_URL`, `DB_USR` and `DB_PWD` env vars.
+**Docker image** (issue #23): `docker build -t build-bro-api .` works from a clean checkout, with no prior `./mvnw package`. The multi-stage `Dockerfile` compiles in a Temurin 25 JDK stage (`./mvnw package -DskipTests`, Maven's repository in a BuildKit cache mount), extracts Spring Boot's layered jar, and copies the layers into `gcr.io/distroless/java25-debian13:nonroot`: no shell, no package manager, user `65532`, exec-form `ENTRYPOINT`, `JAVA_TOOL_OPTIONS=-XX:MaxRAMPercentage=75`. It names no version, so `<version>` changes need no Dockerfile change. Both base images are pinned by digest, and Dependabot (`docker` ecosystem) updates them. The image holds no database settings; pass Spring's standard variables at run time, and it works with a read-only root filesystem:
+
+```bash
+docker run --read-only --tmpfs /tmp -p 8080:8080 -e SPRING_DATASOURCE_URL=jdbc:mariadb://<host>:3306/build_bruh \
+  -e SPRING_DATASOURCE_USERNAME=build_bruh -e SPRING_DATASOURCE_PASSWORD=build_bruh build-bro-api
+```
+
+Nothing may write outside `/tmp` (logging goes to stdout only, `logback.xml`). CI's `docker` job (after `build`) builds the image for amd64 without pushing it, fails on fixable HIGH/CRITICAL Trivy findings, checks that the user isn't root, and runs it read-only against a MariaDB service until `/actuator/health/readiness` answers 200. Publishing to a registry is not set up yet.
 
 ## Architecture
 

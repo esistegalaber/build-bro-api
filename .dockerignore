@@ -1,0 +1,10 @@
+# Only what the build stage needs goes into the build context
+target/
+.git/
+.github/
+.idea/
+.vscode/
+*.iml
+.DS_Store
+.mvn/wrapper/maven-wrapper.jar
+*.log
