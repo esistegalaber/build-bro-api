@@ -12,11 +12,13 @@
 
     <groupId>com.egalaber</groupId>
     <artifactId>build-bro-api</artifactId>
-    <version>0.3.0-SNAPSHOT</version>
+    <!-- Never bumped: release builds set the version from the git tag (-Drevision=X.Y.Z, #28) -->
+    <version>${revision}</version>
     <name>build-bro-api</name>
     <description>Build Bruh REST API</description>
 
     <properties>
+        <revision>1.0-SNAPSHOT</revision>
         <java.version>25</java.version>
         <swagger-ui.version>5.36.0</swagger-ui.version>
         <spock.version>2.5-groovy-5.0</spock.version>

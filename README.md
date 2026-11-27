@@ -136,7 +136,18 @@ connections, so the checks fail with connection refused instead of `503`; reques
 
 ## Run as Docker service
 
-The image builds from a clean checkout; it compiles the API itself, so no `./mvnw package` is needed first.
+Published images are on GHCR, public, no login needed:
+
+```shell
+docker pull ghcr.io/esistegalaber/build-bro-api:latest   # the newest release (also X.Y.Z and X.Y)
+docker pull ghcr.io/esistegalaber/build-bro-api:main     # the newest commit on main (also sha-<7>)
+```
+
+PRs publish `pr-<N>` (the PR number), deleted when the PR closes. Only images whose CI passed (tests, Trivy scan,
+smoke test) are published. The images are amd64 only.
+
+To build it yourself: the image builds from a clean checkout; it compiles the API itself, so no `./mvnw package`
+is needed first.
 
 ```shell
 docker build -t build-bro-api .
@@ -151,6 +162,12 @@ The image contains no database settings or credentials: pass them with the `SPRI
 as a non-root user (`65532`) on a distroless Java 25 base without a shell, and works with a read-only root filesystem
 when `/tmp` is writable (`--tmpfs /tmp`). JVM memory follows the container's limit (`-XX:MaxRAMPercentage=75`);
 override it with `-e JAVA_TOOL_OPTIONS=...`.
+
+## Releases
+
+Create a GitHub release with a new tag `vX.Y.Z` on a commit of `main`. CI builds, tests and checks that commit and
+publishes the image as `X.Y.Z`, `X.Y` and `latest` (pre-releases such as `v1.0.0-rc1` don't get `latest`). The
+version comes from the tag only: `pom.xml` stays at `1.0-SNAPSHOT` and is never bumped.
 
 ## License
 
