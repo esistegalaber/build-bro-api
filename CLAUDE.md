@@ -1,7 +1,5 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 ## Overview
 
 Build Bruh is a Spring Boot 4.2 (Java 25) REST API that tracks CI builds, build numbers, build-set templates ("environments"), servers and deployments. It is backed by MariaDB with Flyway migrations. Tests are written in Groovy with Spock.
