@@ -136,13 +136,21 @@ connections, so the checks fail with connection refused instead of `503`; reques
 
 ## Run as Docker service
 
+The image builds from a clean checkout; it compiles the API itself, so no `./mvnw package` is needed first.
+
 ```shell
-./mvnw package -DskipTests
 docker build -t build-bro-api .
-docker run -d -p 8080:8080 \
-  -e DB_URL=jdbc:mariadb://<db-host>:3306/build_bruh -e DB_USR=build_bruh -e DB_PWD=build_bruh \
+docker run -d --read-only --tmpfs /tmp -p 8080:8080 \
+  -e SPRING_DATASOURCE_URL=jdbc:mariadb://<db-host>:3306/build_bruh \
+  -e SPRING_DATASOURCE_USERNAME=build_bruh \
+  -e SPRING_DATASOURCE_PASSWORD=build_bruh \
   build-bro-api
 ```
+
+The image contains no database settings or credentials: pass them with the `SPRING_DATASOURCE_*` variables. It runs
+as a non-root user (`65532`) on a distroless Java 25 base without a shell, and works with a read-only root filesystem
+when `/tmp` is writable (`--tmpfs /tmp`). JVM memory follows the container's limit (`-XX:MaxRAMPercentage=75`);
+override it with `-e JAVA_TOOL_OPTIONS=...`.
 
 ## License
 
