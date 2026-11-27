@@ -98,6 +98,10 @@ jobs:
             type=sha,prefix=sha-,enable={{is_default_branch}}
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
+          # metadata-action takes the description from the GitHub repo's (empty), which would overwrite the
+          # Dockerfile's label; keep this text in step with it
+          labels: |
+            org.opencontainers.image.description=Build Bruh REST API: builds, build sets, servers and deployments
       # amd64 only; the Dockerfile is architecture-neutral, so it also builds natively on arm64
       - name: Build image
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
